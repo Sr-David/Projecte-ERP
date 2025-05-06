@@ -1,0 +1,46 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: laravel_app
+    working_dir: /var/www
+    volumes:
+      - ./Laravel:/var/www
+    networks:
+      - laravel
+
+  webserver:
+    image: nginx:alpine
+    container_name: nginx_webserver-crm-erp
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+  mysql:
+    image: mysql:8.0
+    container_name: crm-erp-BD
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 1234
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - laravel
+
+networks:
+  laravel:
+
+volumes:
+  db_data:

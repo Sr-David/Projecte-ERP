@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: laravel_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: laravel_db
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: laravel_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    image: php:8.2-apache
+    container_name: laravel_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./laravel:/var/www/html
+      - ./apache/vhost.conf:/etc/apache2/sites-available/000-default.conf
+    working_dir: /var/www/html
+    depends_on:
+      - mysql
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: laravel_db-prueba
+      DB_USERNAME: user
+      DB_PASSWORD: laravel_password
+
+volumes:
+  mysql_data:
