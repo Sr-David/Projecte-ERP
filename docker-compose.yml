@@ -25,7 +25,7 @@ services:
       - laravel
 
   mysql:
-    image: mysql:8.0
+    image: mysql:8.3
     container_name: crm-erp-BD
     ports:
       - "3306:3306"
