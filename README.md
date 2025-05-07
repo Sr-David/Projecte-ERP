@@ -1,5 +1,5 @@
+![imagen(1)](https://github.com/user-attachments/assets/5a7dc411-bbd1-473e-8c7f-4aabf5354e38)
 
-![imagen](https://github.com/user-attachments/assets/e7c465c2-f8c4-42e0-bb4b-c77ffff825da)
 
 
 🇬🇧 English: ElevateCRM is a cutting-edge Customer Relationship Management (CRM) system designed to streamline business operations, boost customer engagement, and scale effortlessly. With a Dockerized setup, it’s built for developers and businesses who want a robust, secure, and easy-to-deploy solution.
