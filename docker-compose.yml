@@ -35,7 +35,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: 1234
     volumes:
-      - db_data:/var/lib/mysql
+      - ./Database-persistence:/var/lib/mysql
     networks:
       - laravel
 
@@ -43,4 +43,4 @@ networks:
   laravel:
 
 volumes:
-  db_data:
+  db_data: 
