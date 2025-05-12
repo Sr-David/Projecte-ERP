@@ -15,4 +15,12 @@ class Clients extends Model
         'Address',
         'ClientType_ID'
     ];
+    
+    /**
+     * Obtiene el tipo de cliente asociado.
+     */
+    public function clientType()
+    {
+        return $this->belongsTo(ClientType::class, 'ClientType_ID');
+    }
 }

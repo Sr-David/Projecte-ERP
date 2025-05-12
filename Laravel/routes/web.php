@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientsController;
 use App\Http\Middleware\AdminAuth;
 
 Route::get('/', function () {
@@ -44,5 +45,16 @@ Route::get('/build/assets/{file}', function ($file) {
 Route::middleware([AdminAuth::class])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
-    });
+    })->name('dashboard');
+    
+    // Rutas de Clientes
+    Route::resource('clientes', ClientsController::class)->names([
+        'index' => 'clients.index',
+        'create' => 'clients.create',
+        'store' => 'clients.store',
+        'show' => 'clients.show',
+        'edit' => 'clients.edit',
+        'update' => 'clients.update',
+        'destroy' => 'clients.destroy',
+    ]);
 });

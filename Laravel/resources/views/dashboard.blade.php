@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="#" class="text-sm font-medium text-brand-blue hover:underline">
+                    <a href="{{ route('clients.index') }}" class="text-sm font-medium text-brand-blue hover:underline">
                         Ver todos
                     </a>
                 </div>
@@ -243,7 +243,7 @@
     <div class="mt-8">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Acciones Rápidas</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <a href="#" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
+            <a href="{{ route('clients.create') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-brand-blue/10 rounded-full p-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
