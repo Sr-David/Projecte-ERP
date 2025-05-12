@@ -28,12 +28,14 @@ Elevate CRM es un sistema completo de gestión de relaciones con clientes diseñ
 
 <div align="center">
   <p>Dashboard y panel de control</p>
-![image](https://github.com/user-attachments/assets/d9b9f47f-0823-4e29-89e5-6b9020d220b0)
+  <img src= "https://github.com/user-attachments/assets/d9b9f47f-0823-4e29-89e5-6b9020d220b0" >
   
   <p>Página de login</p>
-![image](https://github.com/user-attachments/assets/c947cb19-74e5-47db-9647-b76ec31ead5c)
+  <img src= "https://github.com/user-attachments/assets/c947cb19-74e5-47db-9647-b76ec31ead5c" >
+
   <p>Main</p>
-![image](https://github.com/user-attachments/assets/4779fdb3-6425-4dc2-bddf-6aed15beed9b)
+  <img src= "https://github.com/user-attachments/assets/4779fdb3-6425-4dc2-bddf-6aed15beed9b" >
+
 
 </div>
 
