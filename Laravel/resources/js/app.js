@@ -1,2 +1,2 @@
-import './bootstrap';
-import './components/ExampleShadcn';
+// Importar todo desde app.jsx para compatibilidad
+import './app.jsx'; 

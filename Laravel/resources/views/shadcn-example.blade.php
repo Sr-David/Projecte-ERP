@@ -6,7 +6,7 @@
     <title>Tailwind CSS en Laravel</title>
     
     @if (file_exists(public_path('build/manifest.json')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     @else
         <!-- Fallback cuando el manifiesto de Vite no existe -->
         <style>

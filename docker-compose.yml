@@ -8,6 +8,7 @@ services:
     volumes:
       - ./Laravel:/var/www
       - /var/www/vendor
+      - /var/www/node_modules
     networks:
       - laravel
 
@@ -17,7 +18,7 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - ./:/var/www
+      - ./Laravel:/var/www
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - app
