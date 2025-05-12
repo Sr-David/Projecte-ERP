@@ -21,7 +21,7 @@ class AdminAuth
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => 'No autenticado'], 401);
             }
-            return redirect('/login');
+            return redirect()->to('/login');
         }
 
         $userId = $request->session()->get('user_id');
@@ -33,7 +33,7 @@ class AdminAuth
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => 'No autenticado'], 401);
             }
-            return redirect('/login');
+            return redirect()->to('/login');
         }
 
         // Convertir el objeto a array antes de agregarlo al request

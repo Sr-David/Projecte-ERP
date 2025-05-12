@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// Configurar CSRF token para todas las peticiones axios
+axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +16,11 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('/api/login', { username, password });
+      const response = await axios.post('/api/login', { 
+        username, 
+        password 
+      });
+      
       if (response.data.success) {
         window.location.href = '/dashboard';
       } else {

@@ -22,6 +22,24 @@ Route::get('/login', function () {
     return view('login');
 });
 
+// Ruta temporal para servir archivos CSS y JS si Nginx falla
+Route::get('/build/assets/{file}', function ($file) {
+    $path = public_path("build/assets/{$file}");
+    if (file_exists($path)) {
+        $contentType = 'text/plain';
+        
+        if (str_ends_with($file, '.js')) {
+            $contentType = 'application/javascript';
+        } else if (str_ends_with($file, '.css')) {
+            $contentType = 'text/css';
+        }
+        
+        return response()->file($path, ['Content-Type' => $contentType]);
+    }
+    
+    return response("File not found: {$file}", 404);
+})->where('file', '.*');
+
 // Rutas protegidas para administradores
 Route::middleware([AdminAuth::class])->group(function () {
     Route::get('/dashboard', function () {

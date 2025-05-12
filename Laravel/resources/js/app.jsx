@@ -10,6 +10,9 @@ const initReactComponents = () => {
     if (loginContainer) {
         const root = createRoot(loginContainer);
         root.render(<Login />);
+        console.log('Componente Login renderizado');
+    } else {
+        console.error('No se encontró el contenedor #login-container');
     }
 };
 

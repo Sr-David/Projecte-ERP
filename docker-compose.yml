@@ -9,6 +9,8 @@ services:
       - ./Laravel:/var/www
       - /var/www/vendor
       - /var/www/node_modules
+      - /var/www/public/build
+      - /var/www/public/hot
     networks:
       - laravel
 
@@ -20,6 +22,8 @@ services:
     volumes:
       - ./Laravel:/var/www
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - /var/www/public/build
+      - /var/www/public/hot
     depends_on:
       - app
     networks:
