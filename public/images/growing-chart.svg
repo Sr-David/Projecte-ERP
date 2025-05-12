@@ -1,0 +1,73 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo con borde redondeado -->
+  <rect width="400" height="300" fill="white" rx="16" ry="16" />
+  
+  <!-- Grid suave -->
+  <g stroke="#f1f5f9" stroke-width="1">
+    <line x1="50" y1="50" x2="350" y2="50" />
+    <line x1="50" y1="100" x2="350" y2="100" />
+    <line x1="50" y1="150" x2="350" y2="150" />
+    <line x1="50" y1="200" x2="350" y2="200" />
+    <line x1="50" y1="250" x2="350" y2="250" />
+  </g>
+
+  <!-- Ejes principales -->
+  <line x1="50" y1="250" x2="350" y2="250" stroke="#94a3b8" stroke-width="2" />
+  <line x1="50" y1="50" x2="50" y2="250" stroke="#94a3b8" stroke-width="2" />
+
+  <!-- Etiquetas del eje Y -->
+  <g font-family="Poppins" font-size="12" fill="#64748b">
+    <text x="35" y="255" text-anchor="end">0</text>
+    <text x="35" y="205" text-anchor="end">25</text>
+    <text x="35" y="155" text-anchor="end">50</text>
+    <text x="35" y="105" text-anchor="end">75</text>
+    <text x="35" y="55" text-anchor="end">100</text>
+  </g>
+
+  <!-- Barras con animación suave -->
+  <g>
+    <!-- Q1 -->
+    <rect x="100" y="250" width="30" height="0" fill="#3F95FF" opacity="0.9">
+      <animate attributeName="height" from="0" to="100" dur="1s" begin="0s" fill="freeze" />
+      <animate attributeName="y" from="250" to="150" dur="1s" begin="0s" fill="freeze" />
+    </rect>
+    <text x="115" y="270" font-family="Poppins" font-size="12" text-anchor="middle" fill="#64748b">Q1</text>
+
+    <!-- Q2 -->
+    <rect x="180" y="250" width="30" height="0" fill="#3F95FF" opacity="0.9">
+      <animate attributeName="height" from="0" to="150" dur="1s" begin="0.2s" fill="freeze" />
+      <animate attributeName="y" from="250" to="100" dur="1s" begin="0.2s" fill="freeze" />
+    </rect>
+    <text x="195" y="270" font-family="Poppins" font-size="12" text-anchor="middle" fill="#64748b">Q2</text>
+
+    <!-- Q3 -->
+    <rect x="260" y="250" width="30" height="0" fill="#3F95FF" opacity="0.9">
+      <animate attributeName="height" from="0" to="180" dur="1s" begin="0.4s" fill="freeze" />
+      <animate attributeName="y" from="250" to="70" dur="1s" begin="0.4s" fill="freeze" />
+    </rect>
+    <text x="275" y="270" font-family="Poppins" font-size="12" text-anchor="middle" fill="#64748b">Q3</text>
+  </g>
+
+  <!-- Línea de tendencia -->
+  <path d="M115,150 L195,100 L275,70" stroke="#3F95FF" stroke-width="2" fill="none" opacity="0">
+    <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="1s" fill="freeze" />
+  </path>
+
+  <!-- Puntos en la línea -->
+  <g fill="#3F95FF">
+    <circle cx="115" cy="150" r="4" opacity="0">
+      <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.2s" fill="freeze" />
+    </circle>
+    <circle cx="195" cy="100" r="4" opacity="0">
+      <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.4s" fill="freeze" />
+    </circle>
+    <circle cx="275" cy="70" r="4" opacity="0">
+      <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.6s" fill="freeze" />
+    </circle>
+  </g>
+
+  <!-- Título -->
+  <text x="200" y="30" font-family="Poppins" font-size="16" font-weight="600" text-anchor="middle" fill="#1A1A1A">
+    Crecimiento trimestral
+  </text>
+</svg>
