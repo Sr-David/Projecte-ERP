@@ -12,7 +12,13 @@ class ClientsController extends Controller
      */
     public function index()
     {
-        //
+        $clients = Clients::all();
+
+        return response()->json([
+            'success' => true,
+            'data' => $clients
+        ], 200);
+
     }
 
     /**
