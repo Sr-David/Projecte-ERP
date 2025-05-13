@@ -31,16 +31,26 @@ class ClientsController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        \Log::info('Request completo antes de validación:', $request->all());
+        \Log::info('clientTypeId recibido: ' . $request->input('clientTypeId', 'NO RECIBIDO'));
+        
+        $validated = $request->validate([
             'Name' => 'required|string|max:255',
             'LastName' => 'required|string|max:255',
             'Email' => 'required|email|unique:clients,Email',
             'Phone' => 'required|string|max:20',
             'Address' => 'nullable|string|max:255',
-            'ClientType_ID' => 'required|exists:ClientType,id',
+            'clientTypeId' => 'required|integer|exists:ClientType,id',
         ]);
 
-        Clients::create($request->all());
+        \Log::info('Datos validados:', $validated);
+
+        // Mapear el nombre del campo para que coincida con la columna de la base de datos
+        $clientData = $request->all();
+        $clientData['ClientType_ID'] = $clientData['clientTypeId'];
+        unset($clientData['clientTypeId']);
+
+        Clients::create($clientData);
 
         return redirect()->route('clients.index')
             ->with('success', 'Cliente creado exitosamente.');
@@ -74,10 +84,15 @@ class ClientsController extends Controller
             'Email' => 'required|email|unique:clients,Email,' . $client->id,
             'Phone' => 'required|string|max:20',
             'Address' => 'nullable|string|max:255',
-            'ClientType_ID' => 'required|exists:ClientType,id',
+            'clientTypeId' => 'required|integer|exists:ClientType,id',
         ]);
 
-        $client->update($request->all());
+        // Mapear el nombre del campo para que coincida con la columna de la base de datos
+        $clientData = $request->all();
+        $clientData['ClientType_ID'] = $clientData['clientTypeId'];
+        unset($clientData['clientTypeId']);
+
+        $client->update($clientData);
 
         return redirect()->route('clients.index')
             ->with('success', 'Cliente actualizado exitosamente.');
