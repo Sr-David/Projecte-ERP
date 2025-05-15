@@ -40,14 +40,14 @@ class ClientsController extends Controller
             'Email' => 'required|email|unique:clients,Email',
             'Phone' => 'required|string|max:20',
             'Address' => 'nullable|string|max:255',
-            'clientTypeId' => 'required|integer|exists:ClientType,id',
+            'clientTypeId' => 'required|integer|exists:ClientType,idClientType',
         ]);
 
         \Log::info('Datos validados:', $validated);
 
         // Mapear el nombre del campo para que coincida con la columna de la base de datos
         $clientData = $request->all();
-        $clientData['ClientType_ID'] = $clientData['clientTypeId'];
+        $clientData['ClientTypeID'] = $clientData['clientTypeId'];
         unset($clientData['clientTypeId']);
 
         Clients::create($clientData);
@@ -81,15 +81,15 @@ class ClientsController extends Controller
         $request->validate([
             'Name' => 'required|string|max:255',
             'LastName' => 'required|string|max:255',
-            'Email' => 'required|email|unique:clients,Email,' . $client->id,
+            'Email' => 'required|email|unique:clients,Email,' . $client->idClient,
             'Phone' => 'required|string|max:20',
             'Address' => 'nullable|string|max:255',
-            'clientTypeId' => 'required|integer|exists:ClientType,id',
+            'clientTypeId' => 'required|integer|exists:ClientType,idClientType',
         ]);
 
         // Mapear el nombre del campo para que coincida con la columna de la base de datos
         $clientData = $request->all();
-        $clientData['ClientType_ID'] = $clientData['clientTypeId'];
+        $clientData['ClientTypeID'] = $clientData['clientTypeId'];
         unset($clientData['clientTypeId']);
 
         $client->update($clientData);

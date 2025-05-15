@@ -107,7 +107,7 @@
                                     <option value="" disabled selected>Seleccionar tipo de cliente</option>
                                     @if(isset($clientTypes) && count($clientTypes) > 0)
                                         @foreach($clientTypes as $type)
-                                            <option value="{{ $type->id }}" {{ old('clientTypeId') == $type->id ? 'selected' : '' }}>
+                                            <option value="{{ $type->idClientType }}" {{ old('clientTypeId') == $type->idClientType ? 'selected' : '' }}>
                                                 {{ $type->ClientType }}
                                             </option>
                                         @endforeach

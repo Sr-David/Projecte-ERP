@@ -7,13 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Clients extends Model
 {
     protected $table = 'clients';
+    protected $primaryKey = 'idClient';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = false; // <--- Añade esta línea
+
     protected $fillable = [
         'Name',
         'LastName',
         'Email',
         'Phone',
         'Address',
-        'ClientType_ID'
+        'ClientTypeID'
     ];
     
     /**
@@ -21,6 +26,6 @@ class Clients extends Model
      */
     public function clientType()
     {
-        return $this->belongsTo(ClientType::class, 'ClientType_ID');
+        return $this->belongsTo(ClientType::class, 'ClientTypeID', 'idClientType');
     }
 }
