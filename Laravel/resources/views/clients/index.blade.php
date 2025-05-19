@@ -138,8 +138,16 @@
                                         data-client-phone="{{ $client->Phone }}"
                                         data-client-address="{{ $client->Address }}"
                                         data-client-type="{{ $client->clientType->ClientType ?? 'Sin asignar' }}"
+                                        data-client-type-id="{{ $client->ClientTypeID }}"
                                         data-client-created="{{ $client->created_at ? $client->created_at->format('d/m/Y') : 'No disponible' }}"
                                         data-client-updated="{{ $client->updated_at ? $client->updated_at->format('d/m/Y H:i') : 'No disponible' }}"
+                                        onclick="console.log('Datos del botón al hacer clic:', {
+                                            id: '{{ $client->idClient }}',
+                                            nombre: '{{ $client->Name }}',
+                                            apellido: '{{ $client->LastName }}',
+                                            nombre_original: this.getAttribute('data-client-name'),
+                                            apellido_original: this.getAttribute('data-client-lastname')
+                                        })"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -432,6 +440,12 @@
         const typeFilter = document.getElementById('filter-type');
         const tableRows = document.querySelectorAll('tbody tr');
         
+        // Función auxiliar para manejar nombres y apellidos
+        function fixNameCase(str) {
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        }
+        
         // Función para filtrar la tabla
         function filterTable() {
             const searchValue = searchInput.value.toLowerCase();
@@ -513,6 +527,12 @@
         // Event listeners para los botones de ver detalles
         viewButtons.forEach(button => {
             button.addEventListener('click', function() {
+                // Marcar este botón como activo y quitar la marca de los demás
+                document.querySelectorAll('.view-client-details').forEach(btn => {
+                    btn.removeAttribute('data-active');
+                });
+                this.setAttribute('data-active', 'true');
+                
                 const clientId = this.getAttribute('data-client-id');
                 const name = this.getAttribute('data-client-name');
                 const lastName = this.getAttribute('data-client-lastname');
@@ -520,8 +540,26 @@
                 const phone = this.getAttribute('data-client-phone');
                 const address = this.getAttribute('data-client-address') || 'No especificada';
                 const type = this.getAttribute('data-client-type');
+                const typeId = this.getAttribute('data-client-type-id');
                 const createdAt = this.getAttribute('data-client-created');
                 const updatedAt = this.getAttribute('data-client-updated');
+                
+                // Debug - Mostrar los datos extraídos del botón
+                console.log('Datos del botón de detalles:', {
+                    id: clientId,
+                    nombre: name,
+                    apellido: lastName,
+                    email: email,
+                    teléfono: phone,
+                    dirección: address,
+                    tipo: type,
+                    tipoId: typeId,
+                    creado: createdAt,
+                    actualizado: updatedAt
+                });
+                
+                // Guardar el nombre completo original para usarlo después
+                this.setAttribute('data-client-fullname', `${name} ${lastName}`);
                 
                 // Actualizar contenido del modal
                 document.getElementById('clientInitials').textContent = name.charAt(0) + lastName.charAt(0);
@@ -537,6 +575,11 @@
                 document.getElementById('clientCreatedAt').textContent = createdAt;
                 document.getElementById('clientUpdatedAt').textContent = updatedAt;
                 
+                // Guardar los datos originales en atributos data para usarlos posteriormente
+                document.getElementById('clientFullName').setAttribute('data-original-name', name);
+                document.getElementById('clientFullName').setAttribute('data-original-lastname', lastName);
+                document.getElementById('clientType').setAttribute('data-original-type-id', typeId);
+                
                 // Actualizar enlace de edición
                 document.getElementById('editClientLink').href = '/clientes/' + clientId + '/edit';
                 
@@ -548,105 +591,164 @@
         document.getElementById('editClientLink').addEventListener('click', function(e) {
             e.preventDefault();
             
-            const clientUrl = this.getAttribute('href');
-            const clientId = document.getElementById('clientId').textContent.replace('#', '');
-            const name = document.getElementById('clientName').textContent;
-            const lastName = document.getElementById('clientLastName').textContent;
-            const email = document.getElementById('clientEmail').textContent;
-            const phone = document.getElementById('clientPhone').textContent;
-            const address = document.getElementById('clientAddress').textContent;
-            const type = document.getElementById('clientType').textContent;
-            
-            // Rellenar el formulario de edición
-            document.getElementById('edit_name').value = name;
-            document.getElementById('edit_lastname').value = lastName;
-            document.getElementById('edit_email').value = email;
-            document.getElementById('edit_phone').value = phone;
-            document.getElementById('edit_address').value = address === 'No especificada' ? '' : address;
-            
-            // Configurar el tipo de cliente en el select
-            const typeOptions = document.querySelectorAll('#edit_client_type option');
-            typeOptions.forEach(option => {
-                if (option.textContent === type) {
-                    option.selected = true;
+            try {
+                // Obtener el botón activo que abrió el modal
+                const activeButton = document.querySelector('.view-client-details[data-active="true"]');
+                
+                if (!activeButton) {
+                    console.error('Error crítico: No se encontró el botón activo');
+                    alert('Error al obtener datos del cliente. Por favor inténtelo de nuevo.');
+                    return;
                 }
-            });
-            
-            // Configurar la acción del formulario
-            document.getElementById('editClientForm').action = clientUrl;
-            
-            // Establecer iniciales en el modal de edición
-            document.getElementById('editClientInitials').textContent = name.charAt(0) + lastName.charAt(0);
-            
-            // Mostrar en consola para debugging
-            console.log('Editando cliente desde modal:', {
-                id: clientId,
-                url: clientUrl,
-                nombre: name,
-                apellido: lastName
-            });
-            
-            // Ocultar modal de detalles y mostrar modal de edición
-            hideDetailsModal();
-            showEditModal();
+                
+                // Obtener datos DIRECTAMENTE de los atributos del botón sin ningún procesamiento
+                const clientId = activeButton.getAttribute('data-client-id');
+                const name = activeButton.getAttribute('data-client-name');
+                const lastName = activeButton.getAttribute('data-client-lastname');
+                
+                // Usar console.error para asegurar visibilidad en la consola
+                console.error('DATOS FINALES PARA EDITAR:', {
+                    'ID Cliente': clientId,
+                    'Nombre': name,
+                    'Apellido': lastName
+                });
+                
+                // ESTABLECER DIRECTAMENTE los valores en los campos del formulario
+                const nameField = document.getElementById('edit_name');
+                const lastNameField = document.getElementById('edit_lastname');
+                const emailField = document.getElementById('edit_email');
+                const phoneField = document.getElementById('edit_phone');
+                const addressField = document.getElementById('edit_address');
+                
+                nameField.value = name || '';
+                lastNameField.value = lastName || '';
+                emailField.value = activeButton.getAttribute('data-client-email') || '';
+                phoneField.value = activeButton.getAttribute('data-client-phone') || '';
+                
+                const address = activeButton.getAttribute('data-client-address');
+                addressField.value = (address && address !== 'No especificada') ? address : '';
+                
+                // Seleccionar tipo de cliente
+                const typeId = activeButton.getAttribute('data-client-type-id');
+                document.querySelectorAll('#edit_client_type option').forEach(option => {
+                    option.selected = option.value === typeId;
+                });
+                
+                // Establecer URL del formulario
+                const clientUrl = `/clientes/${clientId}`;
+                document.getElementById('editClientForm').action = clientUrl;
+                
+                // Iniciales para mostrar (solo visual)
+                document.getElementById('editClientInitials').textContent = (name?.charAt(0) || '') + (lastName?.charAt(0) || '');
+                
+                // Cambiar entre modales
+                hideDetailsModal();
+                showEditModal();
+                
+                // Verificación final
+                setTimeout(() => {
+                    console.log('VERIFICACIÓN FINAL - Valores de los campos:');
+                    console.log('Nombre field value:', nameField.value);
+                    console.log('Apellido field value:', lastNameField.value);
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error crítico en la edición:', error);
+                alert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.');
+            }
         });
         
         // Event listeners para los botones de editar en la tabla
-        document.querySelectorAll('.text-indigo-600').forEach(button => {
+        document.querySelectorAll('a[href*="/clientes/"][href$="/edit"]').forEach(button => {
             button.addEventListener('click', function(e) {
-                // Si es un enlace de edición (contiene el ícono de editar)
-                if (this.querySelector('svg path[d*="M11 5H6"]')) {
-                    e.preventDefault();
-                    
+                console.log('Botón de editar en tabla clickeado', this);
+                e.preventDefault();
+                
+                try {
                     const clientRow = this.closest('tr');
                     const clientUrl = this.getAttribute('href');
-                    const clientId = clientUrl.substring(clientUrl.lastIndexOf('/') + 1);
+                    const clientId = clientUrl.substring(clientUrl.lastIndexOf('/') + 1).replace('/edit', '');
                     
-                    const nameCell = clientRow.querySelector('td:first-child');
-                    const emailCell = clientRow.querySelector('td:nth-child(2)');
-                    const phoneCell = clientRow.querySelector('td:nth-child(3)');
-                    const typeCell = clientRow.querySelector('td:nth-child(4)');
+                    // Encontrar el botón de detalles relacionado para obtener sus datos
+                    const detailsButton = clientRow.querySelector('.view-client-details');
                     
-                    const fullName = nameCell.querySelector('.text-sm.font-medium').textContent.trim();
-                    const nameParts = fullName.split(' ');
-                    const name = nameParts[0];
-                    const lastName = nameParts.slice(1).join(' ');
-                    const address = nameCell.querySelector('.text-xs.text-gray-500') ? 
-                                   nameCell.querySelector('.text-xs.text-gray-500').textContent.trim() : '';
-                    const email = emailCell.textContent.trim();
-                    const phone = phoneCell.textContent.trim();
-                    const type = typeCell.querySelector('span').textContent.trim();
-                    const typeId = typeCell.querySelector('span').getAttribute('data-type-id');
+                    if (!detailsButton) {
+                        console.error('No se pudo encontrar el botón de detalles relacionado');
+                        
+                        // Intentar extraer datos directamente de la fila como respaldo
+                        const nameCell = clientRow.querySelector('td:first-child');
+                        const emailCell = clientRow.querySelector('td:nth-child(2)');
+                        const phoneCell = clientRow.querySelector('td:nth-child(3)');
+                        const typeCell = clientRow.querySelector('td:nth-child(4)');
+                        
+                        if (!nameCell) {
+                            throw new Error('No se pudieron encontrar las celdas necesarias');
+                        }
+                        
+                        // Extraer datos de las celdas
+                        const nameElement = nameCell.querySelector('.text-sm.font-medium');
+                        const fullName = nameElement ? nameElement.textContent.trim() : '';
+                        const nameParts = fullName.split(' ');
+                        const name = nameParts[0] || '';
+                        const lastName = nameParts.slice(1).join(' ') || '';
+                        const email = emailCell ? emailCell.textContent.trim() : '';
+                        const phone = phoneCell ? phoneCell.textContent.trim() : '';
+                        const typeElement = typeCell ? typeCell.querySelector('span') : null;
+                        const type = typeElement ? typeElement.textContent.trim() : '';
+                        const typeId = typeElement ? typeElement.getAttribute('data-type-id') : '';
+                        
+                        // Rellenar el formulario con los datos extraídos
+                        document.getElementById('edit_name').value = name;
+                        document.getElementById('edit_lastname').value = lastName;
+                        document.getElementById('edit_email').value = email;
+                        document.getElementById('edit_phone').value = phone;
+                        
+                        // Seleccionar tipo de cliente si está disponible
+                        if (typeId) {
+                            document.querySelectorAll('#edit_client_type option').forEach(option => {
+                                option.selected = option.value === typeId;
+                            });
+                        }
+                    } else {
+                        // Extraer datos del botón de detalles (más confiable)
+                        const name = detailsButton.getAttribute('data-client-name');
+                        const lastName = detailsButton.getAttribute('data-client-lastname');
+                        const email = detailsButton.getAttribute('data-client-email');
+                        const phone = detailsButton.getAttribute('data-client-phone');
+                        const address = detailsButton.getAttribute('data-client-address');
+                        const typeId = detailsButton.getAttribute('data-client-type-id');
+                        
+                        // Rellenar el formulario
+                        document.getElementById('edit_name').value = name || '';
+                        document.getElementById('edit_lastname').value = lastName || '';
+                        document.getElementById('edit_email').value = email || '';
+                        document.getElementById('edit_phone').value = phone || '';
+                        document.getElementById('edit_address').value = address !== 'No especificada' ? address || '' : '';
+                        
+                        // Seleccionar tipo de cliente
+                        document.querySelectorAll('#edit_client_type option').forEach(option => {
+                            option.selected = option.value === typeId;
+                        });
+                        
+                        // Iniciales para mostrar
+                        document.getElementById('editClientInitials').textContent = (name?.charAt(0) || '') + (lastName?.charAt(0) || '');
+                    }
                     
-                    // Rellenar el formulario de edición
-                    document.getElementById('edit_name').value = name;
-                    document.getElementById('edit_lastname').value = lastName;
-                    document.getElementById('edit_email').value = email;
-                    document.getElementById('edit_phone').value = phone;
-                    document.getElementById('edit_address').value = address;
+                    // Establecer URL del formulario
+                    document.getElementById('editClientForm').action = clientUrl.replace('/edit', '');
                     
-                    // Configurar el tipo de cliente en el select
-                    const typeOptions = document.querySelectorAll('#edit_client_type option');
-                    typeOptions.forEach(option => {
-                        option.selected = option.value === typeId;
+                    // Verificación
+                    console.log('Editando desde tabla, valores finales:', {
+                        nombre: document.getElementById('edit_name').value,
+                        apellido: document.getElementById('edit_lastname').value
                     });
                     
-                    // Mostrar en consola para debugging
-                    console.log('Editando cliente desde tabla:', {
-                        id: clientId,
-                        url: clientUrl,
-                        nombre: name,
-                        apellido: lastName,
-                        typeId: typeId
-                    });
-                    
-                    // Configurar la acción del formulario - usamos la URL completa
-                    document.getElementById('editClientForm').action = clientUrl;
-                    
-                    // Establecer iniciales en el modal de edición
-                    document.getElementById('editClientInitials').textContent = name.charAt(0) + lastName.charAt(0);
-                    
+                    // Mostrar el modal de edición
                     showEditModal();
+                    
+                } catch (error) {
+                    console.error('Error al editar desde tabla:', error);
+                    alert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.');
                 }
             });
         });
