@@ -116,7 +116,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($client->clientType)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800" data-type-id="{{ $client->ClientType_ID }}">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800" data-type-id="{{ $client->ClientTypeID }}">
                                         {{ $client->clientType->ClientType }}
                                     </span>
                                 @else
@@ -131,7 +131,7 @@
                                         type="button" 
                                         class="text-blue-600 hover:text-blue-900 transition-colors view-client-details" 
                                         title="Ver detalles"
-                                        data-client-id="{{ $client->id }}"
+                                        data-client-id="{{ $client->idClient }}"
                                         data-client-name="{{ $client->Name }}"
                                         data-client-lastname="{{ $client->LastName }}"
                                         data-client-email="{{ $client->Email }}"
@@ -330,6 +330,98 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de Edición del Cliente -->
+    <div id="clientEditModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity backdrop-blur-sm"></div>
+        
+        <div class="flex items-center justify-center min-h-screen p-2 sm:p-4">
+            <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-auto overflow-hidden relative z-10">
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-700 p-4 sm:p-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-md">
+                                <span id="editClientInitials" class="text-indigo-700 text-xl font-bold"></span>
+                            </div>
+                            <div class="ml-3 sm:ml-4 text-white">
+                                <h2 class="text-xl sm:text-2xl font-bold">Editar Cliente</h2>
+                                <p class="text-indigo-100 text-sm">Actualiza la información del cliente</p>
+                            </div>
+                        </div>
+                        <button type="button" id="closeEditModal" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Modal Content -->
+                <div class="p-4 sm:p-6">
+                    <form id="editClientForm" method="POST" action="">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="edit_client_id" name="idClient">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Nombre -->
+                            <div>
+                                <label for="edit_name" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                <input type="text" name="Name" id="edit_name" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                            </div>
+                            
+                            <!-- Apellido -->
+                            <div>
+                                <label for="edit_lastname" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                <input type="text" name="LastName" id="edit_lastname" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div>
+                                <label for="edit_email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" name="Email" id="edit_email" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                            </div>
+                            
+                            <!-- Teléfono -->
+                            <div>
+                                <label for="edit_phone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                <input type="text" name="Phone" id="edit_phone" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                            </div>
+                            
+                            <!-- Tipo de Cliente -->
+                            <div class="md:col-span-2">
+                                <label for="edit_client_type" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Cliente</label>
+                                <select name="clientTypeId" id="edit_client_type" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                    @foreach(\App\Models\ClientType::all() as $type)
+                                        <option value="{{ $type->idClientType }}">{{ $type->ClientType }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            <!-- Dirección -->
+                            <div class="md:col-span-2">
+                                <label for="edit_address" class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                                <textarea name="Address" id="edit_address" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" id="cancelEditButton" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -377,25 +469,44 @@
                 const form = this.closest('.delete-form');
                 const clientName = form.getAttribute('data-client-name');
                 
-                if (confirm(`¿Está seguro que desea eliminar el cliente "${clientName}"?`)) {
+                // Añadir más información en la consola para verificar
+                console.log('Intentando eliminar cliente:', {
+                    name: clientName,
+                    action: form.action
+                });
+                
+                if (confirm(`¿Está seguro que desea eliminar el cliente "${clientName}"? Esta acción no se puede deshacer.`)) {
                     form.submit();
                 }
             });
         });
 
         // Funcionalidad del modal de detalles del cliente
-        const modal = document.getElementById('clientDetailsModal');
+        const detailsModal = document.getElementById('clientDetailsModal');
+        const editModal = document.getElementById('clientEditModal');
         const viewButtons = document.querySelectorAll('.view-client-details');
-        const closeButtons = document.querySelectorAll('#closeClientModal, #closeModalButton');
+        const closeDetailButtons = document.querySelectorAll('#closeClientModal, #closeModalButton');
+        const closeEditButtons = document.querySelectorAll('#closeEditModal, #cancelEditButton');
+        const editButtons = document.querySelectorAll('.edit-client'); // Botones de editar en la tabla
         
-        // Funciones para mostrar y ocultar el modal
-        function showModal() {
-            modal.classList.remove('hidden');
+        // Funciones para mostrar y ocultar los modales
+        function showDetailsModal() {
+            detailsModal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
         }
         
-        function hideModal() {
-            modal.classList.add('hidden');
+        function hideDetailsModal() {
+            detailsModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        
+        function showEditModal() {
+            editModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+        
+        function hideEditModal() {
+            editModal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }
         
@@ -427,28 +538,150 @@
                 document.getElementById('clientUpdatedAt').textContent = updatedAt;
                 
                 // Actualizar enlace de edición
-                document.getElementById('editClientLink').href = `/clientes/${clientId}/edit`;
+                document.getElementById('editClientLink').href = '/clientes/' + clientId + '/edit';
                 
-                showModal();
+                showDetailsModal();
             });
         });
         
-        // Event listeners para cerrar el modal
-        closeButtons.forEach(button => {
-            button.addEventListener('click', hideModal);
+        // Event listener para el botón "Editar Cliente" en el modal de detalles
+        document.getElementById('editClientLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const clientUrl = this.getAttribute('href');
+            const clientId = document.getElementById('clientId').textContent.replace('#', '');
+            const name = document.getElementById('clientName').textContent;
+            const lastName = document.getElementById('clientLastName').textContent;
+            const email = document.getElementById('clientEmail').textContent;
+            const phone = document.getElementById('clientPhone').textContent;
+            const address = document.getElementById('clientAddress').textContent;
+            const type = document.getElementById('clientType').textContent;
+            
+            // Rellenar el formulario de edición
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_lastname').value = lastName;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_phone').value = phone;
+            document.getElementById('edit_address').value = address === 'No especificada' ? '' : address;
+            
+            // Configurar el tipo de cliente en el select
+            const typeOptions = document.querySelectorAll('#edit_client_type option');
+            typeOptions.forEach(option => {
+                if (option.textContent === type) {
+                    option.selected = true;
+                }
+            });
+            
+            // Configurar la acción del formulario
+            document.getElementById('editClientForm').action = clientUrl;
+            
+            // Establecer iniciales en el modal de edición
+            document.getElementById('editClientInitials').textContent = name.charAt(0) + lastName.charAt(0);
+            
+            // Mostrar en consola para debugging
+            console.log('Editando cliente desde modal:', {
+                id: clientId,
+                url: clientUrl,
+                nombre: name,
+                apellido: lastName
+            });
+            
+            // Ocultar modal de detalles y mostrar modal de edición
+            hideDetailsModal();
+            showEditModal();
+        });
+        
+        // Event listeners para los botones de editar en la tabla
+        document.querySelectorAll('.text-indigo-600').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Si es un enlace de edición (contiene el ícono de editar)
+                if (this.querySelector('svg path[d*="M11 5H6"]')) {
+                    e.preventDefault();
+                    
+                    const clientRow = this.closest('tr');
+                    const clientUrl = this.getAttribute('href');
+                    const clientId = clientUrl.substring(clientUrl.lastIndexOf('/') + 1);
+                    
+                    const nameCell = clientRow.querySelector('td:first-child');
+                    const emailCell = clientRow.querySelector('td:nth-child(2)');
+                    const phoneCell = clientRow.querySelector('td:nth-child(3)');
+                    const typeCell = clientRow.querySelector('td:nth-child(4)');
+                    
+                    const fullName = nameCell.querySelector('.text-sm.font-medium').textContent.trim();
+                    const nameParts = fullName.split(' ');
+                    const name = nameParts[0];
+                    const lastName = nameParts.slice(1).join(' ');
+                    const address = nameCell.querySelector('.text-xs.text-gray-500') ? 
+                                   nameCell.querySelector('.text-xs.text-gray-500').textContent.trim() : '';
+                    const email = emailCell.textContent.trim();
+                    const phone = phoneCell.textContent.trim();
+                    const type = typeCell.querySelector('span').textContent.trim();
+                    const typeId = typeCell.querySelector('span').getAttribute('data-type-id');
+                    
+                    // Rellenar el formulario de edición
+                    document.getElementById('edit_name').value = name;
+                    document.getElementById('edit_lastname').value = lastName;
+                    document.getElementById('edit_email').value = email;
+                    document.getElementById('edit_phone').value = phone;
+                    document.getElementById('edit_address').value = address;
+                    
+                    // Configurar el tipo de cliente en el select
+                    const typeOptions = document.querySelectorAll('#edit_client_type option');
+                    typeOptions.forEach(option => {
+                        option.selected = option.value === typeId;
+                    });
+                    
+                    // Mostrar en consola para debugging
+                    console.log('Editando cliente desde tabla:', {
+                        id: clientId,
+                        url: clientUrl,
+                        nombre: name,
+                        apellido: lastName,
+                        typeId: typeId
+                    });
+                    
+                    // Configurar la acción del formulario - usamos la URL completa
+                    document.getElementById('editClientForm').action = clientUrl;
+                    
+                    // Establecer iniciales en el modal de edición
+                    document.getElementById('editClientInitials').textContent = name.charAt(0) + lastName.charAt(0);
+                    
+                    showEditModal();
+                }
+            });
+        });
+        
+        // Event listeners para cerrar el modal de detalles
+        closeDetailButtons.forEach(button => {
+            button.addEventListener('click', hideDetailsModal);
+        });
+        
+        // Event listeners para cerrar el modal de edición
+        closeEditButtons.forEach(button => {
+            button.addEventListener('click', hideEditModal);
         });
         
         // Cerrar modal al hacer clic fuera de él
         window.addEventListener('click', function(event) {
-            if (event.target === modal.querySelector('.fixed.inset-0.bg-black.bg-opacity-50')) {
-                hideModal();
+            if (event.target === detailsModal.querySelector('.fixed.inset-0.bg-black.bg-opacity-50')) {
+                hideDetailsModal();
+            }
+            
+            if (event.target === editModal.querySelector('.fixed.inset-0.bg-black.bg-opacity-50')) {
+                hideEditModal();
             }
         });
         
         // Cerrar modal con la tecla ESC
         document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
-                hideModal();
+            if (event.key === 'Escape') {
+                if (!detailsModal.classList.contains('hidden')) {
+                    hideDetailsModal();
+                }
+                
+                if (!editModal.classList.contains('hidden')) {
+                    hideEditModal();
+                }
             }
         });
     });
