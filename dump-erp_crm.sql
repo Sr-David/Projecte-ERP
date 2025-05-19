@@ -126,6 +126,35 @@ CREATE TABLE `UserAdministration` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `Leads`
+--
+
+DROP TABLE IF EXISTS `Leads`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Leads` (
+  `idLead` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
+  `LastName` varchar(100) NOT NULL,
+  `Email` varchar(255) DEFAULT NULL,
+  `Phone` varchar(50) DEFAULT NULL,
+  `Address` varchar(255) DEFAULT NULL,
+  `ClientTypeID` int DEFAULT NULL,
+  `Source` varchar(100) DEFAULT NULL,
+  `Status` varchar(50) DEFAULT 'Nuevo',
+  `Notes` text,
+  `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `AssignedToID` int DEFAULT NULL,
+  PRIMARY KEY (`idLead`),
+  KEY `ClientTypeID` (`ClientTypeID`),
+  KEY `AssignedToID` (`AssignedToID`),
+  CONSTRAINT `leads_ibfk_1` FOREIGN KEY (`ClientTypeID`) REFERENCES `ClientType` (`idClientType`),
+  CONSTRAINT `leads_ibfk_2` FOREIGN KEY (`AssignedToID`) REFERENCES `UserAdministration` (`idUser`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping routines for database 'ERP_CRM'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
