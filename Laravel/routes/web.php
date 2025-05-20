@@ -5,7 +5,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Middleware\AdminAuth;
 
-Route::get('/', function () {
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    if ($request->session()->has('auth_token') && $request->session()->has('user_id')) {
+        return redirect('/dashboard');
+    }
     return view('welcome');
 });
 
@@ -19,7 +22,10 @@ Route::post('/api/logout', [AuthController::class, 'logout']);
 Route::get('/api/check-auth', [AuthController::class, 'check']);
 
 // Ruta para la página de login
-Route::get('/login', function () {
+Route::get('/login', function (\Illuminate\Http\Request $request) {
+    if ($request->session()->has('auth_token') && $request->session()->has('user_id')) {
+        return redirect('/dashboard');
+    }
     return view('login');
 });
 
