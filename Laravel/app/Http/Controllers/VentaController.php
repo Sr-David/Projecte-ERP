@@ -65,9 +65,10 @@ class VentaController extends Controller
         return view('ventas.resumen', compact('ventasCount', 'propuestasCount'));
     }
 
-     public function propuestas()
+    public function propuestas()
     {
-       
+        $propuestas = \App\Models\SalesProposals::with('client')->orderBy('CreatedAt', 'desc')->paginate(10);
+        return view('ventas.propuestas', compact('propuestas'));
     }
 
     /**
