@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VentaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Middleware\AdminAuth;
@@ -63,4 +64,21 @@ Route::middleware([AdminAuth::class])->group(function () {
         'update' => 'clients.update',
         'destroy' => 'clients.destroy',
     ]);
+
+
+
+
+
+
+
+ Route::middleware([AdminAuth::class])->group(function () {
+    // ...otras rutas...
+
+    Route::get('/ventas', [VentaController::class, 'resumen'])->name('ventas.resumen');
+    Route::get('/ventas/confirmadas', [VentaController::class, 'index'])->name('ventas.index');
+    Route::get('/ventas/propuestas', [VentaController::class, 'propuestas'])->name('ventas.propuestas');
+    // ...otras rutas...
+});
+
+
 });
