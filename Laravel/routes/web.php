@@ -75,9 +75,11 @@ Route::middleware([AdminAuth::class])->group(function () {
     // ...otras rutas...
 
     Route::get('/ventas', [VentaController::class, 'resumen'])->name('ventas.resumen');
-    Route::get('/ventas/confirmadas', [VentaController::class, 'index'])->name('ventas.index');
+    Route::get('/ventas/confirmadas', [VentaController::class, 'index'])->name('ventas.ventas');
     Route::get('/ventas/propuestas', [VentaController::class, 'propuestas'])->name('ventas.propuestas');
-    // ...otras rutas...
+    Route::get('/ventas/propuestas/crear', [VentaController::class, 'crearPropuesta'])->name('ventas.propuestas.create');
+    Route::post('/ventas/propuestas', [VentaController::class, 'guardarPropuesta'])->name('ventas.propuestas.store');
+
 });
 
 

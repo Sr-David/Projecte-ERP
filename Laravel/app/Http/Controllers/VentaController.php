@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\SalesDetail;
+use App\Models\SalesDetails;
 use App\Models\SalesProposal;
-use App\Models\Venta;
+
 use App\Models\Clients;
 
 class VentaController extends Controller
@@ -15,7 +15,9 @@ class VentaController extends Controller
      */
     public function index()
     {
-        //
+        $ventas = \App\Models\SalesDetails::with('client')->orderBy('idSaleDetail', 'desc')->paginate(10);
+
+        return view('ventas.ventas', compact('ventas'));
     }
 
     /**
@@ -58,6 +60,18 @@ class VentaController extends Controller
         //
     }
 
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+
+
+
     public function resumen()
     {
         $ventasCount = \App\Models\SalesDetails::count();
@@ -71,11 +85,28 @@ class VentaController extends Controller
         return view('ventas.propuestas', compact('propuestas'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function crearPropuesta()
     {
-        //
+        $clientes = \App\Models\Clients::all();
+        return view('ventas.crear-propuesta', compact('clientes'));
     }
+
+    public function guardarPropuesta(Request $request)
+    {
+        $request->validate([
+            'ClientID' => 'required|exists:Clients,idClient',
+            'State' => 'required|string|max:50',
+            'Details' => 'nullable|string',
+        ]);
+
+        \App\Models\SalesProposals::create([
+            'ClientID' => $request->ClientID,
+            'State' => $request->State,
+            'Details' => $request->Details,
+            'CreatedAt' => now(),
+        ]);
+
+        return redirect()->route('ventas.propuestas')->with('success', 'Propuesta creada correctamente');
+    }
+
 }

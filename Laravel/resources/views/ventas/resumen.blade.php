@@ -8,7 +8,7 @@
             <div class="bg-white rounded shadow p-6 flex flex-col items-center">
                 <span class="text-4xl font-bold text-brand-blue">{{ $ventasCount }}</span>
                 <span class="mt-2 text-lg">Ventas confirmadas</span>
-                <a href="{{ route('ventas.index') }}" class="mt-4 px-4 py-2 bg-brand-blue text-white rounded hover:bg-blue-700">Ver todas</a>
+                <a href="{{ route('ventas.ventas') }}" class="mt-4 px-4 py-2 bg-brand-blue text-white rounded hover:bg-blue-700">Ver todas</a>
             </div>
             <div class="bg-white rounded shadow p-6 flex flex-col items-center">
                 <span class="text-4xl font-bold text-indigo-600">{{ $propuestasCount }}</span>

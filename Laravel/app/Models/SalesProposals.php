@@ -9,6 +9,7 @@ class SalesProposals extends Model
     //
     protected $table = 'SalesProposals';
     protected $primaryKey = 'idSalesProposals'; // <--- Añade esto
+    public $timestamps = false; // <--- Añade esto
 
     protected $fillable = [
         'ClientID',

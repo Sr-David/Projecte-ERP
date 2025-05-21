@@ -7,6 +7,17 @@
 @section('content')
     <div class="max-w-5xl mx-auto py-8">
         <h1 class="text-2xl font-bold mb-6">Propuestas de Venta</h1>
+
+        <div class="mb-4 flex justify-end">
+            <a href="{{ route('ventas.propuestas.create') }}"
+                class="inline-flex items-center px-4 py-2 bg-brand-blue text-white rounded hover:bg-blue-700 text-sm font-medium shadow">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nueva Propuesta
+            </a>
+        </div>
+
         <div class="bg-white rounded shadow p-6">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead>
