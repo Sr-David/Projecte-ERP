@@ -42,14 +42,14 @@
                     <!-- Filtro por tipo -->
                     <div class="relative">
                         <select id="filter-type" 
-                            class="bg-white border border-gray-300 rounded-lg text-gray-700 px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            class="bg-white border border-gray-300 rounded-lg text-gray-700 px-4 py-2 pr-12 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Todos los tipos</option>
                             @foreach(\App\Models\ClientType::all() as $type)
                                 <option value="{{ $type->idClientType }}">{{ $type->ClientType }}</option>
                             @endforeach
                         </select>
                         <button type="button" id="new-client-type-btn" 
-                            class="absolute right-0 top-0 h-full px-2 text-gray-500 hover:text-blue-600 transition-colors"
+                            class="absolute right-2 top-0 h-full px-2 text-gray-500 hover:text-blue-600 transition-colors"
                             title="Crear nuevo tipo">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -146,8 +146,8 @@
                                         data-client-address="{{ $client->Address }}"
                                         data-client-type="{{ $client->clientType->ClientType ?? 'Sin asignar' }}"
                                         data-client-type-id="{{ $client->ClientTypeID }}"
-                                        data-client-created="{{ $client->created_at ? $client->created_at->format('d/m/Y') : 'No disponible' }}"
-                                        data-client-updated="{{ $client->updated_at ? $client->updated_at->format('d/m/Y H:i') : 'No disponible' }}"
+                                        data-client-created="{{ $client->CreatedAt ? date('d/m/Y', strtotime($client->CreatedAt)) : 'No disponible' }}"
+                                        data-client-updated="{{ $client->UpdatedAt ? date('d/m/Y H:i', strtotime($client->UpdatedAt)) : 'No disponible' }}"
                                         onclick="console.log('Datos del botón al hacer clic:', {
                                             id: '{{ $client->idClient }}',
                                             nombre: '{{ $client->Name }}',
@@ -442,7 +442,7 @@
     <div id="clientTypeModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
         <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full relative z-10">
                 <!-- Modal Header -->
                 <div class="bg-blue-600 text-white px-6 py-4 rounded-t-lg">
                     <h3 class="text-lg font-medium leading-6">Crear nuevo tipo de cliente</h3>
@@ -615,8 +615,15 @@
                 document.getElementById('clientEmail').href = 'mailto:' + email;
                 document.getElementById('clientPhone').textContent = phone;
                 document.getElementById('clientAddress').textContent = address;
-                document.getElementById('clientCreatedAt').textContent = createdAt || 'No disponible';
-                document.getElementById('clientUpdatedAt').textContent = updatedAt || 'No disponible';
+                
+                // Formatear y mostrar correctamente las fechas
+                document.getElementById('clientCreatedAt').textContent = createdAt && createdAt !== 'No disponible' 
+                    ? createdAt 
+                    : 'No disponible';
+                    
+                document.getElementById('clientUpdatedAt').textContent = updatedAt && updatedAt !== 'No disponible' 
+                    ? updatedAt 
+                    : 'No disponible';
                 
                 // Guardar los datos originales en atributos data para usarlos posteriormente
                 document.getElementById('clientFullName').setAttribute('data-original-name', name);
@@ -839,14 +846,21 @@
         function showClientTypeModal() {
             clientTypeModal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
+            
+            // Asegurar que el formulario esté limpio
+            document.getElementById('client_type_name').value = '';
+            document.getElementById('client_type_description').value = '';
+            document.getElementById('client-type-error').classList.add('hidden');
+            
+            // Dar foco al input principal
+            setTimeout(() => {
+                document.getElementById('client_type_name').focus();
+            }, 100);
         }
 
         function hideClientTypeModal() {
             clientTypeModal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
-            document.getElementById('client_type_name').value = '';
-            document.getElementById('client_type_description').value = '';
-            document.getElementById('client-type-error').classList.add('hidden');
         }
 
         newClientTypeBtn.addEventListener('click', showClientTypeModal);
