@@ -49,6 +49,20 @@ class ClientsController extends Controller
         $clientData = $request->all();
         $clientData['ClientTypeID'] = $clientData['clientTypeId'];
         unset($clientData['clientTypeId']);
+        
+        // Obtener el idEmpresa del usuario autenticado desde la sesión
+        $userId = session('user_id');
+        $user = \DB::table('Users')->where('idUser', $userId)->first();
+        
+        if (!$user || !$user->idEmpresa) {
+            \Log::error('No se pudo obtener el idEmpresa del usuario: ' . $userId);
+            return redirect()->back()->with('error', 'Error al crear cliente: no se pudo determinar la empresa.');
+        }
+        
+        // Asignar el idEmpresa al cliente
+        $clientData['idEmpresa'] = $user->idEmpresa;
+        
+        \Log::info('Datos del cliente a crear:', $clientData);
 
         Clients::create($clientData);
 
