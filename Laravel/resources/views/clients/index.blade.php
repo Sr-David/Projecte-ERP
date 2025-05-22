@@ -40,14 +40,21 @@
                 
                 <div class="flex flex-col sm:flex-row gap-3">
                     <!-- Filtro por tipo -->
-                    <div>
+                    <div class="relative">
                         <select id="filter-type" 
                             class="bg-white border border-gray-300 rounded-lg text-gray-700 px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Todos los tipos</option>
                             @foreach(\App\Models\ClientType::all() as $type)
-                                <option value="{{ $type->id }}">{{ $type->ClientType }}</option>
+                                <option value="{{ $type->idClientType }}">{{ $type->ClientType }}</option>
                             @endforeach
                         </select>
+                        <button type="button" id="new-client-type-btn" 
+                            class="absolute right-0 top-0 h-full px-2 text-gray-500 hover:text-blue-600 transition-colors"
+                            title="Crear nuevo tipo">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </button>
                     </div>
                     
                     <!-- Botón de añadir cliente -->
@@ -430,6 +437,42 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para crear nuevo tipo de cliente -->
+    <div id="clientTypeModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <!-- Modal Header -->
+                <div class="bg-blue-600 text-white px-6 py-4 rounded-t-lg">
+                    <h3 class="text-lg font-medium leading-6">Crear nuevo tipo de cliente</h3>
+                </div>
+                <!-- Modal Body -->
+                <div class="px-6 py-4">
+                    <form id="newClientTypeForm">
+                        <div class="mb-4">
+                            <label for="client_type_name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del tipo *</label>
+                            <input type="text" id="client_type_name" name="ClientType" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="client_type_description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                            <textarea id="client_type_description" name="Description" rows="3" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                        </div>
+                        <div id="client-type-error" class="text-red-600 text-sm mb-4 hidden"></div>
+                    </form>
+                </div>
+                <!-- Modal Footer -->
+                <div class="bg-gray-50 px-6 py-3 flex justify-end space-x-2 rounded-b-lg border-t">
+                    <button id="closeClientTypeModal" type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancelar
+                    </button>
+                    <button id="saveClientType" type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -572,8 +615,8 @@
                 document.getElementById('clientEmail').href = 'mailto:' + email;
                 document.getElementById('clientPhone').textContent = phone;
                 document.getElementById('clientAddress').textContent = address;
-                document.getElementById('clientCreatedAt').textContent = createdAt;
-                document.getElementById('clientUpdatedAt').textContent = updatedAt;
+                document.getElementById('clientCreatedAt').textContent = createdAt || 'No disponible';
+                document.getElementById('clientUpdatedAt').textContent = updatedAt || 'No disponible';
                 
                 // Guardar los datos originales en atributos data para usarlos posteriormente
                 document.getElementById('clientFullName').setAttribute('data-original-name', name);
@@ -785,6 +828,86 @@
                     hideEditModal();
                 }
             }
+        });
+
+        // Modal para nuevo tipo de cliente
+        const clientTypeModal = document.getElementById('clientTypeModal');
+        const newClientTypeBtn = document.getElementById('new-client-type-btn');
+        const closeClientTypeModal = document.getElementById('closeClientTypeModal');
+        const saveClientType = document.getElementById('saveClientType');
+
+        function showClientTypeModal() {
+            clientTypeModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function hideClientTypeModal() {
+            clientTypeModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            document.getElementById('client_type_name').value = '';
+            document.getElementById('client_type_description').value = '';
+            document.getElementById('client-type-error').classList.add('hidden');
+        }
+
+        newClientTypeBtn.addEventListener('click', showClientTypeModal);
+        closeClientTypeModal.addEventListener('click', hideClientTypeModal);
+
+        saveClientType.addEventListener('click', function() {
+            const name = document.getElementById('client_type_name').value.trim();
+            const description = document.getElementById('client_type_description').value.trim();
+            const errorElement = document.getElementById('client-type-error');
+            
+            if (!name) {
+                errorElement.textContent = 'El nombre del tipo es obligatorio.';
+                errorElement.classList.remove('hidden');
+                return;
+            }
+
+            // Enviar petición AJAX para crear el tipo
+            fetch('/api/client-types', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    ClientType: name,
+                    Description: description,
+                    idEmpresa: 1 // Este valor debería venir del usuario autenticado
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Añadir el nuevo tipo al select
+                    const filterSelect = document.getElementById('filter-type');
+                    const editClientTypeSelect = document.getElementById('edit_client_type');
+                    
+                    const newOption = document.createElement('option');
+                    newOption.value = data.clientType.idClientType;
+                    newOption.textContent = data.clientType.ClientType;
+                    
+                    filterSelect.appendChild(newOption);
+                    
+                    if (editClientTypeSelect) {
+                        const editOption = newOption.cloneNode(true);
+                        editClientTypeSelect.appendChild(editOption);
+                    }
+                    
+                    hideClientTypeModal();
+                    
+                    // Mostrar mensaje de éxito
+                    alert('Tipo de cliente creado correctamente!');
+                } else {
+                    errorElement.textContent = data.message || 'Error al crear el tipo de cliente.';
+                    errorElement.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorElement.textContent = 'Error al procesar la solicitud.';
+                errorElement.classList.remove('hidden');
+            });
         });
     });
 </script>

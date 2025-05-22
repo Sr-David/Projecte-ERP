@@ -22,6 +22,9 @@ Route::post('/api/login', [AuthController::class, 'login']);
 Route::post('/api/logout', [AuthController::class, 'logout']);
 Route::get('/api/check-auth', [AuthController::class, 'check']);
 
+// API para tipos de clientes
+Route::post('/api/client-types', [App\Http\Controllers\ClientTypeController::class, 'store']);
+
 // Ruta para la página de login
 Route::get('/login', function (\Illuminate\Http\Request $request) {
     if ($request->session()->has('auth_token') && $request->session()->has('user_id')) {
@@ -65,22 +68,14 @@ Route::middleware([AdminAuth::class])->group(function () {
         'destroy' => 'clients.destroy',
     ]);
 
-
-
-
-
-
-
- Route::middleware([AdminAuth::class])->group(function () {
-    // ...otras rutas...
+    // Ruta de Reportes
+    Route::get('/reportes', function () {
+        return view('reportes.index');
+    })->name('reportes.index');
 
     Route::get('/ventas', [VentaController::class, 'resumen'])->name('ventas.resumen');
     Route::get('/ventas/confirmadas', [VentaController::class, 'index'])->name('ventas.ventas');
     Route::get('/ventas/propuestas', [VentaController::class, 'propuestas'])->name('ventas.propuestas');
     Route::get('/ventas/propuestas/crear', [VentaController::class, 'crearPropuesta'])->name('ventas.propuestas.create');
     Route::post('/ventas/propuestas', [VentaController::class, 'guardarPropuesta'])->name('ventas.propuestas.store');
-
-});
-
-
 });

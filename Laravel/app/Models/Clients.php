@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Clients extends Model
 {
@@ -23,6 +24,21 @@ class Clients extends Model
         'CreatedAt',
         'UpdatedAt'
     ];
+    
+    /**
+     * Sobreescribimos el método save para actualizar automáticamente UpdatedAt
+     */
+    public function save(array $options = []) 
+    {
+        if (!$this->exists && !$this->CreatedAt) {
+            $this->CreatedAt = now();
+        }
+        
+        // Siempre actualizamos UpdatedAt al guardar
+        $this->UpdatedAt = now();
+        
+        return parent::save($options);
+    }
     
     /**
      * Obtiene el tipo de cliente asociado.
