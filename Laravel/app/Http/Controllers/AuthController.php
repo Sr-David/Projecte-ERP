@@ -15,7 +15,7 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        $user = DB::table('UserAdministration')
+        $user = DB::table('Users')
             ->where('Username', $request->username)
             ->first();
 
@@ -65,7 +65,7 @@ class AuthController extends Controller
         if ($request->session()->has('auth_token') && $request->session()->has('user_id')) {
             $userId = $request->session()->get('user_id');
             
-            $user = DB::table('UserAdministration')
+            $user = DB::table('Users')
                 ->where('idUser', $userId)
                 ->first();
                 
