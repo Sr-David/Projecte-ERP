@@ -32,13 +32,14 @@ class AuthController extends Controller
         if ($request->password === $user->Password) {
             // Contraseña correcta
             $token = bin2hex(random_bytes(32));
-            session(['auth_token' => $token, 'user_id' => $user->idUser]);
+            session(['auth_token' => $token, 'user_id' => $user->idUser, 'user_name' => $user->Name]);
 
             return response()->json([
                 'success' => true,
                 'user' => [
                     'id' => $user->idUser,
-                    'username' => $user->Username
+                    'username' => $user->Username,
+                    'name' => $user->Name
                 ]
             ]);
         }
@@ -52,7 +53,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->forget(['auth_token', 'user_id']);
+        $request->session()->forget(['auth_token', 'user_id', 'user_name']);
         
         return response()->json([
             'success' => true,
@@ -74,7 +75,8 @@ class AuthController extends Controller
                     'success' => true,
                     'user' => [
                         'id' => $user->idUser,
-                        'username' => $user->Username
+                        'username' => $user->Username,
+                        'name' => $user->Name
                     ]
                 ]);
             }

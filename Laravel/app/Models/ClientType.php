@@ -11,8 +11,27 @@ class ClientType extends Model
     public $incrementing = true;
     protected $keyType = 'int';
     protected $primaryKey = 'idClientType';
+    public $timestamps = false;
+    
     protected $fillable = [
         'ClientType',
-        'Description'
+        'Description',
+        'idEmpresa'
     ];
+
+    /**
+     * Obtiene la empresa asociada.
+     */
+    public function empresa()
+    {
+        return $this->belongsTo(UserAdministration::class, 'idEmpresa', 'idEmpresa');
+    }
+
+    /**
+     * Obtiene todos los clientes de este tipo.
+     */
+    public function clients()
+    {
+        return $this->hasMany(Clients::class, 'ClientTypeID', 'idClientType');
+    }
 }

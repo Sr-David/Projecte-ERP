@@ -225,7 +225,8 @@
                             </span>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">Admin User</p>
+                            <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">{{ $userName ?? 'Usuario' }}</p>
+                            <p class="text-xs text-gray-500">{{ $companyName ?? 'Empresa' }}</p>
                             <p class="text-xs font-medium text-gray-500 group-hover:text-gray-700">
                                 <button id="logout-btn" class="text-brand-blue hover:underline">Cerrar sesión</button>
                             </p>
