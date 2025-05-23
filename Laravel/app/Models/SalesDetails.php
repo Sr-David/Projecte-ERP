@@ -18,7 +18,8 @@ class SalesDetails extends Model
         'ProductServiceID',
         'QuantitySold',
         'UnitPrice',
-        'idEmpresa'
+        'idEmpresa',
+        'CreatedAt'
     ];
 
     /**

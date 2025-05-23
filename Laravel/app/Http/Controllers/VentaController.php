@@ -91,22 +91,69 @@ class VentaController extends Controller
         return view('ventas.crear-propuesta', compact('clientes'));
     }
 
-    public function guardarPropuesta(Request $request)
-    {
-        $request->validate([
-            'ClientID' => 'required|exists:Clients,idClient',
-            'State' => 'required|string|max:50',
-            'Details' => 'nullable|string',
-        ]);
+ public function guardarPropuesta(Request $request)
+{
+    $request->validate([
+        'ClientID' => 'required|exists:Clients,idClient',
+        'State' => 'required|string|max:50',
+        'Details' => 'nullable|string',
+    ]);
 
-        \App\Models\SalesProposals::create([
-            'ClientID' => $request->ClientID,
-            'State' => $request->State,
-            'Details' => $request->Details,
-            'CreatedAt' => now(),
-        ]);
-
-        return redirect()->route('ventas.propuestas')->with('success', 'Propuesta creada correctamente');
+    // Obtener el idEmpresa del usuario autenticado
+    $userId = session('user_id');
+    $user = \DB::table('Users')->where('idUser', $userId)->first();
+    if (!$user || !$user->idEmpresa) {
+        return redirect()->back()->with('error', 'No se pudo determinar la empresa.');
     }
+
+    \App\Models\SalesProposals::create([
+        'ClientID' => $request->ClientID,
+        'State' => $request->State,
+        'Details' => $request->Details,
+        'CreatedAt' => now(),
+        'idEmpresa' => $user->idEmpresa, // <-- Añade esto
+    ]);
+
+    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta creada correctamente');
+}
+
+
+
+public function confirmarPropuesta($id)
+{
+    $propuesta = \App\Models\SalesProposals::findOrFail($id);
+    $productos = \App\Models\ProductsServices::all();
+    return view('ventas.confirmar-propuesta', compact('propuesta', 'productos'));
+}
+
+
+public function efectuarPropuesta(Request $request, $id)
+{
+    $propuesta = \App\Models\SalesProposals::findOrFail($id);
+
+    $request->validate([
+        'ProductServiceID' => 'required|exists:ProductsServices,idProductService',
+        'QuantitySold' => 'required|integer|min:1',
+        'UnitPrice' => 'required|numeric|min:0',
+    ]);
+
+    // Actualizar estado de la propuesta
+    $propuesta->State = 'Efectuada';
+    $propuesta->save();
+
+    // Crear detalle de venta
+    \App\Models\SalesDetails::create([
+        'ProposalID' => $propuesta->idSalesProposals,
+        'ProductServiceID' => $request->ProductServiceID,
+        'QuantitySold' => $request->QuantitySold,
+        'UnitPrice' => $request->UnitPrice,
+        'idEmpresa' => $propuesta->idEmpresa,
+        'created_at' => now()
+    ]);
+
+    return redirect()->route('ventas.ventas')->with('success', 'Propuesta confirmada como venta.');
+}
+
+
 
 }

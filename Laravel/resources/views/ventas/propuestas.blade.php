@@ -38,9 +38,14 @@
                             <td class="px-4 py-2">
                                 {{ $propuesta->CreatedAt ? \Carbon\Carbon::parse($propuesta->CreatedAt)->format('d/m/Y') : '-' }}
                             </td>
-                            <td class="px-4 py-2">
-                                <a href="#" class="text-brand-blue hover:underline text-sm">Ver</a>
+                           <td class="px-4 py-2">
+                                <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
+                                class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-2">
+                                    Confirmar
+                                </a>
+                                
                             </td>
+                            
                         </tr>
                     @empty
                         <tr>
