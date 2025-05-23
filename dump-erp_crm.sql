@@ -116,7 +116,7 @@ CREATE TABLE `SalesProposals` (
   `ClientID` int DEFAULT NULL,
   `CreatedAt` datetime DEFAULT NULL,
   `State` varchar(45) DEFAULT NULL,
-  `Details` varchar(45) DEFAULT NULL,
+  `Details` text DEFAULT NULL,
   `idEmpresa` int NOT NULL,
   PRIMARY KEY (`idSalesProposals`),
   KEY `fk_salesproposals_client` (`ClientID`),
