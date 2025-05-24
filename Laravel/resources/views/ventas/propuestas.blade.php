@@ -66,38 +66,38 @@
                                     {{ $propuesta->CreatedAt ? \Carbon\Carbon::parse($propuesta->CreatedAt)->format('d/m/Y') : '-' }}
                                 </td>
                                 <td class="px-4 py-2">
-    @if($propuesta->State === 'Cancelada')
-        <form action="{{ route('ventas.propuestas.rehabilitar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
-            @csrf
-            <button type="submit"
-                class="inline-flex items-center px-3 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600 transition-colors"
-                onclick="return confirm('¿Seguro que quieres volver a habilitar esta propuesta?')">
-                Volver a habilitar
-            </button>
-        </form>
-    @elseif($propuesta->State !== 'Efectuada')
-        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
-           class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700 mr-2 transition-colors">
-            Confirmar
-        </a>
-        <form action="{{ route('ventas.propuestas.cancelar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
-            @csrf
-            <button type="submit"
-                class="inline-flex items-center px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
-                onclick="return confirm('¿Seguro que quieres cancelar esta propuesta?')">
-                Cancelar
-            </button>
-        </form>
-    @elseif($propuesta->State === 'Efectuada')
-        <span class="inline-flex items-center px-3 py-1 bg-gray-400 text-white rounded text-xs cursor-not-allowed mr-2">
-            Efectuada
-        </span>
-        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
-           class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700">
-            Volver a realizar
-        </a>
-    @endif
-</td>
+                                    @if($propuesta->State === 'Cancelada')
+                                        <form action="{{ route('ventas.propuestas.rehabilitar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                class="inline-flex items-center px-3 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600 transition-colors"
+                                                onclick="return confirm('¿Seguro que quieres volver a habilitar esta propuesta?')">
+                                                Volver a habilitar
+                                            </button>
+                                        </form>
+                                    @elseif($propuesta->State !== 'Efectuada')
+                                        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
+                                        class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700 mr-2 transition-colors">
+                                            Confirmar
+                                        </a>
+                                        <form action="{{ route('ventas.propuestas.cancelar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                class="inline-flex items-center px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                                                onclick="return confirm('¿Seguro que quieres cancelar esta propuesta?')">
+                                                Cancelar
+                                            </button>
+                                        </form>
+                                    @elseif($propuesta->State === 'Efectuada')
+                                        <span class="inline-flex items-center px-3 py-1 bg-gray-400 text-white rounded text-xs cursor-not-allowed mr-2">
+                                            Efectuada
+                                        </span>
+                                        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
+                                        class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700">
+                                            Volver a realizar
+                                        </a>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
