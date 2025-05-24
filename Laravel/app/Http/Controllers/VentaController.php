@@ -123,7 +123,11 @@ public function confirmarPropuesta($id)
 {
     $propuesta = \App\Models\SalesProposals::findOrFail($id);
     $productos = \App\Models\ProductsServices::all();
-    return view('ventas.confirmar-propuesta', compact('propuesta', 'productos'));
+    $ultimoDetalle = \App\Models\SalesDetails::where('ProposalID', $propuesta->idSalesProposals)
+        ->orderByDesc('created_at')
+        ->first();
+
+    return view('ventas.confirmar-propuesta', compact('propuesta', 'productos', 'ultimoDetalle'));
 }
 
 

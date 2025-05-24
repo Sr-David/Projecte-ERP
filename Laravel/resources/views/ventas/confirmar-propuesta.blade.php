@@ -13,7 +13,14 @@
                     <option value="">Selecciona un producto/servicio</option>
                     @foreach($productos as $producto)
                         <option value="{{ $producto->idProductService }}"
-                            {{ $loop->first ? 'selected' : '' }}>
+                            @if(old('ProductServiceID'))
+                                {{ old('ProductServiceID') == $producto->idProductService ? 'selected' : '' }}
+                            @elseif(isset($ultimoDetalle))
+                                {{ $ultimoDetalle->ProductServiceID == $producto->idProductService ? 'selected' : '' }}
+                            @else
+                                {{ $loop->first ? 'selected' : '' }}
+                            @endif
+                        >
                             {{ $producto->Name }}
                         </option>
                     @endforeach
@@ -21,12 +28,13 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad *</label>
-                <input type="number" name="QuantitySold" class="w-full rounded border-gray-300" min="1" required>
+                <input type="number" name="QuantitySold" class="w-full rounded border-gray-300" min="1" required
+                    value="{{ old('QuantitySold', $ultimoDetalle->QuantitySold ?? '') }}">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario *</label>
-                <input type="number" name="UnitPrice" class="w-full rounded border-gray-300 bg-gray-100"
-                    value="{{ count($productos) ? $productos[0]->Price : '' }}" min="0" step="0.01" readonly required>
+                <input type="number" name="UnitPrice" class="w-full rounded border-gray-300 bg-gray-100" min="0" step="0.01" readonly required
+    value="{{ old('UnitPrice', $ultimoDetalle->UnitPrice ?? ($productos[0]->Price ?? '')) }}">
             </div>
             <div class="flex justify-end space-x-2">
                 <a href="{{ route('ventas.propuestas') }}"
