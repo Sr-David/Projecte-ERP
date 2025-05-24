@@ -169,4 +169,14 @@ public function cancelarPropuesta($id)
 }
 
 
+
+public function rehabilitarPropuesta($id)
+{
+    $propuesta = \App\Models\SalesProposals::findOrFail($id);
+    $propuesta->State = 'En negociación';
+    $propuesta->save();
+
+    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta habilitada correctamente.');
+}
+
 }

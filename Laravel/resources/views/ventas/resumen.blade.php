@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+
 @section('content')
 <div class="flex flex-col flex-1 justify-center">
     <div class="max-w-4xl mx-auto py-8 flex-1">

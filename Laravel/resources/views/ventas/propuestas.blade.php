@@ -2,10 +2,22 @@
 
 @section('title', 'Propuestas de Venta')
 @section('header', 'Propuestas de Venta')
-@section('breadcrumb', 'Ventas / Propuestas')
+@section('breadcrumb')
+    <a href="javascript:history.back()"
+       class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs font-medium mr-2 transition-colors">
+        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Volver
+    </a>
+    Ventas / Propuestas
+@endsection
 
 @section('content')
     <div class="max-w-5xl mx-auto py-8">
+
+
+    
         <h1 class="text-2xl font-bold mb-6">Propuestas de Venta</h1>
 
         <div class="mb-4 flex justify-end">
@@ -54,29 +66,38 @@
                                     {{ $propuesta->CreatedAt ? \Carbon\Carbon::parse($propuesta->CreatedAt)->format('d/m/Y') : '-' }}
                                 </td>
                                 <td class="px-4 py-2">
-                                    @if($propuesta->State !== 'Efectuada')
-                                        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
-                                           class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700 mr-2 transition-colors">
-                                            Confirmar
-                                        </a>
-                                        <form action="{{ route('ventas.propuestas.cancelar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
-                                            @csrf
-                                            <button type="submit"
-                                                class="inline-flex items-center px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
-                                                onclick="return confirm('¿Seguro que quieres cancelar esta propuesta?')">
-                                                Cancelar
-                                            </button>
-                                        </form>
-                                    @elseif($propuesta->State === 'Efectuada')
-                                        <span class="inline-flex items-center px-3 py-1 bg-gray-400 text-white rounded text-xs cursor-not-allowed mr-2">
-                                            Efectuada
-                                        </span>
-                                        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
-                                           class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700">
-                                            Volver a realizar
-                                        </a>
-                                    @endif
-                                </td>
+    @if($propuesta->State === 'Cancelada')
+        <form action="{{ route('ventas.propuestas.rehabilitar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
+            @csrf
+            <button type="submit"
+                class="inline-flex items-center px-3 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600 transition-colors"
+                onclick="return confirm('¿Seguro que quieres volver a habilitar esta propuesta?')">
+                Volver a habilitar
+            </button>
+        </form>
+    @elseif($propuesta->State !== 'Efectuada')
+        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
+           class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700 mr-2 transition-colors">
+            Confirmar
+        </a>
+        <form action="{{ route('ventas.propuestas.cancelar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
+            @csrf
+            <button type="submit"
+                class="inline-flex items-center px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                onclick="return confirm('¿Seguro que quieres cancelar esta propuesta?')">
+                Cancelar
+            </button>
+        </form>
+    @elseif($propuesta->State === 'Efectuada')
+        <span class="inline-flex items-center px-3 py-1 bg-gray-400 text-white rounded text-xs cursor-not-allowed mr-2">
+            Efectuada
+        </span>
+        <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
+           class="inline-flex items-center px-3 py-1 bg-brand-blue text-white rounded text-xs hover:bg-blue-700">
+            Volver a realizar
+        </a>
+    @endif
+</td>
                             </tr>
                         @empty
                             <tr>
