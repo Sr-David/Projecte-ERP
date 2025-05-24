@@ -155,5 +155,14 @@ public function efectuarPropuesta(Request $request, $id)
 }
 
 
+public function cancelarPropuesta($id)
+{
+    $propuesta = \App\Models\SalesProposals::findOrFail($id);
+    $propuesta->State = 'Cancelada';
+    $propuesta->save();
+
+    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta cancelada correctamente.');
+}
+
 
 }

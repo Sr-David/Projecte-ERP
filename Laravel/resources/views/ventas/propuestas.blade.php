@@ -39,11 +39,33 @@
                                 {{ $propuesta->CreatedAt ? \Carbon\Carbon::parse($propuesta->CreatedAt)->format('d/m/Y') : '-' }}
                             </td>
                            <td class="px-4 py-2">
-                                <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
-                                class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-2">
-                                    Confirmar
-                                </a>
-                                
+                                @if($propuesta->State !== 'Efectuada')
+                                    <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
+                                    class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-2">
+                                        Confirmar
+                                    </a>
+                                    
+                                     <form action="{{ route('ventas.propuestas.cancelar', $propuesta->idSalesProposals) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                                            onclick="return confirm('¿Seguro que quieres cancelar esta propuesta?')">
+                                            Cancelar
+                                        </button>
+                                    </form>
+                                @elseif($propuesta->State === 'Efectuada')
+                                    <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700">
+                                        Efectuada
+                                    </button>
+
+                                    <a href="{{ route('ventas.propuestas.confirmar', $propuesta->idSalesProposals) }}"
+                                    class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-2">
+                                        Volver a realizar
+                                    </a>
+
+                                    
+
+
+                                @endif
                             </td>
                             
                         </tr>
