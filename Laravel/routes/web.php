@@ -89,4 +89,7 @@ Route::middleware([AdminAuth::class])->group(function () {
     Route::post('/ventas/propuestas/{id}/rehabilitar', [VentaController::class, 'rehabilitarPropuesta'])->name('ventas.propuestas.rehabilitar');
     
     
+    Route::get('/ventas/propuestas/{id}/edit', [VentaController::class, 'editPropuesta'])->name('ventas.propuestas.edit');
+    Route::put('/ventas/propuestas/{id}', [VentaController::class, 'updatePropuesta'])->name('ventas.propuestas.update');
+
 });

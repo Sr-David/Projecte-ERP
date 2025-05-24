@@ -179,4 +179,32 @@ public function rehabilitarPropuesta($id)
     return redirect()->route('ventas.propuestas')->with('success', 'Propuesta habilitada correctamente.');
 }
 
+
+public function editPropuesta($id)
+{
+    $propuesta = \App\Models\SalesProposals::with('client')->findOrFail($id);
+    $clientes = \App\Models\Clients::all();
+    return view('ventas.editar-propuesta', compact('propuesta', 'clientes'));
+}
+
+
+public function updatePropuesta(Request $request, $id)
+{
+    $propuesta = \App\Models\SalesProposals::findOrFail($id);
+
+    $request->validate([
+        'ClientID' => 'required|exists:Clients,idClient',
+        'State' => 'required|string|max:50',
+        'Details' => 'nullable|string',
+    ]);
+
+    $propuesta->ClientID = $request->ClientID;
+    $propuesta->State = $request->State;
+    $propuesta->Details = $request->Details;
+    $propuesta->save();
+
+    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta actualizada correctamente.');
+}
+
+
 }

@@ -39,7 +39,8 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Habilitación</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -97,7 +98,39 @@
                                             Volver a realizar
                                         </a>
                                     @endif
+
+                                    
                                 </td>
+
+                                <td>
+                                    <button
+                                        class="ver-propuesta-btn inline-flex items-center px-2 py-1 text-brand-blue text-xs transition-colors hover:bg-brand-blue hover:text-blue-700"
+                                        data-id="{{ $propuesta->idSalesProposals ?? '-' }}"
+                                        data-cliente="{{ $propuesta->client->Name ?? 'Sin cliente' }}"
+                                        data-estado="{{ $propuesta->State ?? '-' }}"
+                                        data-fecha="{{ $propuesta->CreatedAt ? \Carbon\Carbon::parse($propuesta->CreatedAt)->format('d/m/Y') : '-' }}"
+                                        data-desc="{{ $propuesta->Details ?? 'Sin descripción' }}"
+                                        title="Ver detalles"
+                                    >
+                                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        Ver
+                                    </button>
+                                    <a href="{{ route('ventas.propuestas.edit', $propuesta->idSalesProposals) }}"
+                                        class="inline-flex items-center px-2 py-1 text-brand-blue text-xs transition-colors hover:bg-brand-blue hover:text-blue-700 rounded ml-1"
+                                        title="Editar propuesta">
+                                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6m-2 2h2v2a2 2 0 002 2h2a2 2 0 002-2v-2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2v-2a2 2 0 00-2-2h-2a2 2 0 00-2 2v2H7a2 2 0 00-2 2v2a2 2 0 002 2h2z" />
+                                            </svg>
+                                            Editar
+                                    </a>
+                                </td>
+
                             </tr>
                         @empty
                             <tr>
@@ -112,4 +145,94 @@
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal Detalle de Propuesta -->
+<div id="propuestaDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full relative z-10 border border-gray-200">
+            <button id="closePropuestaModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl focus:outline-none" title="Cerrar">&times;</button>
+            <div class="px-8 py-6 space-y-6">
+                <!-- Bloque de información de la Propuesta -->
+                <div class="bg-gray-50 rounded-lg p-5 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <h3 class="text-lg font-medium text-indigo-700 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Información de la Propuesta
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-gray-600">ID Propuesta:</span>
+                            <span id="modalPropuestaId" class="text-gray-800"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-gray-600">Cliente:</span>
+                            <span id="modalPropuestaCliente" class="text-gray-800"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-gray-600">Estado:</span>
+                            <span id="modalPropuestaEstado" class="text-gray-800"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-gray-600">Fecha creación:</span>
+                            <span id="modalPropuestaFecha" class="text-gray-800"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-gray-600">Descripción:</span>
+                            <span id="modalPropuestaDesc" class="text-gray-800"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section('scripts')
+<script>
+    document.querySelectorAll('.ver-propuesta-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('modalPropuestaId').textContent = this.dataset.id;
+            document.getElementById('modalPropuestaCliente').textContent = this.dataset.cliente;
+            document.getElementById('modalPropuestaEstado').textContent = this.dataset.estado;
+            document.getElementById('modalPropuestaFecha').textContent = this.dataset.fecha;
+            document.getElementById('modalPropuestaDesc').textContent = this.dataset.desc;
+
+            document.getElementById('propuestaDetailsModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        });
+    });
+
+    document.getElementById('closePropuestaModal').addEventListener('click', function() {
+        document.getElementById('propuestaDetailsModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    });
+    document.getElementById('propuestaDetailsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && !document.getElementById('propuestaDetailsModal').classList.contains('hidden')) {
+            document.getElementById('propuestaDetailsModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+</script>
+@endsection
 @endsection
