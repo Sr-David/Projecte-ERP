@@ -110,17 +110,7 @@
         </div>
     </div>
     
-    <!-- Mensajes de estado -->
-    @if(session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm animate__animated animate__fadeIn" role="alert">
-            <div class="flex items-center">
-                <svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p>{{ session('success') }}</p>
-            </div>
-        </div>
-    @endif
+    <!-- Los mensajes de estado ahora son manejados desde app.blade.php en un formato unificado -->
 
     <!-- Contenido de la nota -->
     <div class="sticky-note-container animate__animated animate__fadeIn">

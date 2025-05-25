@@ -89,11 +89,11 @@
                             </div>
                             <div class="py-2 flex justify-between">
                                 <dt class="text-sm font-medium text-gray-500">Fecha de Registro:</dt>
-                                <dd class="text-sm text-gray-900">{{ $client->created_at->format('d/m/Y') }}</dd>
+                                <dd class="text-sm text-gray-900">{{ $client->created_at ? $client->created_at->format('d/m/Y') : 'No disponible' }}</dd>
                             </div>
                             <div class="py-2 flex justify-between">
                                 <dt class="text-sm font-medium text-gray-500">Última Actualización:</dt>
-                                <dd class="text-sm text-gray-900">{{ $client->updated_at->format('d/m/Y H:i') }}</dd>
+                                <dd class="text-sm text-gray-900">{{ $client->updated_at ? $client->updated_at->format('d/m/Y H:i') : 'No disponible' }}</dd>
                             </div>
                         </dl>
                     </div>

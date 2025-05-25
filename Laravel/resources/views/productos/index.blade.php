@@ -19,18 +19,7 @@
             </a>
         </div>
 
-        <!-- Notification Messages -->
-        @if (session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 mx-6 mt-4" role="alert">
-                <p>{{ session('success') }}</p>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 mx-6 mt-4" role="alert">
-                <p>{{ session('error') }}</p>
-            </div>
-        @endif
+        <!-- Los mensajes de estado ahora son manejados desde app.blade.php en un formato unificado -->
 
         <!-- Search and Filter -->
         <div class="p-6 bg-gray-50 border-b">

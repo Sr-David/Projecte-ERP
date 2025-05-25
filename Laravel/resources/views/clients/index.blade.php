@@ -6,16 +6,7 @@
 
 @section('content')
     <!-- Mensajes de estado -->
-    @if(session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm" role="alert">
-            <div class="flex items-center">
-                <svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p>{{ session('success') }}</p>
-            </div>
-        </div>
-    @endif
+    <!-- Los mensajes de estado ahora son manejados desde app.blade.php en un formato unificado -->
 
     <!-- Panel de control -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-6">
@@ -720,7 +711,12 @@
                 
             } catch (error) {
                 console.error('Error crítico en la edición:', error);
-                alert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.');
+                // Mostrar error usando la función de alerta personalizada si está disponible
+                if (typeof showAlert === 'function') {
+                    showAlert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.', 'error');
+                } else {
+                    alert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.');
+                }
             }
         });
         
@@ -888,8 +884,7 @@
             const errorElement = document.getElementById('client-type-error');
             
             if (!name) {
-                errorElement.textContent = 'El nombre del tipo es obligatorio.';
-                errorElement.classList.remove('hidden');
+                showAlert('El nombre del tipo es obligatorio.', 'error');
                 return;
             }
 
@@ -926,25 +921,86 @@
                     
                     hideClientTypeModal();
                     
-                    // Mostrar mensaje de éxito
-                    alert('Tipo de cliente creado correctamente!');
+                    // Mostrar mensaje de éxito con la alerta personalizada
+                    showAlert('Tipo de cliente creado correctamente!');
                 } else {
-                    // Mostrar mensajes de error con más detalle
+                    // Mostrar mensajes de error con la alerta personalizada
                     if (data.errors) {
-                        const errorMessages = Object.values(data.errors).flat().join('<br>');
-                        errorElement.innerHTML = `${data.message || 'Datos inválidos'}: <br>${errorMessages}`;
+                        const errorMessages = Object.values(data.errors).flat().join('. ');
+                        showAlert(`${data.message || 'Datos inválidos'}: ${errorMessages}`, 'error');
                     } else {
-                        errorElement.textContent = data.message || 'Error al crear el tipo de cliente.';
+                        showAlert(data.message || 'Error al crear el tipo de cliente.', 'error');
                     }
-                    errorElement.classList.remove('hidden');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                errorElement.textContent = 'Error al procesar la solicitud.';
-                errorElement.classList.remove('hidden');
+                showAlert('Error al procesar la solicitud.', 'error');
             });
         });
+        
+        // Función para mostrar alertas con un estilo consistente
+        function showAlert(message, type = 'success') {
+            const alertClass = type === 'success' ? 'app-alert-success' : 
+                               type === 'warning' ? 'app-alert-warning' : 
+                               type === 'info' ? 'app-alert-info' : 'app-alert-error';
+            
+            const iconPath = type === 'success' ? 
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />' : 
+                type === 'info' ?
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />';
+            
+            // Crear un contenedor para la alerta si no existe
+            let alertContainer = document.getElementById('custom-alert-container');
+            if (!alertContainer) {
+                alertContainer = document.createElement('div');
+                alertContainer.id = 'custom-alert-container';
+                alertContainer.style.position = 'fixed';
+                alertContainer.style.top = '1rem';
+                alertContainer.style.right = '1rem';
+                alertContainer.style.zIndex = '9999';
+                alertContainer.style.maxWidth = '24rem';
+                document.body.appendChild(alertContainer);
+            }
+            
+            // Crear la alerta
+            const alertElement = document.createElement('div');
+            alertElement.className = `app-alert ${alertClass} shadow-lg mb-3 transform transition-all duration-300 ease-in-out`;
+            alertElement.style.opacity = '0';
+            alertElement.style.transform = 'translateX(1rem)';
+            alertElement.innerHTML = `
+                <svg class="app-alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    ${iconPath}
+                </svg>
+                <span>${message}</span>
+            `;
+            
+            // Añadir la alerta al contenedor
+            alertContainer.appendChild(alertElement);
+            
+            // Animación de entrada
+            setTimeout(() => {
+                alertElement.style.opacity = '1';
+                alertElement.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                alertElement.style.opacity = '0';
+                alertElement.style.transform = 'translateX(1rem)';
+                
+                // Eliminar el elemento después de la animación
+                setTimeout(() => {
+                    alertContainer.removeChild(alertElement);
+                    
+                    // Eliminar el contenedor si no tiene más alertas
+                    if (alertContainer.childNodes.length === 0) {
+                        document.body.removeChild(alertContainer);
+                    }
+                }, 300);
+            }, 5000);
+        }
     });
 
 
