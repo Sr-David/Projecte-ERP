@@ -90,9 +90,7 @@ Route::get('/build/assets/{file}', function ($file) {
 
 // Rutas protegidas (requieren autenticación)
 Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
     // Rutas de Leads
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':leads,ver')->group(function () {

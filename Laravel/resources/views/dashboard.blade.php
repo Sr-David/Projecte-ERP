@@ -20,8 +20,10 @@
                     <div class="ml-4">
                         <h3 class="text-sm font-medium text-gray-500">Total Clientes</h3>
                         <div class="mt-1 flex items-baseline">
-                            <p class="text-2xl font-semibold text-gray-900">127</p>
-                            <p class="ml-2 text-sm font-medium text-green-600">+8%</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ $stats['clients']['total'] }}</p>
+                            <p class="ml-2 text-sm font-medium {{ $stats['clients']['growth'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $stats['clients']['growth'] >= 0 ? '+' : '' }}{{ $stats['clients']['growth'] }}%
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -43,13 +45,15 @@
                     <div class="ml-4">
                         <h3 class="text-sm font-medium text-gray-500">Proyectos Activos</h3>
                         <div class="mt-1 flex items-baseline">
-                            <p class="text-2xl font-semibold text-gray-900">34</p>
-                            <p class="ml-2 text-sm font-medium text-green-600">+12%</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ $stats['projects']['total'] }}</p>
+                            <p class="ml-2 text-sm font-medium {{ $stats['projects']['growth'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $stats['projects']['growth'] >= 0 ? '+' : '' }}{{ $stats['projects']['growth'] }}%
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="#" class="text-sm font-medium text-indigo-600 hover:underline">
+                    <a href="{{ route('proyectos.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">
                         Ver todos
                     </a>
                 </div>
@@ -66,19 +70,21 @@
                     <div class="ml-4">
                         <h3 class="text-sm font-medium text-gray-500">Facturación Mensual</h3>
                         <div class="mt-1 flex items-baseline">
-                            <p class="text-2xl font-semibold text-gray-900">$45,280</p>
-                            <p class="ml-2 text-sm font-medium text-green-600">+5.2%</p>
+                            <p class="text-2xl font-semibold text-gray-900">${{ number_format($stats['sales']['total'], 2) }}</p>
+                            <p class="ml-2 text-sm font-medium {{ $stats['sales']['growth'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $stats['sales']['growth'] >= 0 ? '+' : '' }}{{ $stats['sales']['growth'] }}%
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="#" class="text-sm font-medium text-green-600 hover:underline">
+                    <a href="{{ route('ventas.resumen') }}" class="text-sm font-medium text-green-600 hover:underline">
                         Ver detalles
                     </a>
                 </div>
             </div>
             
-            <!-- Tickets de Soporte -->
+            <!-- Tickets de Soporte (Notas) -->
             <div class="card bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-red-100 rounded-full p-3">
@@ -90,13 +96,15 @@
                     <div class="ml-4">
                         <h3 class="text-sm font-medium text-gray-500">Tickets de Soporte</h3>
                         <div class="mt-1 flex items-baseline">
-                            <p class="text-2xl font-semibold text-gray-900">8</p>
-                            <p class="ml-2 text-sm font-medium text-red-600">-2</p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ $stats['notes']['total'] }}</p>
+                            <p class="ml-2 text-sm font-medium {{ $stats['notes']['change'] <= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $stats['notes']['change'] >= 0 ? '+' : '' }}{{ $stats['notes']['change'] }}
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="#" class="text-sm font-medium text-red-600 hover:underline">
+                    <a href="{{ route('notes.index') }}" class="text-sm font-medium text-red-600 hover:underline">
                         Resolver tickets
                     </a>
                 </div>
@@ -111,10 +119,10 @@
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-medium text-gray-900">Crecimiento de Ventas</h3>
                 <div class="relative">
-                    <select class="bg-white border border-gray-300 rounded-md text-gray-700 px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50">
-                        <option>Este Año</option>
-                        <option>Este Mes</option>
-                        <option>Último Mes</option>
+                    <select id="period-selector" class="bg-white border border-gray-300 rounded-md text-gray-700 px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50">
+                        <option value="year">Este Año</option>
+                        <option value="month">Este Mes</option>
+                        <option value="last-month">Último Mes</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -124,7 +132,7 @@
                 </div>
             </div>
             <div class="relative h-64">
-                <img src="/images/growing-chart.svg" alt="Gráfico de Crecimiento" class="w-full h-full object-contain">
+                <canvas id="salesChart" class="w-full h-full"></canvas>
             </div>
         </div>
         
@@ -138,102 +146,52 @@
             </div>
             <div class="flow-root">
                 <ul class="-my-5 divide-y divide-gray-200">
+                    @foreach($recentActivities as $activity)
                     <li class="py-4">
                         <div class="flex items-center space-x-4">
                             <div class="flex-shrink-0">
-                                <span class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                <span class="h-8 w-8 rounded-full 
+                                    @if($activity['type'] == 'client') bg-blue-100 
+                                    @elseif($activity['type'] == 'project_completed') bg-green-100 
+                                    @elseif($activity['type'] == 'project_created') bg-indigo-100 
+                                    @elseif($activity['type'] == 'note') bg-yellow-100 
+                                    @endif
+                                    flex items-center justify-center">
+                                    @if($activity['type'] == 'client')
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                     </svg>
-                                </span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">
-                                    Nuevo cliente registrado
-                                </p>
-                                <p class="text-sm text-gray-500">
-                                    Empresa Acme S.L.
-                                </p>
-                            </div>
-                            <div class="flex-shrink-0 text-right">
-                                <p class="text-sm text-gray-500">
-                                    Hace 30 min
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="py-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-shrink-0">
-                                <span class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                    @elseif($activity['type'] == 'project_completed')
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                </span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">
-                                    Proyecto completado
-                                </p>
-                                <p class="text-sm text-gray-500">
-                                    Desarrollo E-commerce
-                                </p>
-                            </div>
-                            <div class="flex-shrink-0 text-right">
-                                <p class="text-sm text-gray-500">
-                                    Hace 2 horas
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="py-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-shrink-0">
-                                <span class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                    @elseif($activity['type'] == 'project_created')
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                     </svg>
-                                </span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">
-                                    Nuevo proyecto creado
-                                </p>
-                                <p class="text-sm text-gray-500">
-                                    Rediseño de tienda online
-                                </p>
-                            </div>
-                            <div class="flex-shrink-0 text-right">
-                                <p class="text-sm text-gray-500">
-                                    Hace 5 horas
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="py-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-shrink-0">
-                                <span class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                                    @elseif($activity['type'] == 'note')
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
+                                    @endif
                                 </span>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate">
-                                    Nuevo ticket de soporte
+                                    {{ $activity['title'] }}
                                 </p>
                                 <p class="text-sm text-gray-500">
-                                    Problema con el servidor
+                                    {{ $activity['detail'] }}
                                 </p>
                             </div>
                             <div class="flex-shrink-0 text-right">
                                 <p class="text-sm text-gray-500">
-                                    Hace 1 día
+                                    {{ $activity['time'] }}
                                 </p>
                             </div>
                         </div>
                     </li>
+                    @endforeach
                 </ul>
             </div>
         </div>
@@ -257,7 +215,7 @@
                 </div>
             </a>
             
-            <a href="#" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
+            <a href="{{ route('proyectos.create') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-indigo-100 rounded-full p-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -271,7 +229,7 @@
                 </div>
             </a>
             
-            <a href="#" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
+            <a href="{{ route('ventas.propuestas.create') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-green-100 rounded-full p-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -285,7 +243,7 @@
                 </div>
             </a>
             
-            <a href="#" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
+            <a href="{{ route('notes.create') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 bg-purple-100 rounded-full p-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -293,8 +251,8 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-900">Enviar Comunicación</h3>
-                        <p class="text-xs text-gray-500 mt-1">Notificar a todos los clientes</p>
+                        <h3 class="text-sm font-medium text-gray-900">Crear Nota</h3>
+                        <p class="text-xs text-gray-500 mt-1">Añadir una nueva nota</p>
                     </div>
                 </div>
             </a>
@@ -303,7 +261,92 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Aquí podrían ir scripts específicos para el dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        // Datos de ventas
+        const salesData = @json($salesData);
+        
+        // Configurar el gráfico de ventas
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: salesData.map(item => item.month + ' ' + item.year),
+                datasets: [{
+                    label: 'Ventas Mensuales',
+                    data: salesData.map(item => item.amount),
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: 'rgb(59, 130, 246)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgb(59, 130, 246)',
+                    pointRadius: 4,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `$${context.raw.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Cambiar datos según el período seleccionado
+        document.getElementById('period-selector').addEventListener('change', function() {
+            const period = this.value;
+            let filteredData = [];
+            
+            if (period === 'year') {
+                filteredData = salesData;
+            } else if (period === 'month') {
+                // Filtrar para mostrar solo el mes actual
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                filteredData = salesData.filter(item => {
+                    const date = new Date(`${item.month} 1, ${item.year}`);
+                    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+                });
+            } else if (period === 'last-month') {
+                // Filtrar para mostrar solo el mes anterior
+                let lastMonth = new Date().getMonth() - 1;
+                let year = new Date().getFullYear();
+                if (lastMonth < 0) {
+                    lastMonth = 11;
+                    year -= 1;
+                }
+                filteredData = salesData.filter(item => {
+                    const date = new Date(`${item.month} 1, ${item.year}`);
+                    return date.getMonth() === lastMonth && date.getFullYear() === year;
+                });
+            }
+            
+            // Actualizar el gráfico
+            salesChart.data.labels = filteredData.map(item => item.month + ' ' + item.year);
+            salesChart.data.datasets[0].data = filteredData.map(item => item.amount);
+            salesChart.update();
+        });
+    });
 </script>
 @endsection 
