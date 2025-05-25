@@ -230,8 +230,14 @@ class VentaController extends Controller
             'created_at' => now()
         ]);
 
+        // Reducir el stock del producto
+        $producto = \App\Models\ProductsServices::findOrFail($request->ProductServiceID);
+        $producto->Stock = max(0, $producto->Stock - $request->QuantitySold);
+        $producto->save();
+
         return redirect()->route('ventas.ventas')->with('success', 'Propuesta confirmada como venta.');
     }
+
 
 
     public function cancelarPropuesta($id)
