@@ -62,6 +62,58 @@
             animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
+        /* Page Transition Animation */
+        .page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .page-transition-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bars-container {
+            display: flex;
+            align-items: flex-end;
+            height: 100px;
+            gap: 5px;
+        }
+
+        .bar {
+            width: 10px;
+            background-color: #3F95FF;
+            border-radius: 3px;
+            transform-origin: bottom;
+        }
+
+        @keyframes barAnimation {
+            0% { height: 20px; }
+            50% { height: 100px; }
+            100% { height: 20px; }
+        }
+
+        .bar:nth-child(1) { animation: barAnimation 1.2s ease-in-out 0s infinite; }
+        .bar:nth-child(2) { animation: barAnimation 1.2s ease-in-out 0.1s infinite; }
+        .bar:nth-child(3) { animation: barAnimation 1.2s ease-in-out 0.2s infinite; }
+        .bar:nth-child(4) { animation: barAnimation 1.2s ease-in-out 0.3s infinite; }
+        .bar:nth-child(5) { animation: barAnimation 1.2s ease-in-out 0.4s infinite; }
+        .bar:nth-child(6) { animation: barAnimation 1.2s ease-in-out 0.3s infinite; }
+        .bar:nth-child(7) { animation: barAnimation 1.2s ease-in-out 0.2s infinite; }
+        .bar:nth-child(8) { animation: barAnimation 1.2s ease-in-out 0.1s infinite; }
+
         /* Background patterns */
         .geometric-bg {
             background-color: #f9fafb;
@@ -108,6 +160,20 @@
 </head>
 
 <body class="bg-gray-50 antialiased">
+    <!-- Page Transition Animation Overlay -->
+    <div class="page-transition-overlay" id="pageTransition">
+        <div class="bars-container">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+    
     <div class="min-h-screen flex">
         <!-- Sidebar -->
         <aside
@@ -361,6 +427,46 @@
             } catch (error) {
                 console.error('Error al cerrar sesión:', error);
             }
+        });
+
+        // Page transition animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageTransition = document.getElementById('pageTransition');
+            const links = document.querySelectorAll('a:not([target="_blank"]):not([href^="#"]):not([href^="javascript"]):not([href^="mailto"])');
+            
+            // Function to show the animation
+            function showTransition() {
+                pageTransition.classList.add('active');
+                
+                // Hide animation after a delay (1.5 seconds)
+                setTimeout(() => {
+                    pageTransition.classList.remove('active');
+                }, 1500);
+            }
+            
+            // Add click event listeners to all navigation links
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Check if it's a navigation link (not in-page anchor or external)
+                    const href = link.getAttribute('href');
+                    const isLocal = href && (href.startsWith('/') || href.startsWith(window.location.origin));
+                    
+                    if (isLocal && !e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                        showTransition();
+                        
+                        // Navigate to the new page after a short delay
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 300);
+                    }
+                });
+            });
+
+            // Also trigger the animation when navigating with browser history
+            window.addEventListener('popstate', function() {
+                showTransition();
+            });
         });
     </script>
 
