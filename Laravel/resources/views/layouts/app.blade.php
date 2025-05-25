@@ -62,6 +62,58 @@
             animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
+        /* Page Transition Animation */
+        .page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .page-transition-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bars-container {
+            display: flex;
+            align-items: flex-end;
+            height: 100px;
+            gap: 5px;
+        }
+
+        .bar {
+            width: 10px;
+            background-color: #3F95FF;
+            border-radius: 3px;
+            transform-origin: bottom;
+        }
+
+        @keyframes barAnimation {
+            0% { height: 20px; }
+            50% { height: 100px; }
+            100% { height: 20px; }
+        }
+
+        .bar:nth-child(1) { animation: barAnimation 1.2s ease-in-out 0s infinite; }
+        .bar:nth-child(2) { animation: barAnimation 1.2s ease-in-out 0.1s infinite; }
+        .bar:nth-child(3) { animation: barAnimation 1.2s ease-in-out 0.2s infinite; }
+        .bar:nth-child(4) { animation: barAnimation 1.2s ease-in-out 0.3s infinite; }
+        .bar:nth-child(5) { animation: barAnimation 1.2s ease-in-out 0.4s infinite; }
+        .bar:nth-child(6) { animation: barAnimation 1.2s ease-in-out 0.3s infinite; }
+        .bar:nth-child(7) { animation: barAnimation 1.2s ease-in-out 0.2s infinite; }
+        .bar:nth-child(8) { animation: barAnimation 1.2s ease-in-out 0.1s infinite; }
+
         /* Background patterns */
         .geometric-bg {
             background-color: #f9fafb;
@@ -108,6 +160,20 @@
 </head>
 
 <body class="bg-gray-50 antialiased">
+    <!-- Page Transition Animation Overlay -->
+    <div class="page-transition-overlay" id="pageTransition">
+        <div class="bars-container">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+    
     <div class="min-h-screen flex">
         <!-- Sidebar -->
         <aside
@@ -135,6 +201,19 @@
                         Dashboard
                     </a>
 
+                    <!-- Leads -->
+                    <a href="{{ url('/leads') }}"
+                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('leads*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="mr-3 h-5 w-5 {{ request()->is('leads*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Leads
+                    </a>
+
+
                     <!-- Clientes -->
                     <a href="{{ url('/clientes') }}"
                         class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('clientes*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
@@ -158,6 +237,18 @@
                                 d="M7 21v-2a4 4 0 013-3.87" />
                         </svg>
                         Ventas
+                    </a>
+
+                    <!-- Productos -->
+                    <a href="{{ url('/productos') }}"
+                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('productos*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="mr-3 h-5 w-5 {{ request()->is('productos*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Productos
                     </a>
 
                     <!-- Proyectos -->
@@ -348,6 +439,46 @@
             } catch (error) {
                 console.error('Error al cerrar sesión:', error);
             }
+        });
+
+        // Page transition animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageTransition = document.getElementById('pageTransition');
+            const links = document.querySelectorAll('a:not([target="_blank"]):not([href^="#"]):not([href^="javascript"]):not([href^="mailto"])');
+            
+            // Function to show the animation
+            function showTransition() {
+                pageTransition.classList.add('active');
+                
+                // Hide animation after a delay (1.5 seconds)
+                setTimeout(() => {
+                    pageTransition.classList.remove('active');
+                }, 1500);
+            }
+            
+            // Add click event listeners to all navigation links
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Check if it's a navigation link (not in-page anchor or external)
+                    const href = link.getAttribute('href');
+                    const isLocal = href && (href.startsWith('/') || href.startsWith(window.location.origin));
+                    
+                    if (isLocal && !e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                        showTransition();
+                        
+                        // Navigate to the new page after a short delay
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 300);
+                    }
+                });
+            });
+
+            // Also trigger the animation when navigating with browser history
+            window.addEventListener('popstate', function() {
+                showTransition();
+            });
         });
     </script>
 
