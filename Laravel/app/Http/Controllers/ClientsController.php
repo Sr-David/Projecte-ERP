@@ -260,7 +260,7 @@ class ClientsController extends Controller
             return response()->json(['success' => true, 'message' => 'Cliente actualizado correctamente']);
         }
         
-        return redirect()->route('clients.show', $id)->with('success', 'Cliente actualizado correctamente');
+        return redirect()->route('clients.index', $id)->with('success', 'Cliente actualizado correctamente');
     }
 
     /**

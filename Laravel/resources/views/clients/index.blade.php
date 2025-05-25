@@ -663,7 +663,7 @@
         
         // Event listener para el botón "Editar Cliente" en el modal de detalles
         document.getElementById('editClientLink').addEventListener('click', function(e) {
-            e.preventDefault();
+            //e.preventDefault();
             
             try {
                 // Obtener el botón activo que abrió el modal

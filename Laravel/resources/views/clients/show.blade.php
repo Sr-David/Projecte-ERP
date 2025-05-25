@@ -3,19 +3,10 @@
 @section('title', 'Detalles del Cliente')
 @section('header', 'Detalles del Cliente')
 @section('breadcrumb')
-    <li class="text-sm font-medium text-gray-500 hover:text-gray-900">
-        <a href="{{ route('dashboard') }}">Inicio</a>
-    </li>
-    <li class="text-sm font-medium text-gray-500 pl-2">
-        /
-    </li>
-    <li class="text-sm font-medium text-gray-500 hover:text-gray-900 pl-2">
-        <a href="{{ route('clients.index') }}">Clientes</a>
-    </li>
-    <li class="text-sm font-medium text-gray-500 pl-2">
-        /
-    </li>
-    <li class="text-sm font-medium text-gray-900 pl-2">Detalles del Cliente</li>
+    <p class="text-sm font-medium text-gray-500 hover:text-gray-900">
+        <a href="{{ route('dashboard') }}">Inicio</a> / <a href="{{ route('clients.index') }}">Clientes</a> / Detalles del Cliente
+    </p>
+
 @endsection
 
 @section('content')
