@@ -273,7 +273,7 @@
         </h1>
     </div>
 
-<div class="bg-white rounded-lg shadow-lg p-8 mb-6 max-w-3xl mx-auto">
+<div class="bg-white rounded-lg shadow-lg p-8 mb-6 max-w-8xl mx-auto">
     <h3 class="text-xl font-semibold mb-4 text-blue-700 flex items-center gap-2">
         Ventas totales por producto
     </h3>
@@ -293,6 +293,25 @@
                 @endforeach
             </ul>
         </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-lg shadow-lg p-8 mb-6 max-w-8xl mx-auto">
+    <h3 class="text-xl font-semibold mb-4 text-blue-700 flex items-center gap-2">
+        Análisis de productos según fecha de entrada
+    </h3>
+    <div class="flex justify-center">
+        <canvas id="productosPorFechaChart" width="700" height="350"></canvas>
+    </div>
+</div>
+
+
+<div class="bg-white rounded-lg shadow-lg p-8 mb-6 max-w-8xl mx-auto">
+    <h3 class="text-xl font-semibold mb-4 text-blue-700 flex items-center gap-2">
+        Ventas por producto y fecha
+    </h3>
+    <div class="flex justify-center">
+        <canvas id="lineVentasPorProductoFecha" width="900" height="400"></canvas>
     </div>
 </div>
 
@@ -326,6 +345,69 @@
                 }
             });
         });
+
+   const colores = [
+            '#3F95FF'
+        ];
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // ...código del gráfico de ventas por producto...
+
+        // Gráfico de productos según fecha de entrada
+        const ctxFecha = document.getElementById('productosPorFechaChart').getContext('2d');
+        new Chart(ctxFecha, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($productosFechasLabels ?? []) !!},
+                datasets: [{
+                    label: 'Productos añadidos',
+                    data: {!! json_encode($productosFechasValores ?? []) !!},
+                    backgroundColor: colores
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // ...otros gráficos...
+
+        // Gráfico de líneas: ventas por producto y fecha
+        const ctxLine = document.getElementById('lineVentasPorProductoFecha').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($fechas ?? []) !!},
+                datasets: {!! json_encode($lineChartDatasets ?? []) !!}
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true, position: 'bottom' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+
+
 
 
         // Delete confirmation
