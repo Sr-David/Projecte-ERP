@@ -71,13 +71,26 @@ class VentaController extends Controller
     }
 
 
+public function resumen()
+{
+    $ventasCount = \App\Models\SalesDetails::count();
+    $propuestasCount = \App\Models\SalesProposals::count();
 
-    public function resumen()
-    {
-        $ventasCount = \App\Models\SalesDetails::count();
-        $propuestasCount = \App\Models\SalesProposals::count();
-        return view('ventas.resumen', compact('ventasCount', 'propuestasCount'));
-    }
+    // Agrupar ventas por fecha (formato: d/m/Y)
+    $ventasPorFecha = \App\Models\SalesDetails::selectRaw('DATE(created_at) as fecha, COUNT(*) as total')
+        ->groupBy('fecha')
+        ->orderBy('fecha')
+        ->get();
+
+    $labels = $ventasPorFecha->pluck('fecha')->map(function($fecha) {
+        return \Carbon\Carbon::parse($fecha)->format('d/m/Y');
+    })->toArray();
+
+    $valores = $ventasPorFecha->pluck('total')->toArray();
+
+    return view('ventas.resumen', compact('ventasCount', 'propuestasCount', 'labels', 'ventasPorFecha' /* Cambia a valores */))
+        ->with('ventasPorFecha', $valores);
+}
 
     public function propuestas()
     {

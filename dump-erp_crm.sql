@@ -38,7 +38,8 @@ CREATE TABLE `Clients` (
   KEY `idEmpresa` (`idEmpresa`),
   CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`ClientTypeID`) REFERENCES `ClientType` (`idClientType`),
   CONSTRAINT `clients_ibfk_2` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -56,12 +57,19 @@ CREATE TABLE `ClientType` (
   PRIMARY KEY (`idClientType`),
   KEY `idEmpresa` (`idEmpresa`),
   CONSTRAINT `clienttype_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Where the client''s type is stored';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Where the client''s type is stored';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `ProductsServices`
 --
+
+
+
+
+
+
+
 
 DROP TABLE IF EXISTS `ProductsServices`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -77,7 +85,7 @@ CREATE TABLE `ProductsServices` (
   PRIMARY KEY (`idProductService`),
   KEY `idEmpresa` (`idEmpresa`),
   CONSTRAINT `productsservices_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -101,7 +109,7 @@ CREATE TABLE `SalesDetails` (
   KEY `idEmpresa` (`idEmpresa`),
   CONSTRAINT `salesdetails_ibfk_2` FOREIGN KEY (`ProductServiceID`) REFERENCES `ProductsServices` (`idProductService`),
   CONSTRAINT `salesdetails_ibfk_3` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,18 +120,18 @@ DROP TABLE IF EXISTS `SalesProposals`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SalesProposals` (
-  `idSalesProposals` int NOT NULL,
+  `idSalesProposals` int NOT NULL AUTO_INCREMENT,
   `ClientID` int DEFAULT NULL,
   `CreatedAt` datetime DEFAULT NULL,
   `State` varchar(45) DEFAULT NULL,
-  `Details` text DEFAULT NULL,
+  `Details` text,
   `idEmpresa` int NOT NULL,
   PRIMARY KEY (`idSalesProposals`),
   KEY `fk_salesproposals_client` (`ClientID`),
   KEY `idEmpresa` (`idEmpresa`),
   CONSTRAINT `fk_salesproposals_client` FOREIGN KEY (`ClientID`) REFERENCES `Clients` (`idClient`),
   CONSTRAINT `salesproposals_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +148,7 @@ CREATE TABLE `UserAdministration` (
   `Password` varchar(255) NOT NULL,
   `Permissions` text,
   PRIMARY KEY (`idEmpresa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,7 +168,7 @@ CREATE TABLE `Users` (
   PRIMARY KEY (`idUser`),
   KEY `idEmpresa` (`idEmpresa`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
