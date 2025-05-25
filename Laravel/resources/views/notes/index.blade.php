@@ -4,6 +4,132 @@
 @section('header', 'Gestión de Notas')
 @section('breadcrumb', 'Notas')
 
+@section('styles')
+<style>
+    /* Estilos para notas tipo sticky */
+    .sticky-notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+        padding: 20px 0;
+    }
+    
+    .sticky-note {
+        position: relative;
+        min-height: 200px;
+        padding: 16px;
+        border-radius: 2px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        transition: all 0.2s ease;
+        transform-origin: center;
+    }
+    
+    .sticky-note::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 20px;
+        width: 25px;
+        height: 25px;
+        background-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transform: translate(2px, -14px) rotate(45deg);
+        z-index: -1;
+    }
+    
+    .sticky-note:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    }
+    
+    /* Colores por tipo */
+    .sticky-note-general {
+        background: linear-gradient(135deg, #f9f9f9 0%, #ececec 100%);
+        transform: rotate(-1deg);
+    }
+    
+    .sticky-note-client {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        transform: rotate(1deg);
+    }
+    
+    .sticky-note-lead {
+        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+        transform: rotate(-0.5deg);
+    }
+    
+    .sticky-note-project {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        transform: rotate(0.7deg);
+    }
+    
+    .sticky-note-sale {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        transform: rotate(-0.8deg);
+    }
+    
+    /* Contenido */
+    .sticky-note-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        word-break: break-word;
+    }
+    
+    .sticky-note-content {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 18px;
+        flex-grow: 1;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+    }
+    
+    .sticky-note-footer {
+        border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        padding-top: 12px;
+        margin-top: auto;
+        font-size: 12px;
+        color: #777;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .sticky-note-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 12px;
+        opacity: 0.8;
+    }
+    
+    /* Ajustes para notas */
+    .sticky-note {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Animaciones */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .sticky-note {
+        animation: fadeIn 0.5s ease forwards;
+        animation-delay: calc(var(--animation-order) * 0.1s);
+        opacity: 0;
+    }
+</style>
+@endsection
+
 @section('content')
     <!-- Banner -->
     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 py-6 mb-8 rounded-xl shadow-lg border border-blue-700 animate__animated animate__fadeIn">
@@ -84,70 +210,67 @@
         </div>
     </div>
 
-    <!-- Notas Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($notes as $note)
-            <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200 overflow-hidden note-card" data-related="{{ $note->RelatedTo }}">
-                <div class="p-6">
-                    <!-- Título y tipo de nota -->
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $note->Title }}</h3>
-                        @php
-                            $badgeColors = [
-                                'general' => 'bg-gray-100 text-gray-800',
-                                'client' => 'bg-blue-100 text-blue-800',
-                                'lead' => 'bg-purple-100 text-purple-800',
-                                'project' => 'bg-green-100 text-green-800',
-                                'sale' => 'bg-yellow-100 text-yellow-800'
-                            ];
-                            $badgeLabels = [
-                                'general' => 'General',
-                                'client' => 'Cliente',
-                                'lead' => 'Lead',
-                                'project' => 'Proyecto',
-                                'sale' => 'Venta'
-                            ];
-                            $badgeColor = $badgeColors[$note->RelatedTo] ?? 'bg-gray-100 text-gray-800';
-                            $badgeLabel = $badgeLabels[$note->RelatedTo] ?? 'Otro';
-                        @endphp
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $badgeColor }}">
-                            {{ $badgeLabel }}
-                        </span>
+    <!-- Notas Grid - Ahora como sticky notes -->
+    <div class="sticky-notes-grid">
+        @forelse($notes as $index => $note)
+            @php
+                $badgeColors = [
+                    'general' => 'bg-gray-100 text-gray-800',
+                    'client' => 'bg-blue-100 text-blue-800',
+                    'lead' => 'bg-purple-100 text-purple-800',
+                    'project' => 'bg-green-100 text-green-800',
+                    'sale' => 'bg-yellow-100 text-yellow-800'
+                ];
+                $badgeLabels = [
+                    'general' => 'General',
+                    'client' => 'Cliente',
+                    'lead' => 'Lead',
+                    'project' => 'Proyecto',
+                    'sale' => 'Venta'
+                ];
+                $badgeColor = $badgeColors[$note->RelatedTo] ?? 'bg-gray-100 text-gray-800';
+                $badgeLabel = $badgeLabels[$note->RelatedTo] ?? 'Otro';
+            @endphp
+            
+            <div class="sticky-note sticky-note-{{ $note->RelatedTo }} note-card" 
+                data-related="{{ $note->RelatedTo }}" 
+                style="--animation-order: {{ $index }}">
+                
+                <span class="sticky-note-badge {{ $badgeColor }}">
+                    {{ $badgeLabel }}
+                </span>
+                
+                <h3 class="sticky-note-title">{{ $note->Title }}</h3>
+                <div class="sticky-note-content">
+                    {{ Str::limit($note->Content, 150) }}
+                </div>
+                
+                <div class="sticky-note-footer">
+                    <div>
+                        <span>Por: {{ $note->creator ? $note->creator->Name : 'Usuario' }}</span>
+                        <span class="ml-3">{{ $note->created_at->format('d/m/Y') }}</span>
                     </div>
-                    
-                    <!-- Contenido de la nota (limitado) -->
-                    <div class="text-gray-700 text-sm mb-4 note-content">
-                        {{ Str::limit($note->Content, 150) }}
-                    </div>
-                    
-                    <!-- Metadatos y acciones -->
-                    <div class="mt-4 border-t pt-4 flex justify-between items-center text-xs text-gray-500">
-                        <div>
-                            <span>Por: {{ $note->creator ? $note->creator->Name : 'Usuario' }}</span>
-                            <span class="ml-3">{{ $note->created_at->format('d/m/Y H:i') }}</span>
-                        </div>
-                        <div class="flex space-x-2">
-                            <a href="{{ route('notes.show', $note->idNote) }}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                    <div class="flex space-x-2">
+                        <a href="{{ route('notes.show', $note->idNote) }}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </a>
+                        <a href="{{ route('notes.edit', $note->idNote) }}" class="text-indigo-600 hover:text-indigo-800 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </a>
+                        <form method="POST" action="{{ route('notes.destroy', $note->idNote) }}" class="inline delete-note-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="text-red-600 hover:text-red-800 transition-colors delete-note" title="Eliminar">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
-                            </a>
-                            <a href="{{ route('notes.edit', $note->idNote) }}" class="text-indigo-600 hover:text-indigo-800 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                            </a>
-                            <form method="POST" action="{{ route('notes.destroy', $note->idNote) }}" class="inline delete-note-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="text-red-600 hover:text-red-800 transition-colors delete-note" title="Eliminar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </form>
-                        </div>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -187,8 +310,8 @@
             const searchTerm = this.value.toLowerCase();
             
             noteCards.forEach(card => {
-                const title = card.querySelector('h3').textContent.toLowerCase();
-                const content = card.querySelector('.note-content').textContent.toLowerCase();
+                const title = card.querySelector('.sticky-note-title').textContent.toLowerCase();
+                const content = card.querySelector('.sticky-note-content').textContent.toLowerCase();
                 
                 if (title.includes(searchTerm) || content.includes(searchTerm)) {
                     card.style.display = '';
@@ -228,6 +351,24 @@
                     this.closest('form').submit();
                 }
             });
+        });
+        
+        // Aplicar rotaciones aleatorias adicionales para un efecto más natural
+        document.querySelectorAll('.sticky-note').forEach(note => {
+            // Pequeña variación aleatoria en la rotación (-0.5 a 0.5 grados)
+            const extraRotation = (Math.random() - 0.5) * 1;
+            const currentTransform = note.style.transform || '';
+            
+            if (currentTransform.includes('rotate')) {
+                // Ajustar la rotación existente
+                note.style.transform = currentTransform.replace(
+                    /rotate\(([^)]+)\)/, 
+                    (match, angle) => `rotate(${parseFloat(angle) + extraRotation}deg)`
+                );
+            } else {
+                // Añadir rotación si no existe
+                note.style.transform = currentTransform + ` rotate(${extraRotation}deg)`;
+            }
         });
     });
 </script>

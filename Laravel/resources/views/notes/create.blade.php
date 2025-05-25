@@ -58,20 +58,15 @@
                     </select>
                 </div>
                 
-                <!-- ID de relación (se muestra/oculta según el tipo) -->
-                <div id="relatedIdContainer" style="{{ $related == 'general' ? 'display:none;' : '' }}">
-                    <label for="RelatedID" class="block text-sm font-medium text-gray-700 mb-1">ID del {{ $related != 'general' ? ($related == 'client' ? 'Cliente' : ($related == 'lead' ? 'Lead' : ($related == 'project' ? 'Proyecto' : 'Venta'))) : '' }}</label>
-                    <div class="relative">
-                        <input type="number" name="RelatedID" id="RelatedID" value="{{ old('RelatedID', $relatedId) }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <a href="#" id="searchEntityBtn" class="text-blue-600 hover:text-blue-800" title="Buscar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-500">Introduce el ID del elemento relacionado</p>
+                <!-- Selector de entidad (reemplaza el input de ID) -->
+                <div id="relatedEntityContainer" style="{{ $related == 'general' ? 'display:none;' : '' }}">
+                    <label for="RelatedID" class="block text-sm font-medium text-gray-700 mb-1">
+                        Seleccionar <span id="entityTypeLabel">{{ $related != 'general' ? ($related == 'client' ? 'Cliente' : ($related == 'lead' ? 'Lead' : ($related == 'project' ? 'Proyecto' : 'Venta'))) : '' }}</span>
+                    </label>
+                    <select name="RelatedID" id="RelatedID" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Cargando opciones...</option>
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500">Selecciona el elemento relacionado</p>
                 </div>
             </div>
             
@@ -92,19 +87,107 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const relatedToSelect = document.getElementById('RelatedTo');
-        const relatedIdContainer = document.getElementById('relatedIdContainer');
-        const relatedIdInput = document.getElementById('RelatedID');
-        const searchEntityBtn = document.getElementById('searchEntityBtn');
+        const relatedEntityContainer = document.getElementById('relatedEntityContainer');
+        const relatedIdSelect = document.getElementById('RelatedID');
+        const entityTypeLabel = document.getElementById('entityTypeLabel');
+        const csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         
-        // Función para actualizar la visibilidad del campo de ID relacionado
-        function updateRelatedIdVisibility() {
-            if (relatedToSelect.value === 'general') {
-                relatedIdContainer.style.display = 'none';
-                relatedIdInput.value = '';
-                relatedIdInput.required = false;
+        // Función para cargar las entidades relacionadas
+        async function loadRelatedEntities(entityType) {
+            if (entityType === 'general') {
+                return;
+            }
+            
+            // Mostrar mensaje de carga
+            relatedIdSelect.innerHTML = '<option value="">Cargando...</option>';
+            
+            try {
+                // API endpoints para cada tipo de entidad
+                const endpoints = {
+                    'client': '/api/clientes',
+                    'lead': '/api/leads',
+                    'project': '/api/proyectos',
+                    'sale': '/api/ventas/propuestas'
+                };
+                
+                // Si no tenemos un endpoint definido para este tipo, usar una estructura base
+                if (!endpoints[entityType]) {
+                    console.warn(`No endpoint defined for entity type: ${entityType}`);
+                    relatedIdSelect.innerHTML = '<option value="">No hay opciones disponibles</option>';
+                    return;
+                }
+                
+                // Realizar la petición AJAX para obtener las entidades
+                const response = await fetch(endpoints[entityType], {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf_token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.items && data.items.length > 0) {
+                    // Cada tipo de entidad puede tener diferentes propiedades para ID y nombre
+                    const idField = getIdFieldForEntityType(entityType);
+                    const nameField = getNameFieldForEntityType(entityType);
+                    
+                    // Limpiar y rellenar el select con las opciones
+                    relatedIdSelect.innerHTML = '<option value="">Selecciona una opción</option>';
+                    
+                    data.items.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item[idField];
+                        option.textContent = item[nameField];
+                        relatedIdSelect.appendChild(option);
+                    });
+                } else {
+                    relatedIdSelect.innerHTML = '<option value="">No hay opciones disponibles</option>';
+                }
+            } catch (error) {
+                console.error('Error fetching related entities:', error);
+                relatedIdSelect.innerHTML = '<option value="">Error al cargar opciones</option>';
+            }
+        }
+        
+        // Obtener el campo de ID según el tipo de entidad
+        function getIdFieldForEntityType(entityType) {
+            const idFields = {
+                'client': 'idClient',
+                'lead': 'idLead',
+                'project': 'idProject',
+                'sale': 'idSalesProposals'
+            };
+            return idFields[entityType] || 'id';
+        }
+        
+        // Obtener el campo de nombre según el tipo de entidad
+        function getNameFieldForEntityType(entityType) {
+            const nameFields = {
+                'client': 'Name',
+                'lead': 'Name',
+                'project': 'Name',
+                'sale': 'Title'
+            };
+            return nameFields[entityType] || 'name';
+        }
+        
+        // Función para actualizar la visibilidad y etiqueta del selector de entidades
+        function updateRelatedEntityVisibility() {
+            const entityType = relatedToSelect.value;
+            
+            if (entityType === 'general') {
+                relatedEntityContainer.style.display = 'none';
+                relatedIdSelect.required = false;
             } else {
-                relatedIdContainer.style.display = '';
-                relatedIdInput.required = true;
+                relatedEntityContainer.style.display = '';
+                relatedIdSelect.required = true;
                 
                 // Actualizar el texto de la etiqueta según el tipo seleccionado
                 const labelText = {
@@ -112,40 +195,20 @@
                     'lead': 'Lead',
                     'project': 'Proyecto',
                     'sale': 'Venta'
-                }[relatedToSelect.value] || '';
+                }[entityType] || '';
                 
-                const label = document.querySelector('label[for="RelatedID"]');
-                label.textContent = 'ID del ' + labelText;
+                entityTypeLabel.textContent = labelText;
+                
+                // Cargar las entidades relacionadas
+                loadRelatedEntities(entityType);
             }
         }
         
         // Evento al cambiar el tipo de relación
-        relatedToSelect.addEventListener('change', updateRelatedIdVisibility);
+        relatedToSelect.addEventListener('change', updateRelatedEntityVisibility);
         
-        // Configurar botón de búsqueda
-        searchEntityBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const entityType = relatedToSelect.value;
-            if (entityType === 'general') return;
-            
-            // URLs para búsqueda de entidades
-            const searchUrls = {
-                'client': '/clientes',
-                'lead': '/leads',
-                'project': '/proyectos',
-                'sale': '/ventas/propuestas'
-            };
-            
-            const url = searchUrls[entityType];
-            if (url) {
-                // Abrir en una nueva ventana/pestaña para seleccionar la entidad
-                window.open(url, '_blank');
-            }
-        });
-        
-        // Inicializar el estado del campo de ID relacionado
-        updateRelatedIdVisibility();
+        // Inicializar el estado del campo de entidades relacionadas
+        updateRelatedEntityVisibility();
     });
 </script>
 @endsection 

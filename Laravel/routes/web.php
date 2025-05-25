@@ -217,4 +217,31 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
         'update' => 'notes.update',
         'destroy' => 'notes.destroy',
     ]);
+
+    // API para los desplegables de notas
+    Route::prefix('api')->group(function () {
+        Route::get('/clientes', function (\Illuminate\Http\Request $request) {
+            $idEmpresa = $request->session()->get('empresa_id');
+            $clients = DB::table('Clients')->where('idEmpresa', $idEmpresa)->get(['idClient', 'Name']);
+            return response()->json(['success' => true, 'items' => $clients]);
+        });
+        
+        Route::get('/leads', function (\Illuminate\Http\Request $request) {
+            $idEmpresa = $request->session()->get('empresa_id');
+            $leads = DB::table('Leads')->where('idEmpresa', $idEmpresa)->get(['idLead', 'Name']);
+            return response()->json(['success' => true, 'items' => $leads]);
+        });
+        
+        Route::get('/proyectos', function (\Illuminate\Http\Request $request) {
+            $idEmpresa = $request->session()->get('empresa_id');
+            $projects = DB::table('Projects')->where('idEmpresa', $idEmpresa)->get(['idProject', 'Name']);
+            return response()->json(['success' => true, 'items' => $projects]);
+        });
+        
+        Route::get('/ventas/propuestas', function (\Illuminate\Http\Request $request) {
+            $idEmpresa = $request->session()->get('empresa_id');
+            $sales = DB::table('SalesProposals')->where('idEmpresa', $idEmpresa)->get(['idSalesProposals', 'Title']);
+            return response()->json(['success' => true, 'items' => $sales]);
+        });
+    });
 });

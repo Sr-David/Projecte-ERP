@@ -4,6 +4,103 @@
 @section('header', 'Detalle de Nota')
 @section('breadcrumb', 'Notas / Ver')
 
+@section('styles')
+<style>
+    /* Estilos para notas tipo sticky */
+    .sticky-note-container {
+        max-width: 800px;
+        margin: 0 auto 30px;
+        padding: 30px;
+        position: relative;
+    }
+    
+    .sticky-note-detail {
+        position: relative;
+        padding: 30px;
+        border-radius: 2px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16), 0 5px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        transform-origin: center;
+        min-height: 300px;
+    }
+    
+    .sticky-note-detail::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 40px;
+        width: 30px;
+        height: 30px;
+        background-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        transform: translate(2px, -16px) rotate(45deg);
+        z-index: -1;
+    }
+    
+    /* Colores por tipo */
+    .sticky-note-general {
+        background: linear-gradient(135deg, #f9f9f9 0%, #ececec 100%);
+        transform: rotate(-0.5deg);
+    }
+    
+    .sticky-note-client {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        transform: rotate(0.5deg);
+    }
+    
+    .sticky-note-lead {
+        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+        transform: rotate(-0.3deg);
+    }
+    
+    .sticky-note-project {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        transform: rotate(0.4deg);
+    }
+    
+    .sticky-note-sale {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        transform: rotate(-0.4deg);
+    }
+    
+    /* Contenido */
+    .sticky-note-title {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        word-break: break-word;
+    }
+    
+    .sticky-note-content {
+        font-size: 16px;
+        color: #444;
+        margin-bottom: 30px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+    
+    .sticky-note-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 5px 12px;
+        border-radius: 16px;
+    }
+    
+    .sticky-note-metadata {
+        margin-top: auto;
+        border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        padding-top: 15px;
+        font-size: 14px;
+        color: #666;
+    }
+</style>
+@endsection
+
 @section('content')
     <!-- Banner -->
     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 py-6 mb-8 rounded-xl shadow-lg border border-blue-700 animate__animated animate__fadeIn">
@@ -26,56 +123,52 @@
     @endif
 
     <!-- Contenido de la nota -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 animate__animated animate__fadeIn">
-        <div class="border-b border-gray-200 p-6">
-            <div class="flex justify-between items-start">
-                <h1 class="text-2xl font-bold text-gray-800">{{ $note->Title }}</h1>
-                
-                @php
-                    $badgeColors = [
-                        'general' => 'bg-gray-100 text-gray-800',
-                        'client' => 'bg-blue-100 text-blue-800',
-                        'lead' => 'bg-purple-100 text-purple-800',
-                        'project' => 'bg-green-100 text-green-800',
-                        'sale' => 'bg-yellow-100 text-yellow-800'
-                    ];
-                    $badgeLabels = [
-                        'general' => 'General',
-                        'client' => 'Cliente',
-                        'lead' => 'Lead',
-                        'project' => 'Proyecto',
-                        'sale' => 'Venta'
-                    ];
-                    $badgeColor = $badgeColors[$note->RelatedTo] ?? 'bg-gray-100 text-gray-800';
-                    $badgeLabel = $badgeLabels[$note->RelatedTo] ?? 'Otro';
-                @endphp
-                
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $badgeColor }}">
-                    {{ $badgeLabel }}
-                    @if($note->RelatedID)
-                    <span class="ml-2 text-xs bg-white bg-opacity-50 px-2 py-1 rounded-full">#{{ $note->RelatedID }}</span>
-                    @endif
-                </span>
-            </div>
-        </div>
+    <div class="sticky-note-container animate__animated animate__fadeIn">
+        @php
+            $badgeColors = [
+                'general' => 'bg-gray-100 text-gray-800',
+                'client' => 'bg-blue-100 text-blue-800',
+                'lead' => 'bg-purple-100 text-purple-800',
+                'project' => 'bg-green-100 text-green-800',
+                'sale' => 'bg-yellow-100 text-yellow-800'
+            ];
+            $badgeLabels = [
+                'general' => 'General',
+                'client' => 'Cliente',
+                'lead' => 'Lead',
+                'project' => 'Proyecto',
+                'sale' => 'Venta'
+            ];
+            $badgeColor = $badgeColors[$note->RelatedTo] ?? 'bg-gray-100 text-gray-800';
+            $badgeLabel = $badgeLabels[$note->RelatedTo] ?? 'Otro';
+        @endphp
         
-        <div class="p-6">
-            <div class="prose max-w-none">
+        <div class="sticky-note-detail sticky-note-{{ $note->RelatedTo }}">
+            <span class="sticky-note-badge {{ $badgeColor }}">
+                {{ $badgeLabel }}
+                @if($note->RelatedID)
+                <span class="ml-2 text-xs bg-white bg-opacity-50 px-2 py-1 rounded-full">#{{ $note->RelatedID }}</span>
+                @endif
+            </span>
+            
+            <h1 class="sticky-note-title">{{ $note->Title }}</h1>
+            
+            <div class="sticky-note-content">
                 {!! nl2br(e($note->Content)) !!}
             </div>
             
             <!-- Metadatos -->
-            <div class="mt-8 border-t border-gray-200 pt-4">
+            <div class="sticky-note-metadata">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <p class="text-sm text-gray-500">Creado por: <span class="font-medium text-gray-900">{{ $note->creator ? $note->creator->Name : 'Usuario' }}</span></p>
-                        <p class="text-sm text-gray-500">Fecha de creación: <span class="font-medium text-gray-900">{{ $note->created_at->format('d/m/Y H:i:s') }}</span></p>
+                        <p>Creado por: <span class="font-medium text-gray-900">{{ $note->creator ? $note->creator->Name : 'Usuario' }}</span></p>
+                        <p>Fecha de creación: <span class="font-medium text-gray-900">{{ $note->created_at->format('d/m/Y H:i:s') }}</span></p>
                     </div>
                     
                     <div>
-                        <p class="text-sm text-gray-500">Última actualización: <span class="font-medium text-gray-900">{{ $note->updated_at->format('d/m/Y H:i:s') }}</span></p>
+                        <p>Última actualización: <span class="font-medium text-gray-900">{{ $note->updated_at->format('d/m/Y H:i:s') }}</span></p>
                         @if($note->RelatedTo !== 'general' && $note->RelatedID)
-                            <p class="text-sm text-gray-500">Relacionado con: 
+                            <p>Relacionado con: 
                                 <a href="{{ 
                                     $note->RelatedTo === 'client' ? route('clients.show', $note->RelatedID) : 
                                     ($note->RelatedTo === 'lead' ? route('leads.show', $note->RelatedID) : 
@@ -92,7 +185,7 @@
         </div>
         
         <!-- Acciones -->
-        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 border-t border-gray-200">
+        <div class="bg-white px-6 py-4 flex justify-end space-x-3 rounded-lg shadow-sm border border-gray-200 mt-6">
             <a href="{{ route('notes.index') }}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Volver
             </a>
