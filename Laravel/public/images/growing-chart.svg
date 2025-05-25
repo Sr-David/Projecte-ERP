@@ -1,0 +1,166 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo del gráfico (transparente) -->
+  <rect width="400" height="300" fill="white" rx="10" ry="10" />
+  
+  <!-- Ejes del gráfico -->
+  <line x1="50" y1="250" x2="350" y2="250" stroke="#e2e8f0" stroke-width="2" />
+  <line x1="50" y1="50" x2="50" y2="250" stroke="#e2e8f0" stroke-width="2" />
+  
+  <!-- Líneas horizontales de referencia -->
+  <line x1="50" y1="200" x2="350" y2="200" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="5,5" />
+  <line x1="50" y1="150" x2="350" y2="150" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="5,5" />
+  <line x1="50" y1="100" x2="350" y2="100" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="5,5" />
+  <line x1="50" y1="50" x2="350" y2="50" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="5,5" />
+  
+  <!-- Etiquetas de los ejes -->
+  <text x="35" y="250" font-family="Arial" font-size="12" text-anchor="end" fill="#94a3b8">0</text>
+  <text x="35" y="200" font-family="Arial" font-size="12" text-anchor="end" fill="#94a3b8">25</text>
+  <text x="35" y="150" font-family="Arial" font-size="12" text-anchor="end" fill="#94a3b8">50</text>
+  <text x="35" y="100" font-family="Arial" font-size="12" text-anchor="end" fill="#94a3b8">75</text>
+  <text x="35" y="50" font-family="Arial" font-size="12" text-anchor="end" fill="#94a3b8">100</text>
+  
+  <!-- Primera barra -->
+  <rect x="100" y="250" width="40" height="0" fill="#3F95FF" opacity="0.9">
+    <animate 
+      attributeName="height" 
+      from="0" 
+      to="70" 
+      dur="1.5s" 
+      begin="0.2s"
+      fill="freeze"
+      calcMode="spline"
+      keySplines="0.42 0 0.58 1"
+    />
+    <animate 
+      attributeName="y" 
+      from="250" 
+      to="180" 
+      dur="1.5s" 
+      begin="0.2s"
+      fill="freeze"
+      calcMode="spline"
+      keySplines="0.42 0 0.58 1"
+    />
+  </rect>
+  
+  <!-- Etiqueta Primera barra -->
+  <text x="120" y="270" font-family="Arial" font-size="12" text-anchor="middle" fill="#64748b">Q1</text>
+  
+  <!-- Segunda barra -->
+  <rect x="180" y="250" width="40" height="0" fill="#3F95FF" opacity="0.9">
+    <animate 
+      attributeName="height" 
+      from="0" 
+      to="120" 
+      dur="1.5s" 
+      begin="0.5s"
+      fill="freeze"
+      calcMode="spline"
+      keySplines="0.42 0 0.58 1"
+    />
+    <animate 
+      attributeName="y" 
+      from="250" 
+      to="130" 
+      dur="1.5s" 
+      begin="0.5s"
+      fill="freeze"
+      calcMode="spline"
+      keySplines="0.42 0 0.58 1"
+    />
+  </rect>
+  
+  <!-- Etiqueta Segunda barra -->
+  <text x="200" y="270" font-family="Arial" font-size="12" text-anchor="middle" fill="#64748b">Q2</text>
+  
+  <!-- Tercera barra -->
+  <rect x="260" y="250" width="40" height="0" fill="#3F95FF" opacity="0.9">
+    <animate 
+      attributeName="height" 
+      from="0" 
+      to="180" 
+      dur="1.5s" 
+      begin="0.8s"
+      fill="freeze"
+      calcMode="spline"
+      keySplines="0.42 0 0.58 1"
+    />
+    <animate 
+      attributeName="y" 
+      from="250" 
+      to="70" 
+      dur="1.5s" 
+      begin="0.8s"
+      fill="freeze"
+      calcMode="spline"
+      keySplines="0.42 0 0.58 1"
+    />
+  </rect>
+  
+  <!-- Etiqueta Tercera barra -->
+  <text x="280" y="270" font-family="Arial" font-size="12" text-anchor="middle" fill="#64748b">Q3</text>
+  
+  <!-- Título del gráfico -->
+  <text x="200" y="30" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#1A1A1A">Crecimiento trimestral</text>
+  
+  <!-- Efectos adicionales -->
+  <circle cx="100" cy="180" r="0" fill="#3F95FF" opacity="0.7">
+    <animate 
+      attributeName="r" 
+      from="0" 
+      to="5" 
+      dur="0.5s" 
+      begin="1.7s"
+      fill="freeze"
+    />
+  </circle>
+  
+  <circle cx="180" cy="130" r="0" fill="#3F95FF" opacity="0.7">
+    <animate 
+      attributeName="r" 
+      from="0" 
+      to="5" 
+      dur="0.5s" 
+      begin="2s"
+      fill="freeze"
+    />
+  </circle>
+  
+  <circle cx="260" cy="70" r="0" fill="#3F95FF" opacity="0.7">
+    <animate 
+      attributeName="r" 
+      from="0" 
+      to="5" 
+      dur="0.5s" 
+      begin="2.3s"
+      fill="freeze"
+    />
+  </circle>
+  
+  <!-- Línea de tendencia que se dibuja gradualmente -->
+  <path d="M100,180 L180,130 L260,70" stroke="#3F95FF" stroke-width="2" fill="none" stroke-dasharray="200" stroke-dashoffset="200">
+    <animate 
+      attributeName="stroke-dashoffset" 
+      from="200" 
+      to="0" 
+      dur="1s" 
+      begin="2.5s"
+      fill="freeze"
+    />
+  </path>
+  
+  <!-- Información al pasar el cursor (simulada) -->
+  <g opacity="0">
+    <animate 
+      attributeName="opacity" 
+      from="0" 
+      to="1" 
+      dur="0.5s" 
+      begin="3.5s"
+      fill="freeze"
+    />
+    <rect x="230" y="40" width="100" height="50" rx="5" ry="5" fill="white" stroke="#e2e8f0" stroke-width="1" />
+    <text x="280" y="60" font-family="Arial" font-size="12" text-anchor="middle" fill="#1A1A1A">Crecimiento</text>
+    <text x="280" y="80" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#3F95FF">+75%</text>
+  </g>
+</svg> 

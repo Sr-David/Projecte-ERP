@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Acceso Administrador | Sistema ERP-CRM</title>
+    <title>Acceso Administrador | Elevate CRM</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- CDN para Tailwind CSS -->
@@ -29,7 +29,9 @@
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'slide-up': 'slideUp 0.6s ease-out',
                         'slide-right': 'slideRight 0.6s ease-out',
+                        'slide-left': 'slideLeft 0.6s ease-out',
                         'fade-in': 'fadeIn 0.8s ease-out',
+                        'bounce-slow': 'bounce 3s infinite',
                     },
                     keyframes: {
                         float: {
@@ -48,11 +50,19 @@
                             '0%': { transform: 'translateX(-20px)', opacity: '0' },
                             '100%': { transform: 'translateX(0)', opacity: '1' },
                         },
+                        slideLeft: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' },
                         },
                     },
+                    boxShadow: {
+                        'soft-xl': '0 20px 27px 0 rgba(0, 0, 0, 0.05)',
+                        'inner-soft': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+                    }
                 },
             },
         };
@@ -123,8 +133,8 @@
         
         .geometric-bg {
             background-image: 
-                radial-gradient(#3F95FF20 1px, transparent 1px),
-                radial-gradient(#3F95FF10 1px, transparent 1px);
+                radial-gradient(#3F95FF10 1px, transparent 1px),
+                radial-gradient(#3F95FF05 1px, transparent 1px);
             background-size: 40px 40px;
             background-position: 0 0, 20px 20px;
         }
@@ -132,6 +142,7 @@
         .button-effect {
             position: relative;
             overflow: hidden;
+            transition: all 0.3s ease;
         }
         
         .button-effect:after {
@@ -160,7 +171,7 @@
             border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
             overflow: hidden;
             filter: blur(40px);
-            opacity: 0.15;
+            opacity: 0.1;
             animation: blobAnimation 15s ease-in-out infinite;
         }
         
@@ -171,24 +182,100 @@
             75% { border-radius: 60% 40% 50% 50% / 40% 50% 60% 50%; }
             100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
         }
+        
+        .cta-box {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(63, 149, 255, 0.1) 0%, rgba(63, 149, 255, 0.05) 100%);
+            z-index: -1;
+            border-radius: inherit;
+        }
+        
+        .cta-effect {
+            transition: all 0.3s ease;
+        }
+        
+        .cta-effect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(63, 149, 255, 0.2);
+        }
+        
+        .highlight-dot {
+            position: relative;
+        }
+        
+        .highlight-dot::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #3F95FF;
+            top: 50%;
+            right: -12px;
+            transform: translateY(-50%);
+        }
     </style>
 </head>
 <body class="antialiased">
+    <!-- Efectos de fondo -->
     <div class="fixed top-[-200px] right-[-100px] z-0 blob-animation"></div>
     <div class="fixed bottom-[-200px] left-[-100px] z-0 blob-animation" style="animation-delay: -5s;"></div>
+    <div class="fixed top-[30%] left-[10%] z-0 blob-animation" style="animation-delay: -8s; width: 300px; height: 300px;"></div>
     
-    <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10 geometric-bg">
-        <!-- Logo Area - Animado -->
-        <div class="w-full max-w-md mb-8 animate-float">
-            <div class="flex justify-center">
-                <img src="/images/logoElevate.png" alt="Logo" class="w-20 h-20 object-contain" />
+    <div class="min-h-screen flex flex-col md:flex-row items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10 geometric-bg">
+        <!-- Columna Izquierda - Logo y Mensaje -->
+        <div class="w-full max-w-md mb-8 md:mb-0 md:mr-12 animate-float">
+            <div class="flex justify-center md:justify-start">
+                <img src="/images/logoElevate.png" alt="Logo" class="w-48 h-48 object-contain" />
             </div>
-            <h1 class="text-center text-2xl font-bold mt-4 text-brand-dark animate-slide-up">ERP-CRM Sistema</h1>
+            
+            <div class="hidden md:block mt-8 animate-slide-up">
+                <h2 class="text-3xl font-bold text-brand-dark mb-4">Eleva tu negocio con nosotros</h2>
+                <p class="text-gray-600 mb-6">Gestiona clientes, proyectos y facturación en una única plataforma diseñada para impulsar tu crecimiento.</p>
+                
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-blue" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <p class="text-gray-700">Interfaz intuitiva y moderna</p>
+                </div>
+                
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-blue" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <p class="text-gray-700">Seguridad de datos avanzada</p>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-blue" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <p class="text-gray-700">Soporte técnico 24/7</p>
+                </div>
+            </div>
         </div>
         
-        <!-- Login Card - Minimalista -->
+        <!-- Columna Derecha - Formulario de Login -->
         <div class="w-full max-w-md animate-fade-in">
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden relative">
+            <div class="bg-white rounded-xl shadow-soft-xl overflow-hidden relative">
                 <!-- Efecto shimmer decorativo -->
                 <div class="absolute inset-0 shimmer animate-shimmer pointer-events-none"></div>
                 
@@ -242,9 +329,18 @@
                     </form>
                 </div>
                 
-                <div class="pt-2 pb-4 text-center border-t border-gray-100">
+                <!-- CTA para nuevos usuarios -->
+                <div class="cta-box p-6 mt-4 mb-2 mx-6 rounded-xl animate-slide-up" style="animation-delay: 500ms;">
+                    <h3 class="text-base font-medium text-brand-dark mb-2 highlight-dot inline-block">¿No tienes cuenta?</h3>
+                    <p class="text-sm text-gray-600 mb-4">Empieza a elevar tu negocio hoy mismo y descubre todo lo que nuestro sistema puede hacer por ti.</p>
+                    <a href="#" class="inline-block text-sm px-6 py-2.5 bg-white text-brand-blue border border-brand-blue rounded-full font-medium cta-effect">
+                        Solicitar acceso
+                    </a>
+                </div>
+                
+                <div class="py-3 text-center border-t border-gray-100">
                     <p class="text-xs text-gray-400 animate-pulse-slow">
-                        Sistema de gestión empresarial © {{ date('Y') }}
+                        Elevate CRM © {{ date('Y') }}
                     </p>
                 </div>
             </div>

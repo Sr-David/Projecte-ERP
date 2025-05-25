@@ -30,10 +30,16 @@ CREATE TABLE `Clients` (
   `Phone` varchar(50) DEFAULT NULL,
   `Address` varchar(255) DEFAULT NULL,
   `ClientTypeID` int DEFAULT NULL,
+  `idEmpresa` int NOT NULL,
+  `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idClient`),
   KEY `ClientTypeID` (`ClientTypeID`),
-  CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`ClientTypeID`) REFERENCES `ClientType` (`idClientType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`ClientTypeID`) REFERENCES `ClientType` (`idClientType`),
+  CONSTRAINT `clients_ibfk_2` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,13 +53,23 @@ CREATE TABLE `ClientType` (
   `idClientType` int NOT NULL AUTO_INCREMENT,
   `ClientType` varchar(45) NOT NULL,
   `Description` text,
-  PRIMARY KEY (`idClientType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Where the client''s type is stored';
+  `idEmpresa` int NOT NULL,
+  PRIMARY KEY (`idClientType`),
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `clienttype_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Where the client''s type is stored';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `ProductsServices`
 --
+
+
+
+
+
+
+
 
 DROP TABLE IF EXISTS `ProductsServices`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -65,8 +81,11 @@ CREATE TABLE `ProductsServices` (
   `Price` decimal(10,2) NOT NULL,
   `Stock` int NOT NULL,
   `EntryDate` datetime NOT NULL,
-  PRIMARY KEY (`idProductService`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `idEmpresa` int NOT NULL,
+  PRIMARY KEY (`idProductService`),
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `productsservices_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -82,12 +101,15 @@ CREATE TABLE `SalesDetails` (
   `ProductServiceID` int DEFAULT NULL,
   `QuantitySold` int NOT NULL,
   `UnitPrice` decimal(10,2) NOT NULL,
+  `idEmpresa` int NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`idSaleDetail`),
   KEY `ProposalID` (`ProposalID`),
   KEY `ProductServiceID` (`ProductServiceID`),
-  CONSTRAINT `salesdetails_ibfk_1` FOREIGN KEY (`ProposalID`) REFERENCES `SalesProposals` (`idSalesProposals`),
-  CONSTRAINT `salesdetails_ibfk_2` FOREIGN KEY (`ProductServiceID`) REFERENCES `ProductsServices` (`idProductService`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `salesdetails_ibfk_2` FOREIGN KEY (`ProductServiceID`) REFERENCES `ProductsServices` (`idProductService`),
+  CONSTRAINT `salesdetails_ibfk_3` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,15 +120,18 @@ DROP TABLE IF EXISTS `SalesProposals`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SalesProposals` (
-  `idSalesProposals` int NOT NULL,
+  `idSalesProposals` int NOT NULL AUTO_INCREMENT,
   `ClientID` int DEFAULT NULL,
   `CreatedAt` datetime DEFAULT NULL,
   `State` varchar(45) DEFAULT NULL,
-  `Details` varchar(45) DEFAULT NULL,
+  `Details` text,
+  `idEmpresa` int NOT NULL,
   PRIMARY KEY (`idSalesProposals`),
   KEY `fk_salesproposals_client` (`ClientID`),
-  CONSTRAINT `fk_salesproposals_client` FOREIGN KEY (`ClientID`) REFERENCES `Clients` (`idClient`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `fk_salesproposals_client` FOREIGN KEY (`ClientID`) REFERENCES `Clients` (`idClient`),
+  CONSTRAINT `salesproposals_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,11 +142,66 @@ DROP TABLE IF EXISTS `UserAdministration`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `UserAdministration` (
-  `idUser` int NOT NULL AUTO_INCREMENT,
+  `idEmpresa` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
   `Username` varchar(100) NOT NULL,
   `Password` varchar(255) NOT NULL,
   `Permissions` text,
-  PRIMARY KEY (`idUser`)
+  PRIMARY KEY (`idEmpresa`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Users`
+--
+
+DROP TABLE IF EXISTS `Users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Users` (
+  `idUser` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
+  `Username` varchar(100) NOT NULL,
+  `Password` varchar(255) NOT NULL,
+  `Permissions` text,
+  `idEmpresa` int NOT NULL,
+  PRIMARY KEY (`idUser`),
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Table structure for table `Leads`
+--
+
+DROP TABLE IF EXISTS `Leads`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Leads` (
+  `idLead` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
+  `LastName` varchar(100) NOT NULL,
+  `Email` varchar(255) DEFAULT NULL,
+  `Phone` varchar(50) DEFAULT NULL,
+  `Address` varchar(255) DEFAULT NULL,
+  `ClientTypeID` int DEFAULT NULL,
+  `Source` varchar(100) DEFAULT NULL,
+  `Status` varchar(50) DEFAULT 'New',
+  `Notes` text,
+  `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `AssignedToID` int DEFAULT NULL,
+  `idEmpresa` int NOT NULL,
+  PRIMARY KEY (`idLead`),
+  KEY `ClientTypeID` (`ClientTypeID`),
+  KEY `AssignedToID` (`AssignedToID`),
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `leads_ibfk_1` FOREIGN KEY (`ClientTypeID`) REFERENCES `ClientType` (`idClientType`),
+  CONSTRAINT `leads_ibfk_2` FOREIGN KEY (`AssignedToID`) REFERENCES `UserAdministration` (`idEmpresa`),
+  CONSTRAINT `leads_ibfk_3` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

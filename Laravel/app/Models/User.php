@@ -12,15 +12,26 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $table = 'Users';
+    protected $primaryKey = 'idUser';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'Name',
+        'Username',
+        'Password',
+        'Permissions',
+        'idEmpresa',
+        'CreatedAt',
+        'UpdatedAt',
+        'LastLogin'
     ];
 
     /**
@@ -29,8 +40,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'Password',
     ];
 
     /**
@@ -44,5 +54,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Obtiene la empresa asociada a este usuario.
+     */
+    public function empresa()
+    {
+        return $this->belongsTo(UserAdministration::class, 'idEmpresa', 'idEmpresa');
     }
 }
