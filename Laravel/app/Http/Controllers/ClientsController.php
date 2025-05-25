@@ -86,27 +86,47 @@ class ClientsController extends Controller
         \Illuminate\Support\Facades\Log::info("Datos validados:", $validated);
 
         try {
-            // Obtener el ID de empresa del usuario
+            // Obtener el ID de empresa directamente de la sesión
             $userId = session('user_id');
-            \Illuminate\Support\Facades\Log::info("ID de usuario en sesión: $userId");
+            $empresaId = session('empresa_id');
+            $userType = session('user_type');
             
-            if (!$userId) {
-                \Illuminate\Support\Facades\Log::error("No se encontró ID de usuario en la sesión");
+            \Illuminate\Support\Facades\Log::info("Información de sesión:", [
+                'userId' => $userId, 
+                'empresaId' => $empresaId,
+                'userType' => $userType
+            ]);
+            
+            if (!$userId || !$empresaId) {
+                \Illuminate\Support\Facades\Log::error("No se encontró información de usuario/empresa en la sesión");
                 return redirect()->route('clients.create')->with('error', 'Error de sesión. Por favor, vuelve a iniciar sesión.');
             }
             
-            $user = DB::table('Users')->where('idUser', $userId)->first();
-            
-            if (!$user) {
-                \Illuminate\Support\Facades\Log::error("No se encontró usuario con ID: $userId");
-                return redirect()->route('clients.create')->with('error', 'No se pudo encontrar información del usuario');
-            }
-            
-            \Illuminate\Support\Facades\Log::info("Usuario encontrado:", ['idUser' => $user->idUser, 'idEmpresa' => $user->idEmpresa ?? 'No especificado']);
-            
-            if (!isset($user->idEmpresa)) {
-                \Illuminate\Support\Facades\Log::error("Usuario no tiene idEmpresa asignado");
-                return redirect()->route('clients.create')->with('error', 'Tu cuenta no tiene una empresa asignada');
+            // Si es un usuario administrador, usar directamente su ID como ID de empresa
+            if ($userType === 'admin') {
+                \Illuminate\Support\Facades\Log::info("Usuario es administrador, usando idEmpresa directamente: $empresaId");
+            } else {
+                // Verificar que el usuario exista
+                $user = DB::table('Users')->where('idUser', $userId)->first();
+                
+                if (!$user) {
+                    \Illuminate\Support\Facades\Log::error("No se encontró usuario con ID: $userId");
+                    return redirect()->route('clients.create')->with('error', 'No se pudo verificar tu cuenta. Por favor, vuelve a iniciar sesión.');
+                }
+                
+                \Illuminate\Support\Facades\Log::info("Usuario encontrado:", ['idUser' => $user->idUser, 'idEmpresa' => $user->idEmpresa ?? 'No especificado']);
+                
+                if (!isset($user->idEmpresa)) {
+                    \Illuminate\Support\Facades\Log::error("Usuario no tiene idEmpresa asignado");
+                    return redirect()->route('clients.create')->with('error', 'Tu cuenta no tiene una empresa asignada');
+                }
+                
+                // Verificar que el ID de empresa coincida con el de la sesión
+                if ($user->idEmpresa != $empresaId) {
+                    \Illuminate\Support\Facades\Log::warning("Discrepancia en idEmpresa: Usuario tiene {$user->idEmpresa}, sesión tiene {$empresaId}");
+                    // Corregir el ID de empresa para usar el del usuario
+                    $empresaId = $user->idEmpresa;
+                }
             }
             
             // Crear el cliente usando el modelo
@@ -117,7 +137,7 @@ class ClientsController extends Controller
                 'Phone' => $validated['Phone'] ?? null,
                 'Address' => $validated['Address'] ?? null,
                 'ClientTypeID' => $validated['ClientTypeID'] ?? null,
-                'idEmpresa' => $user->idEmpresa,
+                'idEmpresa' => $empresaId,
             ]);
             
             \Illuminate\Support\Facades\Log::info("Cliente a guardar:", $client->toArray());
