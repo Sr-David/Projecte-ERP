@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductsServicesController;
 use App\Http\Middleware\AdminAuth;
 use App\Http\Middleware\CheckUserPermissions;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\NotesController;
 
 Route::get('/', function (\Illuminate\Http\Request $request) {
     if ($request->session()->has('auth_token') && $request->session()->has('user_id')) {
@@ -205,4 +206,15 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
         Route::get('/ajustes', [App\Http\Controllers\AdminController::class, 'permisos'])->name('ajustes');
         Route::post('/ajustes/permisos', [App\Http\Controllers\AdminController::class, 'savePermisos'])->name('ajustes.save-permisos');
     });
+
+    // Notes routes
+    Route::resource('notas', NotesController::class)->names([
+        'index' => 'notes.index',
+        'create' => 'notes.create',
+        'store' => 'notes.store',
+        'show' => 'notes.show',
+        'edit' => 'notes.edit',
+        'update' => 'notes.update',
+        'destroy' => 'notes.destroy',
+    ]);
 });

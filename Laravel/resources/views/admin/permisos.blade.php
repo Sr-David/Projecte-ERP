@@ -175,6 +175,40 @@
                 @endforeach
             </div>
             
+            <!-- Reportes -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Reportes</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input id="reportes_ver" name="reportes[ver]" type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" {{ isset($permisos['reportes']['ver']) && $permisos['reportes']['ver'] ? 'checked' : '' }}>
+                        <label for="reportes_ver" class="ml-2 block text-sm text-gray-900">Ver</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notas -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Notas</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input id="notas_ver" name="notas[ver]" type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" {{ isset($permisos['notas']['ver']) && $permisos['notas']['ver'] ? 'checked' : '' }}>
+                        <label for="notas_ver" class="ml-2 block text-sm text-gray-900">Ver</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="notas_crear" name="notas[crear]" type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" {{ isset($permisos['notas']['crear']) && $permisos['notas']['crear'] ? 'checked' : '' }}>
+                        <label for="notas_crear" class="ml-2 block text-sm text-gray-900">Crear</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="notas_editar" name="notas[editar]" type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" {{ isset($permisos['notas']['editar']) && $permisos['notas']['editar'] ? 'checked' : '' }}>
+                        <label for="notas_editar" class="ml-2 block text-sm text-gray-900">Editar</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="notas_borrar" name="notas[borrar]" type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" {{ isset($permisos['notas']['borrar']) && $permisos['notas']['borrar'] ? 'checked' : '' }}>
+                        <label for="notas_borrar" class="ml-2 block text-sm text-gray-900">Borrar</label>
+                    </div>
+                </div>
+            </div>
+            
             <div class="mt-6 text-right">
                 <button id="btnSavePermisosBottom" class="btn-primary">Guardar Cambios</button>
             </div>

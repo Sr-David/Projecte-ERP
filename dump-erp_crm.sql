@@ -204,7 +204,22 @@ CREATE TABLE `Leads` (
   CONSTRAINT `leads_ibfk_3` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
+CREATE TABLE `Notes` (
+  `idNote` int NOT NULL AUTO_INCREMENT,
+  `Title` varchar(100) NOT NULL,
+  `Content` text,
+  `RelatedTo` enum('client','lead','project','sale','general') DEFAULT 'general',
+  `RelatedID` int DEFAULT NULL,
+  `CreatedBy` int DEFAULT NULL,
+  `idEmpresa` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idNote`),
+  KEY `idEmpresa` (`idEmpresa`),
+  KEY `CreatedBy` (`CreatedBy`),
+  CONSTRAINT `notes_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`),
+  CONSTRAINT `notes_ibfk_2` FOREIGN KEY (`CreatedBy`) REFERENCES `Users` (`idUser`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
 --
 -- Dumping routines for database 'ERP_CRM'
 --

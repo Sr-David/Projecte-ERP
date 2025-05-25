@@ -280,6 +280,18 @@
                         Proyectos
                     </a>
 
+                    <!-- Notas -->
+                    <a href="{{ url('/notas') }}"
+                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('notas*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="mr-3 h-5 w-5 {{ request()->is('notas*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Notas
+                    </a>
+
                     <!-- Facturación -->
                     <a href="{{ url('/facturacion') }}"
                         class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('facturacion*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
