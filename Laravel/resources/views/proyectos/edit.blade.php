@@ -1,0 +1,203 @@
+@extends('layouts.app')
+
+@section('title', 'Editar Proyecto')
+
+@section('header', 'Editar Proyecto')
+@section('breadcrumb', 'Proyectos / Editar')
+
+@section('styles')
+<style>
+    .form-container {
+        @apply bg-white shadow-sm rounded-lg p-6;
+    }
+    
+    .form-section {
+        @apply mb-8;
+    }
+    
+    .form-section-title {
+        @apply text-lg font-medium text-gray-800 mb-4 pb-2 border-b border-gray-200;
+    }
+    
+    .form-row {
+        @apply mb-4;
+    }
+    
+    .form-label {
+        @apply block text-sm font-medium text-gray-700 mb-1;
+    }
+    
+    .form-input {
+        @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50;
+    }
+    
+    .form-textarea {
+        @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50;
+    }
+    
+    .form-select {
+        @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50;
+    }
+    
+    .btn-primary {
+        @apply inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+    }
+    
+    .btn-secondary {
+        @apply inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+    }
+    
+    .error-message {
+        @apply mt-1 text-sm text-red-600;
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="max-w-4xl mx-auto">
+    <form action="{{ route('proyectos.update', $project->idProject) }}" method="POST" class="form-container">
+        @csrf
+        @method('PUT')
+        
+        @if($errors->any())
+            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Hay errores en el formulario</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+        
+        <!-- Información básica -->
+        <div class="form-section">
+            <h3 class="form-section-title">Información Básica</h3>
+            
+            <div class="form-row">
+                <label for="Name" class="form-label">Nombre del Proyecto <span class="text-red-600">*</span></label>
+                <input type="text" name="Name" id="Name" class="form-input" value="{{ old('Name', $project->Name) }}" required>
+                @error('Name')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <div class="form-row">
+                <label for="Description" class="form-label">Descripción</label>
+                <textarea name="Description" id="Description" rows="4" class="form-textarea">{{ old('Description', $project->Description) }}</textarea>
+                @error('Description')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <div class="form-row">
+                <label for="ClientID" class="form-label">Cliente</label>
+                <select name="ClientID" id="ClientID" class="form-select">
+                    <option value="">Seleccionar cliente</option>
+                    @foreach($clients as $client)
+                        <option value="{{ $client->idClient }}" {{ old('ClientID', $project->ClientID) == $client->idClient ? 'selected' : '' }}>
+                            {{ $client->Name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('ClientID')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-row">
+                    <label for="StartDate" class="form-label">Fecha de Inicio</label>
+                    <input type="date" name="StartDate" id="StartDate" class="form-input" value="{{ old('StartDate', $project->StartDate ? $project->StartDate->format('Y-m-d') : '') }}">
+                    @error('StartDate')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <div class="form-row">
+                    <label for="EndDate" class="form-label">Fecha de Fin</label>
+                    <input type="date" name="EndDate" id="EndDate" class="form-input" value="{{ old('EndDate', $project->EndDate ? $project->EndDate->format('Y-m-d') : '') }}">
+                    @error('EndDate')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <label for="Status" class="form-label">Estado <span class="text-red-600">*</span></label>
+                <select name="Status" id="Status" class="form-select" required>
+                    <option value="Pending" {{ old('Status', $project->Status) == 'Pending' ? 'selected' : '' }}>Pendiente</option>
+                    <option value="In Progress" {{ old('Status', $project->Status) == 'In Progress' ? 'selected' : '' }}>En Progreso</option>
+                    <option value="Completed" {{ old('Status', $project->Status) == 'Completed' ? 'selected' : '' }}>Completado</option>
+                    <option value="Cancelled" {{ old('Status', $project->Status) == 'Cancelled' ? 'selected' : '' }}>Cancelado</option>
+                </select>
+                @error('Status')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+        
+        <!-- Información financiera -->
+        <div class="form-section">
+            <h3 class="form-section-title">Información Financiera</h3>
+            
+            <div class="form-row">
+                <label for="Budget" class="form-label">Presupuesto (€)</label>
+                <input type="number" name="Budget" id="Budget" class="form-input" step="0.01" min="0" value="{{ old('Budget', $project->Budget) }}">
+                @error('Budget')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <div class="form-row">
+                <label for="BillingType" class="form-label">Tipo de Facturación <span class="text-red-600">*</span></label>
+                <select name="BillingType" id="BillingType" class="form-select" required>
+                    <option value="Fixed" {{ old('BillingType', $project->BillingType) == 'Fixed' ? 'selected' : '' }}>Precio Fijo</option>
+                    <option value="Hourly" {{ old('BillingType', $project->BillingType) == 'Hourly' ? 'selected' : '' }}>Por Horas</option>
+                    <option value="None" {{ old('BillingType', $project->BillingType) == 'None' ? 'selected' : '' }}>Sin Facturación</option>
+                </select>
+                @error('BillingType')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+        
+        <!-- Notas adicionales -->
+        <div class="form-section">
+            <h3 class="form-section-title">Notas Adicionales</h3>
+            
+            <div class="form-row">
+                <label for="Notes" class="form-label">Notas</label>
+                <textarea name="Notes" id="Notes" rows="3" class="form-textarea">{{ old('Notes', $project->Notes) }}</textarea>
+                @error('Notes')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-3 mt-8">
+            <a href="{{ route('proyectos.show', $project->idProject) }}" class="btn-secondary">
+                Cancelar
+            </a>
+            <button type="submit" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
+@endsection 

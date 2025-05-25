@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\ProductsServicesController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Middleware\AdminAuth;
 use App\Http\Middleware\CheckUserPermissions;
 use Illuminate\Support\Facades\DB;
@@ -210,6 +211,30 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
         Route::post('/ajustes/permisos', [App\Http\Controllers\AdminController::class, 'savePermisos'])->name('ajustes.save-permisos');
     });
 
+    // Projects routes
+    Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':proyectos,ver')->group(function () {
+        Route::get('/proyectos', [ProjectController::class, 'index'])->name('proyectos.index');
+    });
+
+    Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':proyectos,crear')->group(function () {
+        Route::get('/proyectos/create', [ProjectController::class, 'create'])->name('proyectos.create');
+        Route::post('/proyectos', [ProjectController::class, 'store'])->name('proyectos.store');
+    });
+
+    Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':proyectos,ver')->group(function () {
+        Route::get('/proyectos/{id}', [ProjectController::class, 'show'])->name('proyectos.show');
+    });
+
+    Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':proyectos,editar')->group(function () {
+        Route::get('/proyectos/{id}/edit', [ProjectController::class, 'edit'])->name('proyectos.edit');
+        Route::put('/proyectos/{id}', [ProjectController::class, 'update'])->name('proyectos.update');
+        Route::patch('/proyectos/{id}', [ProjectController::class, 'update']);
+    });
+
+    Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':proyectos,borrar')->group(function () {
+        Route::delete('/proyectos/{id}', [ProjectController::class, 'destroy'])->name('proyectos.destroy');
+    });
+    
     // Notes routes
     Route::resource('notas', NotesController::class)->names([
         'index' => 'notes.index',

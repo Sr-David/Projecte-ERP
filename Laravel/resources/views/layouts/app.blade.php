@@ -312,7 +312,8 @@
 
                     <!-- Proyectos -->
                     <a href="{{ url('/proyectos') }}"
-                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('proyectos*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
+                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('proyectos*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}"
+                        id="nav-proyectos">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="mr-3 h-5 w-5 {{ request()->is('proyectos*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -985,6 +986,10 @@
                 window.Permissions.hideIfNoPermission('.btn-crear-producto', 'productos', 'crear');
                 window.Permissions.hideIfNoPermission('.btn-editar-producto', 'productos', 'editar');
                 window.Permissions.hideIfNoPermission('.btn-eliminar-producto', 'productos', 'borrar');
+                
+                window.Permissions.hideIfNoPermission('.btn-crear-proyecto', 'proyectos', 'crear');
+                window.Permissions.hideIfNoPermission('.btn-editar-proyecto', 'proyectos', 'editar');
+                window.Permissions.hideIfNoPermission('.btn-eliminar-proyecto', 'proyectos', 'borrar');
                 
                 // Y así para los demás módulos...
             }

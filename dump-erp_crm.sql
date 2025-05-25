@@ -171,8 +171,6 @@ CREATE TABLE `Users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-
-
 --
 -- Table structure for table `Leads`
 --
@@ -204,6 +202,7 @@ CREATE TABLE `Leads` (
   CONSTRAINT `leads_ibfk_3` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
 CREATE TABLE `Notes` (
   `idNote` int NOT NULL AUTO_INCREMENT,
   `Title` varchar(100) NOT NULL,
@@ -219,7 +218,37 @@ CREATE TABLE `Notes` (
   KEY `CreatedBy` (`CreatedBy`),
   CONSTRAINT `notes_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`),
   CONSTRAINT `notes_ibfk_2` FOREIGN KEY (`CreatedBy`) REFERENCES `Users` (`idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Table structure for table `Projects`
+--
+
+DROP TABLE IF EXISTS `Projects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Projects` (
+  `idProject` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
+  `Description` text,
+  `ClientID` int DEFAULT NULL,
+  `StartDate` date DEFAULT NULL,
+  `EndDate` date DEFAULT NULL,
+  `Status` enum('Pending','In Progress','Completed','Cancelled') DEFAULT 'Pending',
+  `Budget` decimal(10,2) DEFAULT NULL,
+  `BillingType` enum('Fixed','Hourly','None') DEFAULT 'Fixed',
+  `Notes` text,
+  `idEmpresa` int NOT NULL,
+  `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idProject`),
+  KEY `ClientID` (`ClientID`),
+  KEY `idEmpresa` (`idEmpresa`),
+  CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`ClientID`) REFERENCES `Clients` (`idClient`),
+  CONSTRAINT `projects_ibfk_2` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 --
 -- Dumping routines for database 'ERP_CRM'
 --

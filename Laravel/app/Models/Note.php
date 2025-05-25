@@ -26,7 +26,7 @@ class Note extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $fillable = [
         'Title',
@@ -34,8 +34,45 @@ class Note extends Model
         'RelatedTo',
         'RelatedID',
         'CreatedBy',
-        'idEmpresa'
+        'idEmpresa',
     ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Get the related client.
+     */
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'RelatedID', 'idClient')
+            ->when($this->RelatedTo === 'client');
+    }
+
+    /**
+     * Get the related lead.
+     */
+    public function lead()
+    {
+        return $this->belongsTo(Lead::class, 'RelatedID', 'idLead')
+            ->when($this->RelatedTo === 'lead');
+    }
+
+    /**
+     * Get the related project.
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'RelatedID', 'idProject')
+            ->when($this->RelatedTo === 'project');
+    }
 
     /**
      * Get the user who created the note.
@@ -43,25 +80,6 @@ class Note extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'CreatedBy', 'idUser');
-    }
-
-    /**
-     * Get the related model based on the RelatedTo field.
-     */
-    public function related()
-    {
-        switch ($this->RelatedTo) {
-            case 'client':
-                return $this->belongsTo(Clients::class, 'RelatedID', 'idClient');
-            case 'lead':
-                return $this->belongsTo(Lead::class, 'RelatedID', 'idLead');
-            case 'project':
-                return $this->belongsTo(Project::class, 'RelatedID', 'idProject');
-            case 'sale':
-                return $this->belongsTo(SalesProposal::class, 'RelatedID', 'idSalesProposals');
-            default:
-                return null;
-        }
     }
 
     /**
