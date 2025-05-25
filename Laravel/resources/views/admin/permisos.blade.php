@@ -51,7 +51,7 @@
     }
 
     .permission-card {
-        @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+        @apply bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden h-full;
         transition: all 0.2s ease;
     }
     
@@ -61,27 +61,27 @@
     }
 
     .permission-card-header {
-        @apply px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 flex items-center;
+        @apply px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 flex items-center;
     }
 
     .permission-card-header h3 {
-        @apply text-lg font-medium text-gray-800;
+        @apply text-base font-medium text-gray-800;
     }
 
     .permission-card-icon {
-        @apply flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3;
+        @apply flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center mr-3;
     }
     
     .permission-card-icon svg {
-        @apply h-5 w-5 text-blue-600;
+        @apply h-4 w-4 text-blue-600;
     }
 
     .permission-card-body {
-        @apply p-5 space-y-4;
+        @apply p-4 space-y-3;
     }
 
     .permission-item {
-        @apply flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors duration-150;
+        @apply flex items-center p-2 rounded-md hover:bg-gray-50 transition-colors duration-150;
     }
 
     .permission-label {
@@ -94,7 +94,7 @@
     }
     
     .btn-save {
-        @apply inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+        @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
         transition: all 0.2s ease;
     }
     
@@ -112,7 +112,7 @@
     }
     
     .select-all-icon {
-        @apply flex-shrink-0 h-5 w-5 text-blue-400;
+        @apply flex-shrink-0 h-4 w-4 text-blue-400;
     }
     
     .alert {
@@ -166,44 +166,95 @@
     }
     
     .permissions-header {
-        @apply py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center;
+        @apply py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center;
     }
     
     .permissions-row {
-        @apply border-t border-gray-100 py-3;
+        @apply border-t border-gray-100 py-2;
     }
     
     .permissions-row-item {
-        @apply flex items-center justify-center;
+        @apply flex items-center justify-center py-1;
     }
     
     .permissions-module {
+        @apply text-sm font-medium text-gray-700 px-2;
+    }
+
+    /* Asegurar visibilidad de toggles */
+    .permission-toggle {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 0;
+    }
+
+    .permission-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    /* Estilos de toggle muy visibles */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+        background-color: #d1d5db;
+        border-radius: 34px;
+        cursor: pointer;
+        transition: background-color 0.4s;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #c4c8cc;
+    }
+
+    .switch.checked {
+        background-color: #4f46e5;
+        border-color: #4338ca;
+    }
+
+    .switch-dot {
+        position: absolute;
+        left: 4px;
+        top: 4px;
+        width: 22px;
+        height: 22px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.4s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .switch.checked .switch-dot {
+        transform: translateX(30px);
+    }
+
+    .module-row {
+        @apply py-5 border-b border-gray-100;
+    }
+    
+    .module-title {
+        @apply text-lg font-medium text-gray-800 mb-1 flex items-center;
+    }
+    
+    .module-subtitle {
+        @apply text-xs text-gray-500 italic mb-4;
+    }
+    
+    .permissions-wrapper {
+        @apply flex flex-wrap gap-6 mt-2;
+    }
+    
+    .permission-toggle {
+        @apply flex items-center gap-3 py-1;
+    }
+    
+    .permission-label {
         @apply text-sm font-medium text-gray-700;
     }
 
-    /* Switch/Toggle estilo moderno */
-    .switch {
-        @apply relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
-        background-color: rgba(0, 0, 0, 0.25);
-    }
-    
-    .switch.checked {
-        @apply bg-blue-600;
-    }
-    
-    .switch-dot {
-        @apply pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200;
-        transform: translateX(0);
-    }
-    
-    .switch.checked .switch-dot {
-        transform: translateX(100%);
-    }
-    
-    .switch-label {
-        @apply ml-2 text-sm font-medium text-gray-700;
-    }
-    
     /* Animaciones para switches */
     @keyframes switchPulse {
         0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
@@ -213,6 +264,23 @@
     
     .switch-pulse {
         animation: switchPulse 1s;
+    }
+
+    .switch.partially-checked {
+        @apply bg-blue-400;
+    }
+
+    .permissions-row-item .switch {
+        @apply z-0;
+    }
+
+    .permission-item .switch {
+        @apply z-0;
+    }
+
+    /* Ensure toggles are properly visible */
+    .switch::before {
+        content: none;
     }
 </style>
 @endsection
@@ -280,13 +348,18 @@
     <!-- Configuración de permisos (visible solo cuando se selecciona un usuario) -->
     <div id="permisosContainer" class="hidden mt-8 animate-fade-in">
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="px-8 py-6 bg-gradient-to-r from-indigo-500 to-indigo-600 flex flex-col md:flex-row md:justify-between md:items-center">
-                <div class="mb-4 md:mb-0">
-                    <h2 class="text-xl font-bold text-white">Permisos de <span id="selectedUserName" class="font-extrabold"></span></h2>
-                    <p class="mt-1 text-indigo-100 text-sm">Configura los permisos que tendrá este usuario en cada módulo del sistema</p>
+            <div class="px-6 py-4 bg-gradient-to-r from-indigo-500 to-indigo-600 flex flex-col md:flex-row md:justify-between md:items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="h-10 w-10 rounded-full bg-indigo-200 flex items-center justify-center mr-3 text-indigo-700 font-bold text-lg">
+                        <span id="userInitials"></span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Permisos de <span id="selectedUserName" class="font-extrabold"></span></h2>
+                        <p class="mt-1 text-indigo-100 text-xs">Configura los permisos para este usuario</p>
+                    </div>
                 </div>
-                <button id="btnSavePermisos" class="flex items-center px-5 py-2.5 border border-indigo-300 bg-indigo-700 rounded-lg text-white font-medium hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <button id="btnSavePermisos" class="flex items-center px-4 py-2 border border-indigo-300 bg-indigo-700 rounded-md text-white text-sm font-medium hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                     Guardar Cambios
@@ -295,171 +368,134 @@
             
             <div class="p-6">
                 <!-- Seleccionar Todos -->
-                <div class="select-all-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="select-all-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    <div class="ml-3">
-                        <div class="flex items-center">
-                            <div class="switch" id="selectAllSwitch" role="switch" aria-checked="false" tabindex="0">
-                                <span class="switch-dot"></span>
-                            </div>
-                            <label for="selectAllSwitch" class="switch-label text-blue-800">Seleccionar todos los permisos</label>
+                <div class="bg-blue-50 rounded-lg p-3 mb-6 border border-blue-200">
+                    <div class="flex items-center">
+                        <label class="switch" id="selectAllSwitch" role="switch" aria-checked="false" tabindex="0">
+                            <span class="switch-dot"></span>
+                        </label>
+                        <div class="ml-3">
+                            <span class="text-sm font-medium text-blue-800">Seleccionar todos los permisos</span>
+                            <p class="text-xs text-blue-600 mt-0.5">Esta opción seleccionará o deseleccionará todos los permisos para todos los módulos.</p>
                         </div>
-                        <p class="mt-1 text-xs text-blue-700">Esta opción seleccionará o deseleccionará todos los permisos para todos los módulos.</p>
                     </div>
                 </div>
                 
-                <!-- Módulos y Permisos -->
-                <div class="mt-8">
-                    <div class="module-section mb-8">
-                        <div class="module-section-header">
-                            <h3 class="text-base font-medium text-gray-800">Módulos Principales</h3>
+                <!-- Módulos y Permisos - Nuevo diseño -->
+                <div class="mt-8 bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+                    @foreach($modulos as $key => $nombre)
+                    <div class="module-row px-5" data-modulo="{{ $key }}">
+                        <div class="module-title">
+                            {{ $nombre }}
                         </div>
-                        <div class="module-section-body">
-                            <div class="overflow-hidden">
-                                <div class="permissions-grid font-medium text-gray-700 border-b border-gray-200 mb-2">
-                                    <div class="permissions-header"></div>
-                                    <div class="permissions-header">Ver</div>
-                                    <div class="permissions-header">Crear</div>
-                                    <div class="permissions-header">Editar</div>
-                                    <div class="permissions-header">Eliminar</div>
-                                </div>
-                                
-                                <div id="permisosGrid">
-                                    @foreach($modulos as $key => $nombre)
-                                        <div class="permissions-row grid permissions-grid items-center" data-modulo="{{ $key }}">
-                                            <div class="permissions-module flex items-center pl-2">
-                                                <span>{{ $nombre }}</span>
-                                            </div>
-                                            <div class="permissions-row-item">
-                                                <div class="switch" data-modulo="{{ $key }}" data-permiso="ver" data-input-id="{{ $key }}_ver" role="switch" aria-checked="false" tabindex="0">
-                                                    <input type="checkbox" id="{{ $key }}_ver" class="hidden">
-                                                    <span class="switch-dot"></span>
-                                                </div>
-                                            </div>
-                                            <div class="permissions-row-item">
-                                                <div class="switch" data-modulo="{{ $key }}" data-permiso="crear" data-input-id="{{ $key }}_crear" role="switch" aria-checked="false" tabindex="0">
-                                                    <input type="checkbox" id="{{ $key }}_crear" class="hidden">
-                                                    <span class="switch-dot"></span>
-                                                </div>
-                                            </div>
-                                            <div class="permissions-row-item">
-                                                <div class="switch" data-modulo="{{ $key }}" data-permiso="editar" data-input-id="{{ $key }}_editar" role="switch" aria-checked="false" tabindex="0">
-                                                    <input type="checkbox" id="{{ $key }}_editar" class="hidden">
-                                                    <span class="switch-dot"></span>
-                                                </div>
-                                            </div>
-                                            <div class="permissions-row-item">
-                                                <div class="switch" data-modulo="{{ $key }}" data-permiso="borrar" data-input-id="{{ $key }}_borrar" role="switch" aria-checked="false" tabindex="0">
-                                                    <input type="checkbox" id="{{ $key }}_borrar" class="hidden">
-                                                    <span class="switch-dot"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
+                        <div class="permissions-wrapper">
+                            <!-- Ver -->
+                            <div class="permission-toggle">
+                                <label class="switch" data-modulo="{{ $key }}" data-permiso="ver" data-input-id="{{ $key }}_ver" role="switch" aria-checked="false" tabindex="0">
+                                    <input type="checkbox" id="{{ $key }}_ver" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Ver</span>
+                            </div>
+                            
+                            <!-- Crear -->
+                            <div class="permission-toggle">
+                                <label class="switch" data-modulo="{{ $key }}" data-permiso="crear" data-input-id="{{ $key }}_crear" role="switch" aria-checked="false" tabindex="0">
+                                    <input type="checkbox" id="{{ $key }}_crear" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Crear</span>
+                            </div>
+                            
+                            <!-- Editar -->
+                            <div class="permission-toggle">
+                                <label class="switch" data-modulo="{{ $key }}" data-permiso="editar" data-input-id="{{ $key }}_editar" role="switch" aria-checked="false" tabindex="0">
+                                    <input type="checkbox" id="{{ $key }}_editar" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Editar</span>
+                            </div>
+                            
+                            <!-- Eliminar -->
+                            <div class="permission-toggle">
+                                <label class="switch" data-modulo="{{ $key }}" data-permiso="borrar" data-input-id="{{ $key }}_borrar" role="switch" aria-checked="false" tabindex="0">
+                                    <input type="checkbox" id="{{ $key }}_borrar" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Eliminar</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                    
+                    <!-- Módulos especiales -->
+                    <div class="module-row px-5" data-modulo="reportes">
+                        <div class="module-title">
+                            Reportes
+                            <span class="module-subtitle ml-2">(informes)</span>
+                        </div>
+                        <div class="permissions-wrapper">
+                            <div class="permission-toggle">
+                                <label class="switch" data-input-id="reportes_ver" role="switch" aria-checked="false" tabindex="0">
+                                    <input id="reportes_ver" name="reportes[ver]" type="checkbox" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Ver</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Módulos especiales -->
-                    <div class="permission-container">
-                        <!-- Reportes -->
-                        <div class="permission-card">
-                            <div class="permission-card-header">
-                                <div class="permission-card-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <h3>Reportes</h3>
+                    <div class="module-row px-5" data-modulo="notas">
+                        <div class="module-title">
+                            Notas
+                        </div>
+                        <div class="permissions-wrapper">
+                            <div class="permission-toggle">
+                                <label class="switch" data-input-id="notas_ver" role="switch" aria-checked="false" tabindex="0">
+                                    <input id="notas_ver" name="notas[ver]" type="checkbox" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Ver</span>
                             </div>
-                            <div class="permission-card-body">
-                                <div class="permission-item">
-                                    <div class="switch" data-input-id="reportes_ver" role="switch" aria-checked="false" tabindex="0">
-                                        <input id="reportes_ver" name="reportes[ver]" type="checkbox" class="hidden">
-                                        <span class="switch-dot"></span>
-                                    </div>
-                                    <label for="reportes_ver" class="switch-label">Visualizar reportes y análisis</label>
-                                </div>
+                            <div class="permission-toggle">
+                                <label class="switch" data-input-id="notas_crear" role="switch" aria-checked="false" tabindex="0">
+                                    <input id="notas_crear" name="notas[crear]" type="checkbox" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Crear</span>
+                            </div>
+                            <div class="permission-toggle">
+                                <label class="switch" data-input-id="notas_editar" role="switch" aria-checked="false" tabindex="0">
+                                    <input id="notas_editar" name="notas[editar]" type="checkbox" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Editar</span>
+                            </div>
+                            <div class="permission-toggle">
+                                <label class="switch" data-input-id="notas_borrar" role="switch" aria-checked="false" tabindex="0">
+                                    <input id="notas_borrar" name="notas[borrar]" type="checkbox" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Eliminar</span>
                             </div>
                         </div>
-
-                        <!-- Notas -->
-                        <div class="permission-card">
-                            <div class="permission-card-header">
-                                <div class="permission-card-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                </div>
-                                <h3>Notas</h3>
-                            </div>
-                            <div class="permission-card-body">
-                                <div class="permission-item">
-                                    <div class="switch" data-input-id="notas_ver" role="switch" aria-checked="false" tabindex="0">
-                                        <input id="notas_ver" name="notas[ver]" type="checkbox" class="hidden">
-                                        <span class="switch-dot"></span>
-                                    </div>
-                                    <label for="notas_ver" class="switch-label">Ver notas</label>
-                                </div>
-                                <div class="permission-item">
-                                    <div class="switch" data-input-id="notas_crear" role="switch" aria-checked="false" tabindex="0">
-                                        <input id="notas_crear" name="notas[crear]" type="checkbox" class="hidden">
-                                        <span class="switch-dot"></span>
-                                    </div>
-                                    <label for="notas_crear" class="switch-label">Crear nuevas notas</label>
-                                </div>
-                                <div class="permission-item">
-                                    <div class="switch" data-input-id="notas_editar" role="switch" aria-checked="false" tabindex="0">
-                                        <input id="notas_editar" name="notas[editar]" type="checkbox" class="hidden">
-                                        <span class="switch-dot"></span>
-                                    </div>
-                                    <label for="notas_editar" class="switch-label">Editar notas existentes</label>
-                                </div>
-                                <div class="permission-item">
-                                    <div class="switch" data-input-id="notas_borrar" role="switch" aria-checked="false" tabindex="0">
-                                        <input id="notas_borrar" name="notas[borrar]" type="checkbox" class="hidden">
-                                        <span class="switch-dot"></span>
-                                    </div>
-                                    <label for="notas_borrar" class="switch-label">Eliminar notas</label>
-                                </div>
-                            </div>
+                    </div>
+                    
+                    <div class="module-row px-5" data-modulo="sistema">
+                        <div class="module-title">
+                            Configuración
+                            <span class="module-subtitle ml-2">(sistema)</span>
                         </div>
-
-                        <!-- Configuración -->
-                        <div class="permission-card">
-                            <div class="permission-card-header">
-                                <div class="permission-card-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <h3>Configuración</h3>
-                            </div>
-                            <div class="permission-card-body">
-                                <div class="permission-item">
-                                    <div class="switch" data-input-id="sistema_ver" role="switch" aria-checked="false" tabindex="0">
-                                        <input id="sistema_ver" name="sistema[ver]" type="checkbox" class="hidden">
-                                        <span class="switch-dot"></span>
-                                    </div>
-                                    <label for="sistema_ver" class="switch-label">Configuración del sistema</label>
-                                </div>
+                        <div class="permissions-wrapper">
+                            <div class="permission-toggle">
+                                <label class="switch" data-input-id="sistema_ver" role="switch" aria-checked="false" tabindex="0">
+                                    <input id="sistema_ver" name="sistema[ver]" type="checkbox" class="hidden">
+                                    <span class="switch-dot"></span>
+                                </label>
+                                <span class="permission-label">Ver</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="panel-footer flex justify-end">
-                <button id="btnSavePermisosBottom" class="btn-save">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                    Guardar Cambios
-                </button>
             </div>
         </div>
     </div>
@@ -474,7 +510,6 @@
         const permisosContainer = document.getElementById('permisosContainer');
         const selectedUserName = document.getElementById('selectedUserName');
         const btnSavePermisos = document.getElementById('btnSavePermisos');
-        const btnSavePermisosBottom = document.getElementById('btnSavePermisosBottom');
         const selectAllSwitch = document.getElementById('selectAllSwitch');
         const alertContainer = document.getElementById('alertContainer');
         
@@ -668,7 +703,18 @@
             if (userId) {
                 // Mostrar el contenedor de permisos
                 permisosContainer.classList.remove('hidden');
-                selectedUserName.textContent = selectedOption.textContent.trim();
+                const userName = selectedOption.textContent.trim();
+                selectedUserName.textContent = userName;
+                
+                // Generar iniciales para el avatar
+                const userInitials = document.getElementById('userInitials');
+                const nameParts = userName.split(' ');
+                if (nameParts.length > 0) {
+                    // Tomar la primera letra del nombre y la primera del apellido si existe
+                    const firstInitial = nameParts[0].charAt(0);
+                    const secondInitial = nameParts.length > 1 ? nameParts[1].charAt(0) : '';
+                    userInitials.textContent = (firstInitial + secondInitial).toUpperCase();
+                }
                 
                 // Animación de aparición
                 setTimeout(() => {
@@ -715,13 +761,7 @@
             
             // Mostrar estado de carga
             button.disabled = true;
-            button.innerHTML = `
-                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Guardando...
-            `;
+            button.innerHTML = 'Guardando...';
             
             fetch('/ajustes/permisos', {
                 method: 'POST',
@@ -765,7 +805,6 @@
         }
         
         btnSavePermisos.addEventListener('click', guardarPermisos);
-        btnSavePermisosBottom.addEventListener('click', guardarPermisos);
     });
 </script>
-@endsection 
+@endsection
