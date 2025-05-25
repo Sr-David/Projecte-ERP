@@ -161,19 +161,7 @@ class NotesController extends Controller
                 ]);
             }
             
-            // Redirect based on related entity
-            if ($validated['RelatedTo'] !== 'general' && $validated['RelatedID']) {
-                $redirectRoute = match($validated['RelatedTo']) {
-                    'client' => route('clients.show', $validated['RelatedID']),
-                    'lead' => route('leads.show', $validated['RelatedID']),
-                    'project' => route('proyectos.show', $validated['RelatedID']),
-                    'sale' => route('ventas.propuestas.show', $validated['RelatedID']),
-                    default => route('notes.index')
-                };
-                
-                return redirect($redirectRoute)->with('success', 'Nota creada correctamente');
-            }
-            
+            // Siempre redirigir a la lista de notas, independientemente de la relación
             return redirect()->route('notes.index')->with('success', 'Nota creada correctamente');
             
         } catch (\Exception $e) {
