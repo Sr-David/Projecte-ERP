@@ -399,23 +399,9 @@
 
                         <!-- Header Actions -->
                         <div class="flex items-center space-x-4">
-                            <!-- Notifications -->
-                            <button type="button"
-                                class="relative p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue">
-                                <span class="sr-only">Ver notificaciones</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <!-- Notification Badge -->
-                                <span
-                                    class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                            </button>
-
-                            <!-- Help -->
-                            <button type="button"
-                                class="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue">
+                            <!-- Help Button -->
+                            <button type="button" id="help-button"
+                                class="p-1 rounded-full text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-300 transform hover:scale-110">
                                 <span class="sr-only">Ayuda</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
@@ -482,12 +468,273 @@
         </div>
     </div>
 
+    <!-- Modal de Ayuda -->
+    <div id="help-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-modal="true">
+        <div class="flex min-h-screen items-center justify-center px-4 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
+            
+            <!-- Modal Panel -->
+            <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:align-middle">
+                <!-- Header con logo -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-6 sm:px-6 text-center">
+                    <img src="/images/logoElevate.png" alt="Elevate CRM" class="h-16 mx-auto mb-3 animate__animated animate__pulse animate__infinite animate__slower">
+                    <h3 class="text-xl font-semibold text-white">Centro de Ayuda</h3>
+                    <p class="mt-1 text-sm text-blue-100">Encuentra respuestas a tus preguntas y descubre cómo sacar el máximo provecho del sistema</p>
+                </div>
+                
+                <!-- Contenido del modal -->
+                <div class="px-4 py-5 sm:p-6">
+                    <!-- Pestañas de navegación -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <div class="flex -mb-px">
+                            <button class="help-tab active py-4 px-6 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-tab="faq">
+                                Preguntas Frecuentes
+                            </button>
+                            <button class="help-tab py-4 px-6 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="guides">
+                                Guías Rápidas
+                            </button>
+                            <button class="help-tab py-4 px-6 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="support">
+                                Soporte
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenido de las pestañas -->
+                    <div>
+                        <!-- FAQs -->
+                        <div id="faq-content" class="help-content">
+                            <div class="space-y-4">
+                                <details class="rounded-lg bg-gray-50 overflow-hidden">
+                                    <summary class="cursor-pointer text-sm font-medium px-4 py-3 text-gray-800 flex justify-between items-center">
+                                        ¿Cómo agregar un nuevo cliente?
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </summary>
+                                    <div class="px-4 py-3 text-sm text-gray-600 border-t border-gray-200">
+                                        <p>Para agregar un nuevo cliente, haz lo siguiente:</p>
+                                        <ol class="list-decimal list-inside mt-2 space-y-1 ml-2">
+                                            <li>Navega a la sección "Clientes" en el menú lateral</li>
+                                            <li>Haz clic en el botón "Nuevo Cliente"</li>
+                                            <li>Rellena todos los campos requeridos</li>
+                                            <li>Haz clic en "Guardar" para crear el cliente</li>
+                                        </ol>
+                                    </div>
+                                </details>
+                                
+                                <details class="rounded-lg bg-gray-50 overflow-hidden">
+                                    <summary class="cursor-pointer text-sm font-medium px-4 py-3 text-gray-800 flex justify-between items-center">
+                                        ¿Cómo crear una propuesta de venta?
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </summary>
+                                    <div class="px-4 py-3 text-sm text-gray-600 border-t border-gray-200">
+                                        <p>Para crear una propuesta de venta:</p>
+                                        <ol class="list-decimal list-inside mt-2 space-y-1 ml-2">
+                                            <li>Ve a la sección "Ventas" en el menú lateral</li>
+                                            <li>Selecciona "Propuestas"</li>
+                                            <li>Haz clic en "Nueva Propuesta"</li>
+                                            <li>Selecciona el cliente</li>
+                                            <li>Agrega los productos o servicios</li>
+                                            <li>Completa la información requerida</li>
+                                            <li>Guarda la propuesta</li>
+                                        </ol>
+                                    </div>
+                                </details>
+                                
+                                <details class="rounded-lg bg-gray-50 overflow-hidden">
+                                    <summary class="cursor-pointer text-sm font-medium px-4 py-3 text-gray-800 flex justify-between items-center">
+                                        ¿Cómo gestionar los permisos de usuario?
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </summary>
+                                    <div class="px-4 py-3 text-sm text-gray-600 border-t border-gray-200">
+                                        <p>Para gestionar los permisos de usuario:</p>
+                                        <ol class="list-decimal list-inside mt-2 space-y-1 ml-2">
+                                            <li>Accede a la sección "Gestión de Usuarios" en el menú de Administración</li>
+                                            <li>Selecciona el usuario en el desplegable</li>
+                                            <li>Marca o desmarca los permisos según necesites</li>
+                                            <li>Haz clic en "Guardar Cambios"</li>
+                                        </ol>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                        
+                        <!-- Guías Rápidas -->
+                        <div id="guides-content" class="help-content hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <a href="#" class="rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col">
+                                    <div class="flex items-center mb-3">
+                                        <div class="bg-blue-100 rounded-full p-2 mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                        </div>
+                                        <h4 class="font-medium text-gray-800">Guía de inicio rápido</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Aprende los fundamentos básicos del sistema en menos de 10 minutos</p>
+                                </a>
+
+                                <a href="#" class="rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col">
+                                    <div class="flex items-center mb-3">
+                                        <div class="bg-green-100 rounded-full p-2 mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                        </div>
+                                        <h4 class="font-medium text-gray-800">Reportes y análisis</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Aprende a generar informes y analizar los datos clave</p>
+                                </a>
+
+                                <a href="#" class="rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col">
+                                    <div class="flex items-center mb-3">
+                                        <div class="bg-purple-100 rounded-full p-2 mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                        </div>
+                                        <h4 class="font-medium text-gray-800">Gestión de clientes y leads</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Aprende sobre el ciclo de vida completo de clientes y leads</p>
+                                </a>
+
+                                <a href="#" class="rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col">
+                                    <div class="flex items-center mb-3">
+                                        <div class="bg-yellow-100 rounded-full p-2 mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <h4 class="font-medium text-gray-800">Facturación y ventas</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Todo lo que necesitas saber sobre facturación y gestión de ventas</p>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Soporte -->
+                        <div id="support-content" class="help-content hidden">
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-blue-700">
+                                            Nuestro equipo de soporte está disponible de lunes a viernes, de 8:00 a 18:00 (GMT+1).
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <h4 class="text-base font-medium text-gray-900 mb-2">Contacto</h4>
+                                    <div class="flex items-center mb-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                        <a href="mailto:soporte@elevatecrm.com" class="text-blue-600 hover:text-blue-800">soporte@elevatecrm.com</a>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                        <span class="text-gray-700">+34 91 123 45 67</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="text-base font-medium text-gray-900 mb-2">Enviar consulta</h4>
+                                    <form class="space-y-4">
+                                        <div>
+                                            <label for="support-subject" class="block text-sm font-medium text-gray-700">Asunto</label>
+                                            <input type="text" id="support-subject" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        </div>
+                                        <div>
+                                            <label for="support-message" class="block text-sm font-medium text-gray-700">Mensaje</label>
+                                            <textarea id="support-message" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                        </div>
+                                        <div class="text-right">
+                                            <button type="button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                Enviar mensaje
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer del modal -->
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-200">
+                    <button type="button" id="close-help-modal" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // Mobile menu toggle
         document.getElementById('mobile-menu-btn')?.addEventListener('click', function () {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Modal de Ayuda
+        document.addEventListener('DOMContentLoaded', function() {
+            const helpButton = document.getElementById('help-button');
+            const helpModal = document.getElementById('help-modal');
+            const closeHelpModalBtn = document.getElementById('close-help-modal');
+            const helpTabs = document.querySelectorAll('.help-tab');
+            const helpContents = document.querySelectorAll('.help-content');
+            
+            // Abrir modal
+            helpButton?.addEventListener('click', function() {
+                helpModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Evitar scroll en el fondo
+            });
+            
+            // Cerrar modal
+            closeHelpModalBtn?.addEventListener('click', function() {
+                helpModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            helpModal?.addEventListener('click', function(e) {
+                if (e.target === helpModal) {
+                    helpModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Cambio de pestañas
+            helpTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Actualizar pestañas activas
+                    helpTabs.forEach(t => t.classList.remove('active', 'border-blue-500', 'text-blue-600'));
+                    helpTabs.forEach(t => t.classList.add('border-transparent', 'text-gray-500'));
+                    this.classList.add('active', 'border-blue-500', 'text-blue-600');
+                    this.classList.remove('border-transparent', 'text-gray-500');
+                    
+                    // Mostrar contenido correspondiente
+                    helpContents.forEach(content => content.classList.add('hidden'));
+                    document.getElementById(`${targetTab}-content`).classList.remove('hidden');
+                });
+            });
         });
 
         // Logout functionality
