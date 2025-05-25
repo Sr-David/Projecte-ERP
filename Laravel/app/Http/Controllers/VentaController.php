@@ -71,26 +71,88 @@ class VentaController extends Controller
     }
 
 
-public function resumen()
-{
-    $ventasCount = \App\Models\SalesDetails::count();
-    $propuestasCount = \App\Models\SalesProposals::count();
+    public function resumen()
+    {
+        $ventasCount = \App\Models\SalesDetails::count();
+        $propuestasCount = \App\Models\SalesProposals::count();
 
-    // Agrupar ventas por fecha (formato: d/m/Y)
-    $ventasPorFecha = \App\Models\SalesDetails::selectRaw('DATE(created_at) as fecha, COUNT(*) as total')
-        ->groupBy('fecha')
-        ->orderBy('fecha')
-        ->get();
+        // Ventas por fecha
+        $ventasPorFecha = \App\Models\SalesDetails::selectRaw('DATE(created_at) as fecha, SUM(QuantitySold) as total')
+            ->groupBy('fecha')
+            ->orderBy('fecha')
+            ->get();
+        $labels = $ventasPorFecha->pluck('fecha')->map(fn($fecha) => \Carbon\Carbon::parse($fecha)->format('d/m/Y'))->toArray();
+        $valores = $ventasPorFecha->pluck('total')->toArray();
 
-    $labels = $ventasPorFecha->pluck('fecha')->map(function($fecha) {
-        return \Carbon\Carbon::parse($fecha)->format('d/m/Y');
-    })->toArray();
+        // Ventas por producto
+        $ventasPorProducto = \App\Models\SalesDetails::selectRaw('ProductServiceID, COUNT(*) as total')
+            ->groupBy('ProductServiceID')
+            ->with('productService')
+            ->get();
 
-    $valores = $ventasPorFecha->pluck('total')->toArray();
+        $productosLabels = $ventasPorProducto->map(fn($v) => $v->productService->Name ?? 'Desconocido')->toArray();
+        $productosValores = $ventasPorProducto->pluck('total')->toArray();
 
-    return view('ventas.resumen', compact('ventasCount', 'propuestasCount', 'labels', 'ventasPorFecha' /* Cambia a valores */))
-        ->with('ventasPorFecha', $valores);
-}
+
+        $productos = \App\Models\ProductsServices::all();
+        $ventasPorProductoYFecha = \App\Models\SalesDetails::selectRaw('ProductServiceID, DATE(created_at) as fecha, COUNT(*) as total')
+            ->groupBy('ProductServiceID', 'fecha')
+            ->orderBy('fecha')
+            ->get();
+
+
+
+        $fechasUnicas = $ventasPorProductoYFecha->pluck('fecha')->unique()->sort()->values()->toArray();
+
+        $productosUnicos = $ventasPorProductoYFecha->pluck('productService')->unique('id')->values();
+
+
+        $fechasTodas = $ventasPorProductoYFecha->pluck('fecha')->unique()->sort()->values()->toArray();
+
+
+        $ventasTotalesPorFecha = [];
+        foreach ($fechasTodas as $fecha) {
+            $ventasTotalesPorFecha[$fecha] = $ventasPorProductoYFecha->where('fecha', $fecha)->sum('total');
+        }
+
+
+
+        $ventasPorProductoParaSelector = [
+            'all' => [
+                'nombre' => 'Todos los productos',
+                'fechas' => array_map(fn($f) => \Carbon\Carbon::parse($f)->format('d/m/Y'), $fechasTodas),
+                'valores' => array_values($ventasTotalesPorFecha),
+            ]
+        ];
+        foreach ($productos as $producto) {
+            $ventas = $ventasPorProductoYFecha->where('ProductServiceID', $producto->idProductService)->keyBy('fecha');
+            $valores = [];
+            foreach ($fechasTodas as $fecha) {
+                $valores[] = isset($ventas[$fecha]) ? $ventas[$fecha]->total : 0;
+            }
+            $ventasPorProductoParaSelector[$producto->idProductService] = [
+                'nombre' => $producto->Name,
+                'fechas' => array_map(fn($f) => \Carbon\Carbon::parse($f)->format('d/m/Y'), $fechasTodas),
+                'valores' => $valores,
+            ];
+        }
+
+
+
+
+
+        return view('ventas.resumen', compact(
+            'ventasCount',
+            'propuestasCount',
+            'labels',
+            'valores', // <-- Añade esta línea
+            'productosLabels',
+            'productosValores',
+            'fechasUnicas',
+            'productos',
+            'ventasPorProductoParaSelector'
+        ));
+    }
 
     public function propuestas()
     {
@@ -104,120 +166,120 @@ public function resumen()
         return view('ventas.crear-propuesta', compact('clientes'));
     }
 
- public function guardarPropuesta(Request $request)
-{
-    $request->validate([
-        'ClientID' => 'required|exists:Clients,idClient',
-        'State' => 'required|string|max:50',
-        'Details' => 'nullable|string',
-    ]);
+    public function guardarPropuesta(Request $request)
+    {
+        $request->validate([
+            'ClientID' => 'required|exists:Clients,idClient',
+            'State' => 'required|string|max:50',
+            'Details' => 'nullable|string',
+        ]);
 
-    // Obtener el idEmpresa del usuario autenticado
-    $userId = session('user_id');
-    $user = \DB::table('Users')->where('idUser', $userId)->first();
-    if (!$user || !$user->idEmpresa) {
-        return redirect()->back()->with('error', 'No se pudo determinar la empresa.');
+        // Obtener el idEmpresa del usuario autenticado
+        $userId = session('user_id');
+        $user = \DB::table('Users')->where('idUser', $userId)->first();
+        if (!$user || !$user->idEmpresa) {
+            return redirect()->back()->with('error', 'No se pudo determinar la empresa.');
+        }
+
+        \App\Models\SalesProposals::create([
+            'ClientID' => $request->ClientID,
+            'State' => $request->State,
+            'Details' => $request->Details,
+            'CreatedAt' => now(),
+            'idEmpresa' => $user->idEmpresa, // <-- Añade esto
+        ]);
+
+        return redirect()->route('ventas.propuestas')->with('success', 'Propuesta creada correctamente');
     }
 
-    \App\Models\SalesProposals::create([
-        'ClientID' => $request->ClientID,
-        'State' => $request->State,
-        'Details' => $request->Details,
-        'CreatedAt' => now(),
-        'idEmpresa' => $user->idEmpresa, // <-- Añade esto
-    ]);
-
-    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta creada correctamente');
-}
 
 
+    public function confirmarPropuesta($id)
+    {
+        $propuesta = \App\Models\SalesProposals::findOrFail($id);
+        $productos = \App\Models\ProductsServices::all();
+        $ultimoDetalle = \App\Models\SalesDetails::where('ProposalID', $propuesta->idSalesProposals)
+            ->orderByDesc('created_at')
+            ->first();
 
-public function confirmarPropuesta($id)
-{
-    $propuesta = \App\Models\SalesProposals::findOrFail($id);
-    $productos = \App\Models\ProductsServices::all();
-    $ultimoDetalle = \App\Models\SalesDetails::where('ProposalID', $propuesta->idSalesProposals)
-        ->orderByDesc('created_at')
-        ->first();
-
-    return view('ventas.confirmar-propuesta', compact('propuesta', 'productos', 'ultimoDetalle'));
-}
-
-
-public function efectuarPropuesta(Request $request, $id)
-{
-    $propuesta = \App\Models\SalesProposals::findOrFail($id);
-
-    $request->validate([
-        'ProductServiceID' => 'required|exists:ProductsServices,idProductService',
-        'QuantitySold' => 'required|integer|min:1',
-        'UnitPrice' => 'required|numeric|min:0',
-    ]);
-
-    // Actualizar estado de la propuesta
-    $propuesta->State = 'Efectuada';
-    $propuesta->save();
-
-    // Crear detalle de venta
-    \App\Models\SalesDetails::create([
-        'ProposalID' => $propuesta->idSalesProposals,
-        'ProductServiceID' => $request->ProductServiceID,
-        'QuantitySold' => $request->QuantitySold,
-        'UnitPrice' => $request->UnitPrice,
-        'idEmpresa' => $propuesta->idEmpresa,
-        'created_at' => now()
-    ]);
-
-    return redirect()->route('ventas.ventas')->with('success', 'Propuesta confirmada como venta.');
-}
+        return view('ventas.confirmar-propuesta', compact('propuesta', 'productos', 'ultimoDetalle'));
+    }
 
 
-public function cancelarPropuesta($id)
-{
-    $propuesta = \App\Models\SalesProposals::findOrFail($id);
-    $propuesta->State = 'Cancelada';
-    $propuesta->save();
+    public function efectuarPropuesta(Request $request, $id)
+    {
+        $propuesta = \App\Models\SalesProposals::findOrFail($id);
 
-    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta cancelada correctamente.');
-}
+        $request->validate([
+            'ProductServiceID' => 'required|exists:ProductsServices,idProductService',
+            'QuantitySold' => 'required|integer|min:1',
+            'UnitPrice' => 'required|numeric|min:0',
+        ]);
+
+        // Actualizar estado de la propuesta
+        $propuesta->State = 'Efectuada';
+        $propuesta->save();
+
+        // Crear detalle de venta
+        \App\Models\SalesDetails::create([
+            'ProposalID' => $propuesta->idSalesProposals,
+            'ProductServiceID' => $request->ProductServiceID,
+            'QuantitySold' => $request->QuantitySold,
+            'UnitPrice' => $request->UnitPrice,
+            'idEmpresa' => $propuesta->idEmpresa,
+            'created_at' => now()
+        ]);
+
+        return redirect()->route('ventas.ventas')->with('success', 'Propuesta confirmada como venta.');
+    }
+
+
+    public function cancelarPropuesta($id)
+    {
+        $propuesta = \App\Models\SalesProposals::findOrFail($id);
+        $propuesta->State = 'Cancelada';
+        $propuesta->save();
+
+        return redirect()->route('ventas.propuestas')->with('success', 'Propuesta cancelada correctamente.');
+    }
 
 
 
-public function rehabilitarPropuesta($id)
-{
-    $propuesta = \App\Models\SalesProposals::findOrFail($id);
-    $propuesta->State = 'En negociación';
-    $propuesta->save();
+    public function rehabilitarPropuesta($id)
+    {
+        $propuesta = \App\Models\SalesProposals::findOrFail($id);
+        $propuesta->State = 'En negociación';
+        $propuesta->save();
 
-    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta habilitada correctamente.');
-}
-
-
-public function editPropuesta($id)
-{
-    $propuesta = \App\Models\SalesProposals::with('client')->findOrFail($id);
-    $clientes = \App\Models\Clients::all();
-    return view('ventas.editar-propuesta', compact('propuesta', 'clientes'));
-}
+        return redirect()->route('ventas.propuestas')->with('success', 'Propuesta habilitada correctamente.');
+    }
 
 
-public function updatePropuesta(Request $request, $id)
-{
-    $propuesta = \App\Models\SalesProposals::findOrFail($id);
+    public function editPropuesta($id)
+    {
+        $propuesta = \App\Models\SalesProposals::with('client')->findOrFail($id);
+        $clientes = \App\Models\Clients::all();
+        return view('ventas.editar-propuesta', compact('propuesta', 'clientes'));
+    }
 
-    $request->validate([
-        'ClientID' => 'required|exists:Clients,idClient',
-        'State' => 'required|string|max:50',
-        'Details' => 'nullable|string',
-    ]);
 
-    $propuesta->ClientID = $request->ClientID;
-    $propuesta->State = $request->State;
-    $propuesta->Details = $request->Details;
-    $propuesta->save();
+    public function updatePropuesta(Request $request, $id)
+    {
+        $propuesta = \App\Models\SalesProposals::findOrFail($id);
 
-    return redirect()->route('ventas.propuestas')->with('success', 'Propuesta actualizada correctamente.');
-}
+        $request->validate([
+            'ClientID' => 'required|exists:Clients,idClient',
+            'State' => 'required|string|max:50',
+            'Details' => 'nullable|string',
+        ]);
+
+        $propuesta->ClientID = $request->ClientID;
+        $propuesta->State = $request->State;
+        $propuesta->Details = $request->Details;
+        $propuesta->save();
+
+        return redirect()->route('ventas.propuestas')->with('success', 'Propuesta actualizada correctamente.');
+    }
 
 
 }
