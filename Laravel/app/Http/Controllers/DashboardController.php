@@ -64,11 +64,11 @@ class DashboardController extends Controller
             
         // Facturación mensual
         $currentMonthSales = DB::table('SalesProposals')
-            ->where('SalesProposals.idEmpresa', $idEmpresa)
-            ->where('SalesProposals.State', 'completed')
-            ->where('SalesProposals.CreatedAt', '>=', Carbon::now()->startOfMonth())
-            ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID')
-            ->sum(DB::raw('SalesDetails.QuantitySold * SalesDetails.UnitPrice'));
+    ->where('SalesProposals.idEmpresa', $idEmpresa)
+    ->where('SalesProposals.State', 'Efectuada') // o 'completed' según tu sistema
+    ->where('SalesProposals.CreatedAt', '>=', Carbon::now()->startOfMonth())
+    ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID')
+    ->sum(DB::raw('SalesDetails.QuantitySold * SalesDetails.UnitPrice'));
             
         // Calcular porcentaje de crecimiento de ventas
         $lastMonthSales = DB::table('SalesProposals')
