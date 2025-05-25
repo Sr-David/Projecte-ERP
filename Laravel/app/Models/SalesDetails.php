@@ -33,10 +33,10 @@ class SalesDetails extends Model
     /**
      * Obtiene el producto o servicio asociado.
      */
-    public function productService()
-    {
-        return $this->belongsTo(ProductsServices::class, 'ProductServiceID', 'idProductService');
-    }
+public function productService()
+{
+    return $this->belongsTo(\App\Models\ProductsServices::class, 'ProductServiceID', 'idProductService');
+}
 
     /**
      * Obtiene la empresa asociada.

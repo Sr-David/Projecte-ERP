@@ -11,11 +11,20 @@ class ProductsServicesController extends Controller
     /**
      * Display a listing of products and services.
      */
-    public function index()
-    {
-        $products = ProductsServices::all();
-        return view('productos.index', compact('products'));
-    }
+ public function index()
+{
+    $products = \App\Models\ProductsServices::all();
+
+    $ventasPorProducto = \App\Models\SalesDetails::selectRaw('ProductServiceID, COUNT(*) as total')
+        ->groupBy('ProductServiceID')
+        ->with('productService')
+        ->get();
+
+    $productosLabels = $ventasPorProducto->map(fn($v) => $v->productService->Name ?? 'Desconocido')->toArray();
+    $productosValores = $ventasPorProducto->pluck('total')->toArray();
+
+    return view('productos.index', compact('products', 'productosLabels', 'productosValores'));
+}
 
     /**
      * Show the form for creating a new product.
