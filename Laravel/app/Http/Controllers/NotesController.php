@@ -89,23 +89,68 @@ class NotesController extends Controller
             // Get user ID and company ID from session
             $userId = session('user_id');
             $idEmpresa = session('empresa_id');
+            $userType = session('user_type');
+            
+            Log::info('Información de sesión al crear nota:', [
+                'userId' => $userId,
+                'empresaId' => $idEmpresa,
+                'userType' => $userType
+            ]);
             
             if (!$userId || !$idEmpresa) {
                 Log::error('User or company ID not found in session');
                 return redirect()->route('notes.create')->with('error', 'Error de sesión. Por favor, vuelve a iniciar sesión.');
             }
+
+            // Obtener un ID de usuario válido para CreatedBy
+            $createdBy = null;
             
-            // Create the note
+            // Si es un usuario normal, verificar que existe en la base de datos
+            if ($userType !== 'admin') {
+                $user = DB::table('Users')->where('idUser', $userId)->first();
+                if ($user) {
+                    $createdBy = $userId;
+                    Log::info("Usuario normal: usando su propio ID como CreatedBy: $createdBy");
+                }
+            }
+            
+            // Si es admin o no se encontró el usuario, buscar un usuario válido en la empresa
+            if ($createdBy === null) {
+                $anyUser = DB::table('Users')
+                    ->where('idEmpresa', $idEmpresa)
+                    ->first();
+                
+                if ($anyUser) {
+                    $createdBy = $anyUser->idUser;
+                    Log::info("Encontrado usuario de la empresa para CreatedBy: $createdBy");
+                } else {
+                    // Si no hay usuarios en esta empresa, buscar cualquier usuario en el sistema
+                    $fallbackUser = DB::table('Users')->first();
+                    
+                    if ($fallbackUser) {
+                        $createdBy = $fallbackUser->idUser;
+                        Log::info("Usando usuario de respaldo como CreatedBy: $createdBy");
+                    } else {
+                        // No hay usuarios en el sistema - caso extremadamente raro
+                        Log::error("No se encontraron usuarios en el sistema para asignar como CreatedBy");
+                        return redirect()->route('notes.create')
+                            ->with('error', 'Error al crear nota: No hay usuarios disponibles en el sistema.');
+                    }
+                }
+            }
+            
+            // Ahora que tenemos un CreatedBy válido, crear la nota
             $note = new Note([
                 'Title' => $validated['Title'],
                 'Content' => $validated['Content'],
                 'RelatedTo' => $validated['RelatedTo'],
                 'RelatedID' => $validated['RelatedTo'] === 'general' ? null : $validated['RelatedID'],
-                'CreatedBy' => $userId,
+                'CreatedBy' => $createdBy,
                 'idEmpresa' => $idEmpresa
             ]);
             
             $note->save();
+            Log::info("Nota creada con ID: " . $note->idNote);
             
             // Handle AJAX request
             if ($request->ajax() || $request->wantsJson()) {
