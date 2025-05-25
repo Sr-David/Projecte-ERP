@@ -200,6 +200,23 @@
 </div>
 
 
+<div class="flex flex-col items-center mb-10 mt-12">
+    <h2 class="text-2xl font-bold text-gray-700 mb-2 flex items-center gap-2">
+  
+    </h2>
+</div>
+
+<div class="rounded-xl shadow-lg p-8 w-full max-w-4xl mx-auto border border-gray-200 bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-10">
+    <div class="flex flex-col items-center">
+        <h3 class="text-xl font-semibold text-blue-700 mb-6 text-center">Distribución de clientes por dirección</h3>
+        <div class="w-full max-w-2xl">
+            <canvas id="clientsByAddressChart" class="animate__animated animate__fadeIn"></canvas>
+        </div>
+    </div>
+</div>
+
+
+
 
     <!-- Modal de Detalles del Cliente -->
     <div id="clientDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
@@ -1086,6 +1103,51 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+        // ...existing code para clientTypesPieChart...
+
+        // Gráfico de clientes por dirección
+        const ctxAddress = document.getElementById('clientsByAddressChart').getContext('2d');
+        const addressLabels = {!! json_encode($clientsByAddress->pluck('address')->toArray()) !!};
+        const addressCounts = {!! json_encode($clientsByAddress->pluck('count')->toArray()) !!};
+        new Chart(ctxAddress, {
+            type: 'bar',
+            data: {
+                labels: addressLabels,
+                datasets: [{
+                    label: 'Clientes',
+                    data: addressCounts,
+                    backgroundColor: '#3F95FF'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw} clientes`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Dirección' },
+                        ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Nº de clientes' }
+                    }
+                }
+            }
+        });
+    });
 
 </script>
 @endsection 

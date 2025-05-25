@@ -39,9 +39,18 @@ class ClientsController extends Controller
                 'count' => $type->clients()->count(),
             ];
         });
+
+        $clientsByAddress = \App\Models\Clients::selectRaw('Address as address, COUNT(*) as count')
+    ->whereNotNull('Address')
+    ->where('Address', '!=', '')
+    ->groupBy('Address')
+    ->orderByDesc('count')
+    ->limit(10)
+    ->get();
         
-        return view('clients.index', compact('clients', 'clientTypes', 'clientTypeCounts'));
-    }
+    return view('clients.index', compact('clients', 'clientTypeCounts', 'clientsByAddress'));
+
+}
 
     /**
      * Show the form for creating a new resource.
