@@ -195,16 +195,16 @@
 
 <div class="flex flex-col items-center mb-10">
     <h2 class="text-2xl font-bold text-gray-700 mb-2 flex items-center gap-2">
-
         Análisis de Tipos de Cliente
     </h2>
-
 </div>
 
-<div class="rounded-xl shadow p-6 w-full max-w-md border border-gray-200 bg-white">
-    <h3 class="text-lg font-semibold text-blue-700 mb-4 text-center">Distribución por tipo de cliente</h3>
-    <div class="flex justify-center">
-        <canvas id="clientTypesPieChart"></canvas>
+<div class="rounded-xl shadow-lg p-8 w-full max-w-4xl mx-auto border border-gray-200 bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div class="flex flex-col items-center">
+        <h3 class="text-xl font-semibold text-blue-700 mb-6 text-center">Distribución por tipo de cliente</h3>
+        <div class="w-full max-w-2xl">
+            <canvas id="clientTypesPieChart" class="animate__animated animate__fadeIn"></canvas>
+        </div>
     </div>
 </div>
 
@@ -953,13 +953,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 '#3F95FF', '#6366F1', '#16BA81', '#F59E42', '#F43F5E', '#A855F7', '#FACC15', '#10B981'
             ],
             borderColor: '#fff',
-            borderWidth: 2
+            borderWidth: 3,
+            hoverOffset: 15,
+            borderRadius: 5
         }]
     };
   new Chart(ctx, {
         type: 'doughnut',
         data: data,
         options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '65%',
+            layout: {
+                padding: 20
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true,
+                duration: 2000,
+                easing: 'easeOutQuart'
+            },
             plugins: {
                 legend: {
                     display: true,
@@ -981,6 +995,28 @@ document.addEventListener('DOMContentLoaded', function () {
                                 });
                             }
                             return [];
+                        },
+                        padding: 20,
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    bodyFont: {
+                        size: 14
+                    },
+                    padding: 15,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw;
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
                         }
                     }
                 }

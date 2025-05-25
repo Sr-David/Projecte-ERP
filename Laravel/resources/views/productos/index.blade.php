@@ -273,45 +273,35 @@
         </h1>
     </div>
 
-<div class="bg-white rounded-lg shadow-lg p-8 mb-6 max-w-8xl mx-auto">
-    <h3 class="text-xl font-semibold mb-4 text-blue-700 flex items-center gap-2">
-        Ventas totales por producto
-    </h3>
-    <div class="flex flex-col md:flex-row items-start gap-8" style="width:100%; max-width:900px; margin:auto;">
-        <div class="flex-1 flex items-center justify-center">
-            <canvas id="ventasPorProductoChart" width="500" height="350"></canvas>
-        </div>
-        <div class="flex-1 mt-6 md:mt-0">
-            <h4 class="text-md font-semibold mb-2 text-gray-700">Leyenda</h4>
-            <ul class="space-y-2">
-                @foreach(($productosLabels ?? []) as $i => $nombre)
-                    <li class="flex items-center gap-2">
-                     
-                        <span class="font-medium text-gray-800">{{ $nombre }}</span>
-                        <span class="ml-auto text-gray-500">{{ $productosValores[$i] ?? 0 }} ventas</span>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+<div class="bg-gradient-to-r from-blue-600 to-indigo-600 py-6 mb-8 rounded-xl shadow-lg border border-blue-700 animate__animated animate__fadeIn">
+    <div class="container mx-auto px-6">
+        <h2 class="text-2xl font-bold text-white mb-2 text-center">Análisis de Productos</h2>
+        <p class="text-blue-100 text-center">Estadísticas e información detallada</p>
     </div>
 </div>
 
-<div class="bg-white rounded-lg shadow-lg p-8 mb-6 max-w-8xl mx-auto">
-    <h3 class="text-xl font-semibold mb-4 text-blue-700 flex items-center gap-2">
+<div class="bg-white rounded-xl shadow-lg p-8 mb-8 max-w-8xl mx-auto hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 animate__animated animate__fadeIn">
+    <h3 class="text-xl font-semibold text-blue-700 mb-6 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
         Análisis de productos según fecha de entrada
     </h3>
     <div class="flex justify-center">
-        <canvas id="productosPorFechaChart" width="700" height="350"></canvas>
+        <canvas id="productosPorFechaChart" width="700" height="350" class="animate__animated animate__fadeIn"></canvas>
     </div>
 </div>
 
 
-<div class="bg-white rounded-lg shadow-lg p-8 mb-6 max-w-8xl mx-auto">
-    <h3 class="text-xl font-semibold mb-4 text-blue-700 flex items-center gap-2">
+<div class="bg-white rounded-xl shadow-lg p-8 mb-8 max-w-8xl mx-auto hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 animate__animated animate__fadeIn animate__delay-1s">
+    <h3 class="text-xl font-semibold text-green-700 mb-6 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        </svg>
         Ventas por producto y fecha
     </h3>
     <div class="flex justify-center">
-        <canvas id="lineVentasPorProductoFecha" width="900" height="400"></canvas>
+        <canvas id="lineVentasPorProductoFecha" width="900" height="400" class="animate__animated animate__fadeIn"></canvas>
     </div>
 </div>
 

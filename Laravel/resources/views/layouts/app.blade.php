@@ -13,6 +13,9 @@
 
     <!-- Tailwind CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <style>
         /* Base Styles */
@@ -194,9 +197,9 @@
             class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-10 transition-all duration-300 ease-in-out transform"
             id="sidebar">
             <!-- Logo -->
-            <div class="p-4 border-b flex items-center justify-center h-16">
+            <div class="p-4 border-b flex items-center justify-center h-20">
                 <a href="{{ url('/dashboard') }}" class="flex items-center">
-                    <img src="/images/logoElevate.png" alt="Elevate CRM" class="h-8">
+                    <img src="/images/logoElevate.png" alt="Elevate CRM" class="h-12 animate__animated animate__pulse animate__infinite animate__slower">
                 </a>
             </div>
 
