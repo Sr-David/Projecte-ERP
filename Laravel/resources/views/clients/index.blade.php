@@ -903,7 +903,7 @@
                 body: JSON.stringify({
                     ClientType: name,
                     Description: description,
-                    idEmpresa: 1 // Este valor debería venir del usuario autenticado
+                    idEmpresa: {{ session('empresa_id') }} // Usar el ID de empresa de la sesión
                 })
             })
             .then(response => response.json())
@@ -929,7 +929,13 @@
                     // Mostrar mensaje de éxito
                     alert('Tipo de cliente creado correctamente!');
                 } else {
-                    errorElement.textContent = data.message || 'Error al crear el tipo de cliente.';
+                    // Mostrar mensajes de error con más detalle
+                    if (data.errors) {
+                        const errorMessages = Object.values(data.errors).flat().join('<br>');
+                        errorElement.innerHTML = `${data.message || 'Datos inválidos'}: <br>${errorMessages}`;
+                    } else {
+                        errorElement.textContent = data.message || 'Error al crear el tipo de cliente.';
+                    }
                     errorElement.classList.remove('hidden');
                 }
             })

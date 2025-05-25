@@ -145,12 +145,15 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
     // Rutas de Productos
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':productos,ver')->group(function () {
         Route::get('productos', [ProductsServicesController::class, 'index'])->name('productos.index');
-        Route::get('productos/{producto}', [ProductsServicesController::class, 'show'])->name('productos.show');
     });
 
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':productos,crear')->group(function () {
         Route::get('productos/create', [ProductsServicesController::class, 'create'])->name('productos.create');
         Route::post('productos', [ProductsServicesController::class, 'store'])->name('productos.store');
+    });
+
+    Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':productos,ver')->group(function () {
+        Route::get('productos/{producto}', [ProductsServicesController::class, 'show'])->name('productos.show');
     });
 
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':productos,editar')->group(function () {
