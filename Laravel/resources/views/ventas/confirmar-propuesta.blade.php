@@ -9,10 +9,11 @@
             @csrf
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Producto/Servicio *</label>
-                <select name="ProductServiceID" class="w-full rounded border-gray-300" required>
+                <select name="ProductServiceID" id="ProductServiceID" class="w-full rounded border-gray-300" required>
                     <option value="">Selecciona un producto/servicio</option>
                     @foreach($productos as $producto)
                         <option value="{{ $producto->idProductService }}"
+                            data-price="{{ $producto->Price }}"
                             @if(old('ProductServiceID'))
                                 {{ old('ProductServiceID') == $producto->idProductService ? 'selected' : '' }}
                             @elseif(isset($ultimoDetalle))
@@ -33,7 +34,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario *</label>
-                <input type="number" name="UnitPrice" class="w-full rounded border-gray-300 bg-gray-100" min="0" step="0.01" readonly required
+                <input type="number" name="UnitPrice" id="UnitPrice" class="w-full rounded border-gray-300 bg-gray-100" min="0" step="0.01" readonly required
     value="{{ old('UnitPrice', $ultimoDetalle->UnitPrice ?? ($productos[0]->Price ?? '')) }}">
             </div>
             <div class="flex justify-end space-x-2">
@@ -44,4 +45,24 @@
             </div>
         </form>
     </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('ProductServiceID');
+        const priceInput = document.getElementById('UnitPrice');
+        if (select && priceInput) {
+            select.addEventListener('change', function () {
+                const selected = select.options[select.selectedIndex];
+                const price = selected.getAttribute('data-price');
+                if (price !== null) {
+                    priceInput.value = price;
+                } else {
+                    priceInput.value = '';
+                }
+            });
+        }
+    });
+</script>
 @endsection
