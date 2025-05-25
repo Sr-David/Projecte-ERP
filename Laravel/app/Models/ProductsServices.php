@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductsServices extends Model
 {
+    use HasFactory;
+
     //
     protected $table = 'ProductsServices';
     protected $primaryKey = 'idProductService';
@@ -20,6 +23,12 @@ class ProductsServices extends Model
         'Stock',
         'EntryDate',
         'idEmpresa'
+    ];
+
+    // Cast price to decimal
+    protected $casts = [
+        'Price' => 'decimal:2',
+        'EntryDate' => 'datetime',
     ];
 
     /**

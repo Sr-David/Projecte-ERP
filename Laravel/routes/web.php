@@ -5,6 +5,7 @@ use App\Http\Controllers\VentaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\ProductsServicesController;
 use App\Http\Middleware\AdminAuth;
 
 Route::get('/', function (\Illuminate\Http\Request $request) {
@@ -72,6 +73,9 @@ Route::middleware([AdminAuth::class])->group(function () {
         'update' => 'clients.update',
         'destroy' => 'clients.destroy',
     ]);
+
+    // Rutas de Productos
+    Route::resource('productos', ProductsServicesController::class);
 
     // Ruta de Reportes
     Route::get('/reportes', function () {
