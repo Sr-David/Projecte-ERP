@@ -122,7 +122,7 @@
                                 <div class="text-sm text-gray-900">{{ $client->Phone }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($client->clientType)
+                                @if(isset($client->clientType) && $client->clientType)
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800" data-type-id="{{ $client->ClientTypeID }}">
                                         {{ $client->clientType->ClientType }}
                                     </span>
@@ -140,21 +140,14 @@
                                         title="Ver detalles"
                                         data-client-id="{{ $client->idClient }}"
                                         data-client-name="{{ $client->Name }}"
-                                        data-client-lastname="{{ $client->LastName }}"
-                                        data-client-email="{{ $client->Email }}"
-                                        data-client-phone="{{ $client->Phone }}"
-                                        data-client-address="{{ $client->Address }}"
-                                        data-client-type="{{ $client->clientType->ClientType ?? 'Sin asignar' }}"
-                                        data-client-type-id="{{ $client->ClientTypeID }}"
-                                        data-client-created="{{ $client->CreatedAt ? date('d/m/Y', strtotime($client->CreatedAt)) : 'No disponible' }}"
-                                        data-client-updated="{{ $client->UpdatedAt ? date('d/m/Y H:i', strtotime($client->UpdatedAt)) : 'No disponible' }}"
-                                        onclick="console.log('Datos del botón al hacer clic:', {
-                                            id: '{{ $client->idClient }}',
-                                            nombre: '{{ $client->Name }}',
-                                            apellido: '{{ $client->LastName }}',
-                                            nombre_original: this.getAttribute('data-client-name'),
-                                            apellido_original: this.getAttribute('data-client-lastname')
-                                        })"
+                                        data-client-lastname="{{ $client->LastName ?? '' }}"
+                                        data-client-email="{{ $client->Email ?? '' }}"
+                                        data-client-phone="{{ $client->Phone ?? '' }}"
+                                        data-client-address="{{ $client->Address ?? '' }}"
+                                        data-client-type="{{ isset($client->clientType) && $client->clientType ? $client->clientType->ClientType : 'Sin asignar' }}"
+                                        data-client-type-id="{{ $client->ClientTypeID ?? '' }}"
+                                        data-client-created="{{ isset($client->CreatedAt) && $client->CreatedAt ? date('d/m/Y', strtotime($client->CreatedAt)) : 'No disponible' }}"
+                                        data-client-updated="{{ isset($client->UpdatedAt) && $client->UpdatedAt ? date('d/m/Y H:i', strtotime($client->UpdatedAt)) : 'No disponible' }}"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

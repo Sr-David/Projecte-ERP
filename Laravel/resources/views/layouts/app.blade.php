@@ -433,6 +433,13 @@
             <main class="py-6 px-4 sm:px-6 lg:px-8">
                 <!-- Content Container -->
                 <div class="max-w-7xl mx-auto">
+                    @if(session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative" role="alert">
+                        <strong class="font-bold">Error:</strong>
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                    </div>
+                    @endif
+                    
                     @yield('content')
                 </div>
             </main>
@@ -486,6 +493,85 @@
                 }
             } catch (error) {
                 console.error('Error al cerrar sesión:', error);
+            }
+        });
+
+        // Funciones de permisos para uso en JavaScript
+        window.Permissions = {
+            // Variable para almacenar permisos (se llenará mediante AJAX)
+            userPermissions: {},
+            
+            // Obtener permisos del usuario actual
+            fetchPermissions: async function() {
+                try {
+                    const response = await fetch('/api/user-permissions', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.userPermissions = data.permissions || {};
+                        return this.userPermissions;
+                    }
+                } catch (error) {
+                    console.error('Error al obtener permisos:', error);
+                }
+                return {};
+            },
+            
+            // Verificar si el usuario tiene un permiso específico
+            hasPermission: function(modulo, permiso = 'ver') {
+                // Si es admin, retornar true directamente
+                if (this.isAdmin()) {
+                    return true;
+                }
+                
+                // Verificar en permisos del usuario
+                return this.userPermissions && 
+                       this.userPermissions[modulo] && 
+                       this.userPermissions[modulo][permiso] === true;
+            },
+            
+            // Verificar si el usuario es administrador
+            isAdmin: function() {
+                return document.body.dataset.isAdmin === 'true';
+            },
+            
+            // Ocultar elementos basados en permisos
+            hideIfNoPermission: function(selector, modulo, permiso = 'ver') {
+                const elements = document.querySelectorAll(selector);
+                if (!this.hasPermission(modulo, permiso)) {
+                    elements.forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+            }
+        };
+        
+        // Inicializar permisos al cargar la página
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Establecer si el usuario es administrador desde el backend
+            document.body.dataset.isAdmin = '{{ isset($isAdmin) && $isAdmin ? "true" : "false" }}';
+            
+            // Obtener permisos si no es admin
+            if (document.body.dataset.isAdmin !== 'true') {
+                await window.Permissions.fetchPermissions();
+                
+                // Ocultar elementos que requieren permisos específicos
+                // Ejemplo: Ocultar botones de crear clientes
+                window.Permissions.hideIfNoPermission('.btn-crear-cliente', 'clientes', 'crear');
+                window.Permissions.hideIfNoPermission('.btn-editar-cliente', 'clientes', 'editar');
+                window.Permissions.hideIfNoPermission('.btn-eliminar-cliente', 'clientes', 'borrar');
+                
+                window.Permissions.hideIfNoPermission('.btn-crear-producto', 'productos', 'crear');
+                window.Permissions.hideIfNoPermission('.btn-editar-producto', 'productos', 'editar');
+                window.Permissions.hideIfNoPermission('.btn-eliminar-producto', 'productos', 'borrar');
+                
+                // Y así para los demás módulos...
             }
         });
 

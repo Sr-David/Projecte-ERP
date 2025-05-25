@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminAuth
 {
@@ -15,15 +16,16 @@ class AdminAuth
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
+        // Verificar autenticación básica
         if (!$request->session()->has('auth_token') || !$request->session()->has('user_id')) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => 'No autenticado'], 401);
             }
-            return redirect()->to('/login');
+            return redirect('/login');
         }
-
+        
         $userId = $request->session()->get('user_id');
         $userType = $request->session()->get('user_type', 'user');
         
@@ -37,17 +39,18 @@ class AdminAuth
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json(['success' => false, 'message' => 'No autenticado'], 401);
                 }
-                return redirect()->to('/login');
+                return redirect('/login');
             }
             
             // Convertir el objeto a array antes de agregarlo al request
             $request->merge(['admin_user' => (array)$admin]);
             
             // Para administradores, la empresa es ellos mismos
-            $companyName = $admin->Name;
+            $userName = isset($admin->Name) ? $admin->Name : 'Administrador';
+            $companyName = $userName;
             
             // Hacer disponible el nombre del usuario y de la empresa para todas las vistas
-            view()->share('userName', $admin->Name);
+            view()->share('userName', $userName);
             view()->share('companyName', $companyName);
             view()->share('isAdmin', true);
         } else {
@@ -60,21 +63,31 @@ class AdminAuth
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json(['success' => false, 'message' => 'No autenticado'], 401);
                 }
-                return redirect()->to('/login');
+                return redirect('/login');
             }
             
             // Convertir el objeto a array antes de agregarlo al request
             $request->merge(['admin_user' => (array)$user]);
             
-            // Obtener el nombre de la empresa
-            $company = DB::table('UserAdministration')
-                ->where('idEmpresa', $user->idEmpresa)
-                ->first();
-            
-            $companyName = $company ? $company->Name : 'Empresa';
+            // Verificar que el usuario tiene un idEmpresa antes de buscar la empresa
+            if (!isset($user->idEmpresa)) {
+                // Log del error
+                \Illuminate\Support\Facades\Log::warning("Usuario sin idEmpresa asignada: " . $userId);
+                // Valores por defecto
+                $userName = isset($user->Name) ? $user->Name : 'Usuario';
+                $companyName = 'Empresa';
+            } else {
+                // Obtener el nombre de la empresa
+                $company = DB::table('UserAdministration')
+                    ->where('idEmpresa', $user->idEmpresa)
+                    ->first();
+                
+                $userName = isset($user->Name) ? $user->Name : 'Usuario';
+                $companyName = ($company && isset($company->Name)) ? $company->Name : 'Empresa';
+            }
             
             // Hacer disponible el nombre del usuario y de la empresa para todas las vistas
-            view()->share('userName', $user->Name);
+            view()->share('userName', $userName);
             view()->share('companyName', $companyName);
             view()->share('isAdmin', false);
         }
