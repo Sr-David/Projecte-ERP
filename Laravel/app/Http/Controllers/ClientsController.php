@@ -11,11 +11,20 @@ class ClientsController extends Controller
     /**
      * Display a listing of clients.
      */
-    public function index()
-    {
-        $clients = Clients::all();
-        return view('clients.index', compact('clients'));
-    }
+public function index()
+{
+    $clients = \App\Models\Clients::with('clientType')->get();
+    $clientTypes = \App\Models\ClientType::all();
+
+    $clientTypeCounts = $clientTypes->map(function($type) {
+        return [
+            'label' => $type->ClientType,
+            'count' => $type->clients()->count(),
+        ];
+    });
+
+    return view('clients.index', compact('clients', 'clientTypes', 'clientTypeCounts'));
+}
 
     /**
      * Show the form for creating a new client.

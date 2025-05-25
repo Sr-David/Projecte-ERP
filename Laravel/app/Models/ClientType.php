@@ -30,8 +30,8 @@ class ClientType extends Model
     /**
      * Obtiene todos los clientes de este tipo.
      */
-    public function clients()
-    {
-        return $this->hasMany(Clients::class, 'ClientTypeID', 'idClientType');
-    }
+ public function clients()
+{
+    return $this->hasMany(\App\Models\Clients::class, 'ClientTypeID', 'idClientType');
+}
 }
