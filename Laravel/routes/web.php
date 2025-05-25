@@ -167,9 +167,7 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
 
     // Ruta de Reportes
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':reportes,ver')->group(function () {
-        Route::get('/reportes', function () {
-            return view('reportes.index');
-        })->name('reportes.index');
+        Route::get('/reportes', [App\Http\Controllers\ReportesController::class, 'index'])->name('reportes.index');
     });
 
     // Rutas de Ventas
