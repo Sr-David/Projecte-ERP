@@ -26,9 +26,21 @@ class ClientsController extends Controller
             return redirect('/dashboard')->with('error', 'No tienes permiso para ver clientes');
         }
         
-        // Usamos el modelo Eloquent y cargamos la relación clientType
+        // Usamos el modelo Eloquent y cargamos la relación clientType con paginación
         $clients = Clients::with('clientType')->paginate(10);
-        return view('clients.index', compact('clients'));
+        
+        // Obtenemos los tipos de cliente para los filtros
+        $clientTypes = ClientType::all();
+        
+        // Calculamos el conteo de clientes por tipo
+        $clientTypeCounts = $clientTypes->map(function($type) {
+            return [
+                'label' => $type->ClientType,
+                'count' => $type->clients()->count(),
+            ];
+        });
+        
+        return view('clients.index', compact('clients', 'clientTypes', 'clientTypeCounts'));
     }
 
     /**

@@ -70,6 +70,8 @@
         </div>
     </div>
 
+
+
     <!-- Tabla de Clientes -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
@@ -190,6 +192,23 @@
             </table>
         </div>
     </div>
+
+<div class="flex flex-col items-center mb-10">
+    <h2 class="text-2xl font-bold text-gray-700 mb-2 flex items-center gap-2">
+
+        Análisis de Tipos de Cliente
+    </h2>
+
+</div>
+
+<div class="rounded-xl shadow p-6 w-full max-w-md border border-gray-200 bg-white">
+    <h3 class="text-lg font-semibold text-blue-700 mb-4 text-center">Distribución por tipo de cliente</h3>
+    <div class="flex justify-center">
+        <canvas id="clientTypesPieChart"></canvas>
+    </div>
+</div>
+
+
 
     <!-- Modal de Detalles del Cliente -->
     <div id="clientDetailsModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
@@ -466,9 +485,13 @@
             </div>
         </div>
     </div>
+
+
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     // Filtro de búsqueda en tiempo real
     document.addEventListener('DOMContentLoaded', function() {
@@ -917,5 +940,54 @@
             });
         });
     });
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('clientTypesPieChart').getContext('2d');
+    const data = {
+        labels: {!! json_encode($clientTypeCounts->pluck('label')->toArray()) !!},
+        datasets: [{
+            data: {!! json_encode($clientTypeCounts->pluck('count')->toArray()) !!},
+            backgroundColor: [
+                '#3F95FF', '#6366F1', '#16BA81', '#F59E42', '#F43F5E', '#A855F7', '#FACC15', '#10B981'
+            ],
+            borderColor: '#fff',
+            borderWidth: 2
+        }]
+    };
+  new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map((label, i) => {
+                                    const value = data.datasets[0].data[i];
+                                    return {
+                                        text: `${label} (${value})`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].borderColor,
+                                        lineWidth: data.datasets[0].borderWidth,
+                                        hidden: isNaN(data.datasets[0].data[i]) || chart.getDataVisibility(i) === false,
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+
 </script>
 @endsection 

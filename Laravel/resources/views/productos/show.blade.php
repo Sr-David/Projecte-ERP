@@ -114,6 +114,13 @@
                 </form>
             </div>
         </div>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h3 class="text-lg font-semibold mb-4">Ventas totales por producto</h3>
+    <div style="width:100%; max-width:600px; margin:auto;">
+        <canvas id="ventasPorProductoChart"></canvas>
+    </div>
+</div>
     </div>
 </div>
 @endsection
@@ -129,5 +136,33 @@
             }
         });
     });
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('ventasPorProductoChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($productosLabels ?? []) !!},
+            datasets: [{
+                label: 'Ventas totales',
+                data: {!! json_encode($productosValores ?? []) !!},
+                backgroundColor: '#3F95FF'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+});
+
+
 </script>
 @endsection 

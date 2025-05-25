@@ -11,11 +11,73 @@ class ProductsServicesController extends Controller
     /**
      * Display a listing of products and services.
      */
-    public function index()
-    {
-        $products = ProductsServices::all();
-        return view('productos.index', compact('products'));
+public function index()
+{
+    $products = \App\Models\ProductsServices::all();
+
+    // Ventas por producto
+    $ventasPorProducto = \App\Models\SalesDetails::selectRaw('ProductServiceID, COUNT(*) as total')
+        ->groupBy('ProductServiceID')
+        ->with('productService')
+        ->get();
+
+    $productosLabels = $ventasPorProducto->map(fn($v) => $v->productService->Name ?? 'Desconocido')->toArray();
+    $productosValores = $ventasPorProducto->pluck('total')->toArray();
+
+    // Fechas únicas de ventas (ordenadas)
+    $fechas = \App\Models\SalesDetails::selectRaw('DATE(created_at) as fecha')
+        ->distinct()
+        ->orderBy('fecha')
+        ->pluck('fecha')
+        ->map(fn($f) => \Carbon\Carbon::parse($f)->format('d/m/Y'))
+        ->toArray();
+
+    // Productos por fecha de entrada
+    $productosPorFecha = \App\Models\ProductsServices::selectRaw('DATE(EntryDate) as fecha, COUNT(*) as total')
+        ->groupBy('fecha')
+        ->orderBy('fecha')
+        ->get();
+
+    $productosFechasLabels = $productosPorFecha->pluck('fecha')->map(fn($f) => \Carbon\Carbon::parse($f)->format('d/m/Y'))->toArray();
+    $productosFechasValores = $productosPorFecha->pluck('total')->toArray();
+
+    // Gráfico de líneas: ventas por producto y fecha
+    $productos = \App\Models\ProductsServices::all();
+    $ventasPorProductoYFecha = \App\Models\SalesDetails::selectRaw('ProductServiceID, DATE(created_at) as fecha, COUNT(*) as total')
+        ->groupBy('ProductServiceID', 'fecha')
+        ->get();
+
+    $lineChartDatasets = [];
+    $colores = ['#3F95FF', '#6366F1', '#16BA81', '#F59E42', '#F43F5E', '#A855F7', '#FACC15', '#10B981', '#FFB6C1', '#FF6347', '#20B2AA', '#FFD700'];
+
+    foreach ($productos as $i => $producto) {
+        $ventasPorFecha = [];
+        foreach ($fechas as $fecha) {
+            $ventas = $ventasPorProductoYFecha->where('ProductServiceID', $producto->idProductService)
+                ->where('fecha', \Carbon\Carbon::createFromFormat('d/m/Y', $fecha)->format('Y-m-d'))
+                ->first();
+            $ventasPorFecha[] = $ventas ? $ventas->total : 0;
+        }
+        $lineChartDatasets[] = [
+            'label' => $producto->Name,
+            'data' => $ventasPorFecha,
+            'borderColor' => $colores[$i % count($colores)],
+            'backgroundColor' => $colores[$i % count($colores)],
+            'tension' => 0.3,
+            'fill' => false,
+        ];
     }
+
+    return view('productos.index', compact(
+        'products',
+        'productosLabels',
+        'productosValores',
+        'productosFechasLabels',
+        'productosFechasValores',
+        'fechas',
+        'lineChartDatasets'
+    ));
+}
 
     /**
      * Show the form for creating a new product.
