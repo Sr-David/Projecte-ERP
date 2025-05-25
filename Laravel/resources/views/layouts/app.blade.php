@@ -17,6 +17,9 @@
     <!-- Animation Library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
+    <link rel="icon" type="image/png" href="{{ asset('images/logoElevate.png') }}">
+
+
     <style>
         /* Base Styles */
         body {
