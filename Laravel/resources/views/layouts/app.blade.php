@@ -154,6 +154,20 @@
         .sidebar-scroll::-webkit-scrollbar-thumb:hover {
             background: #9ca3af;
         }
+
+        /* Admin badge */
+        .admin-badge {
+            background-color: #4f46e5;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+        }
     </style>
 
     @yield('styles')
@@ -300,6 +314,39 @@
                         </svg>
                         Ajustes
                     </a>
+
+                    <!-- Sección para administradores -->
+                    @if(isset($isAdmin) && $isAdmin)
+                    <div class="pt-4 mt-4 border-t border-gray-200">
+                        <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Administración
+                        </h3>
+                        
+                        <!-- Gestión de Usuarios -->
+                        <a href="{{ url('/usuarios') }}"
+                            class="group flex items-center px-3 py-2 mt-1 text-sm font-medium rounded-md {{ request()->is('usuarios*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="mr-3 h-5 w-5 {{ request()->is('usuarios*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            Gestión de Usuarios
+                        </a>
+                        
+                        <!-- Configuración del Sistema -->
+                        <a href="{{ url('/sistema') }}"
+                            class="group flex items-center px-3 py-2 mt-1 text-sm font-medium rounded-md {{ request()->is('sistema*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="mr-3 h-5 w-5 {{ request()->is('sistema*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            </svg>
+                            Configuración del Sistema
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </nav>
 
@@ -316,8 +363,18 @@
                             </span>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">{{ $userName ?? 'Usuario' }}</p>
-                            <p class="text-xs text-gray-500">{{ $companyName ?? 'Empresa' }}</p>
+                            <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                                {{ $userName ?? 'Usuario' }}
+                                @if(isset($isAdmin) && $isAdmin)
+                                <span class="admin-badge">Admin</span>
+                                @endif
+                            </p>
+                            <p class="text-xs text-gray-500">
+                                {{ $companyName ?? 'Empresa' }}
+                                @if(isset($isAdmin) && $isAdmin)
+                                <span class="text-xs text-indigo-600">(Administración)</span>
+                                @endif
+                            </p>
                             <p class="text-xs font-medium text-gray-500 group-hover:text-gray-700">
                                 <button id="logout-btn" class="text-brand-blue hover:underline">Cerrar sesión</button>
                             </p>
@@ -365,6 +422,11 @@
                                         d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </button>
+
+                            <!-- User Type Badge (solo visible en la versión móvil) -->
+                            @if(isset($isAdmin) && $isAdmin)
+                            <span class="md:hidden admin-badge">Admin</span>
+                            @endif
 
                             <!-- Mobile Menu Button -->
                             <button id="mobile-menu-btn" type="button"

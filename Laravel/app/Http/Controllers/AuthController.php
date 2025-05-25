@@ -12,39 +12,76 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'user_type' => 'required|string|in:user,admin'
         ]);
 
-        $user = DB::table('Users')
-            ->where('Username', $request->username)
-            ->first();
+        if ($request->user_type === 'admin') {
+            $admin = DB::table('UserAdministration')
+                ->where('Username', $request->username)
+                ->first();
 
-        // Si no se encuentra el usuario, responder con error
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Credenciales inválidas'
-            ], 401);
-        }
+            if (!$admin) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Credenciales inválidas'
+                ], 401);
+            }
 
-        // En vez de usar Hash::check, comparamos directamente las contraseñas
-        // ya que las contraseñas no están usando Bcrypt
-        if ($request->password === $user->Password) {
-            // Contraseña correcta
-            $token = bin2hex(random_bytes(32));
-            session(['auth_token' => $token, 'user_id' => $user->idUser, 'user_name' => $user->Name]);
+            if ($request->password === $admin->Password) {
+                $token = bin2hex(random_bytes(32));
+                session([
+                    'auth_token' => $token, 
+                    'user_id' => $admin->idEmpresa, 
+                    'user_name' => $admin->Name,
+                    'user_type' => 'admin',
+                    'empresa_id' => $admin->idEmpresa
+                ]);
 
-            return response()->json([
-                'success' => true,
-                'user' => [
-                    'id' => $user->idUser,
-                    'username' => $user->Username,
-                    'name' => $user->Name
-                ]
-            ]);
+                return response()->json([
+                    'success' => true,
+                    'user' => [
+                        'id' => $admin->idEmpresa,
+                        'username' => $admin->Username,
+                        'name' => $admin->Name,
+                        'type' => 'admin'
+                    ]
+                ]);
+            }
+        } else {
+            $user = DB::table('Users')
+                ->where('Username', $request->username)
+                ->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Credenciales inválidas'
+                ], 401);
+            }
+
+            if ($request->password === $user->Password) {
+                $token = bin2hex(random_bytes(32));
+                session([
+                    'auth_token' => $token, 
+                    'user_id' => $user->idUser, 
+                    'user_name' => $user->Name,
+                    'user_type' => 'user',
+                    'empresa_id' => $user->idEmpresa
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'user' => [
+                        'id' => $user->idUser,
+                        'username' => $user->Username,
+                        'name' => $user->Name,
+                        'type' => 'user'
+                    ]
+                ]);
+            }
         }
         
-        // Contraseña incorrecta
         return response()->json([
             'success' => false,
             'message' => 'Credenciales inválidas'
@@ -53,7 +90,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->forget(['auth_token', 'user_id', 'user_name']);
+        $request->session()->forget(['auth_token', 'user_id', 'user_name', 'user_type', 'empresa_id']);
         
         return response()->json([
             'success' => true,
@@ -65,20 +102,40 @@ class AuthController extends Controller
     {
         if ($request->session()->has('auth_token') && $request->session()->has('user_id')) {
             $userId = $request->session()->get('user_id');
+            $userType = $request->session()->get('user_type', 'user');
             
-            $user = DB::table('Users')
-                ->where('idUser', $userId)
-                ->first();
-                
-            if ($user) {
-                return response()->json([
-                    'success' => true,
-                    'user' => [
-                        'id' => $user->idUser,
-                        'username' => $user->Username,
-                        'name' => $user->Name
-                    ]
-                ]);
+            if ($userType === 'admin') {
+                $admin = DB::table('UserAdministration')
+                    ->where('idEmpresa', $userId)
+                    ->first();
+                    
+                if ($admin) {
+                    return response()->json([
+                        'success' => true,
+                        'user' => [
+                            'id' => $admin->idEmpresa,
+                            'username' => $admin->Username,
+                            'name' => $admin->Name,
+                            'type' => 'admin'
+                        ]
+                    ]);
+                }
+            } else {
+                $user = DB::table('Users')
+                    ->where('idUser', $userId)
+                    ->first();
+                    
+                if ($user) {
+                    return response()->json([
+                        'success' => true,
+                        'user' => [
+                            'id' => $user->idUser,
+                            'username' => $user->Username,
+                            'name' => $user->Name,
+                            'type' => 'user'
+                        ]
+                    ]);
+                }
             }
         }
         

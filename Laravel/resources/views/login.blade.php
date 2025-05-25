@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Acceso Administrador | Elevate CRM</title>
+    <title>Acceso | Elevate CRM</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- CDN para Tailwind CSS -->
@@ -225,6 +225,11 @@
             right: -12px;
             transform: translateY(-50%);
         }
+
+        /* Estilo para los botones de tipo de usuario */
+        .user-type-btn {
+            @apply px-4 py-2 border rounded-md text-center cursor-pointer transition-all duration-300 w-full;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -285,8 +290,33 @@
                         <p class="mt-2 text-sm text-gray-500">Accede a tu cuenta para continuar</p>
                     </div>
                     
+                    <!-- Selector de tipo de usuario -->
+                    <div class="mb-6 animate-slide-up" style="animation-delay: 150ms;">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de acceso</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="user-type-btn active bg-brand-blue text-white border-brand-blue" data-type="user">
+                                <div class="flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Usuario
+                                </div>
+                            </div>
+                            <div class="user-type-btn border-gray-300 text-gray-600 hover:bg-gray-50" data-type="admin">
+                                <div class="flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                    Administrador
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <form id="login-form" action="/api/login" method="post" class="space-y-8">
                         @csrf
+                        <input type="hidden" id="user_type" name="user_type" value="user">
+                        
                         <div class="input-effect animate-slide-up" style="animation-delay: 200ms;">
                             <input
                                 id="username"
@@ -316,6 +346,7 @@
                                 type="submit"
                                 id="login-button"
                                 class="w-full py-3 px-4 rounded-full bg-brand-blue text-white font-medium hover:shadow-lg transition duration-300 button-effect relative overflow-hidden"
+                                onclick="console.log('Tipo de usuario al enviar:', document.getElementById('user_type').value);"
                             >
                                 <span id="button-text" class="relative z-10">Iniciar sesión</span>
                                 <div id="loading-spinner" class="hidden absolute inset-0 flex items-center justify-center bg-brand-blue z-20">
@@ -359,6 +390,39 @@
             const form = document.getElementById('login-form');
             const buttonText = document.getElementById('button-text');
             const loadingSpinner = document.getElementById('loading-spinner');
+            const userTypeButtons = document.querySelectorAll('.user-type-btn');
+            const userTypeInput = document.getElementById('user_type');
+            
+            // Manejar cambio de tipo de usuario
+            userTypeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Quitar clases activas de todos los botones
+                    userTypeButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.classList.remove('bg-brand-blue');
+                        btn.classList.remove('text-white');
+                        btn.classList.remove('border-brand-blue');
+                        btn.classList.add('border-gray-300');
+                        btn.classList.add('text-gray-600');
+                        btn.classList.add('hover:bg-gray-50');
+                    });
+                    
+                    // Agregar clases activas al botón clickeado
+                    this.classList.add('active');
+                    this.classList.add('bg-brand-blue');
+                    this.classList.add('text-white');
+                    this.classList.add('border-brand-blue');
+                    this.classList.remove('border-gray-300');
+                    this.classList.remove('text-gray-600');
+                    this.classList.remove('hover:bg-gray-50');
+                    
+                    // Actualizar valor del input hidden
+                    userTypeInput.value = this.dataset.type;
+                    
+                    // Debug - mostrar en consola
+                    console.log("Tipo de usuario seleccionado:", this.dataset.type);
+                });
+            });
             
             if (form) {
                 form.addEventListener('submit', function(e) {
@@ -371,8 +435,11 @@
                     const data = {
                         username: formData.get('username'),
                         password: formData.get('password'),
+                        user_type: formData.get('user_type'),
                         _token: formData.get('_token')
                     };
+                    
+                    console.log("Enviando login con:", data);
                     
                     // Enviar solicitud de login
                     fetch('/api/login', {
