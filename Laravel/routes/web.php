@@ -5,7 +5,6 @@ use App\Http\Controllers\VentaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\LeadController;
-use App\Http\Controllers\ClientsController;
 use App\Http\Middleware\AdminAuth;
 
 Route::get('/', function (\Illuminate\Http\Request $request) {
@@ -57,14 +56,11 @@ Route::get('/build/assets/{file}', function ($file) {
 Route::middleware([AdminAuth::class])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
-    });
     })->name('dashboard');
     
     // Rutas de Leads
     Route::resource('leads', LeadController::class);
     Route::post('/leads/{id}/convert', [LeadController::class, 'convertToClient'])->name('leads.convert');
-    
-    })->name('dashboard');
     
     // Rutas de Clientes
     Route::resource('clientes', ClientsController::class)->names([
@@ -88,17 +84,12 @@ Route::middleware([AdminAuth::class])->group(function () {
     Route::get('/ventas/propuestas/crear', [VentaController::class, 'crearPropuesta'])->name('ventas.propuestas.create');
     Route::post('/ventas/propuestas', [VentaController::class, 'guardarPropuesta'])->name('ventas.propuestas.store');
 
-
-
-
     Route::get('/ventas/propuestas/{id}/confirmar', [VentaController::class, 'confirmarPropuesta'])->name('ventas.propuestas.confirmar');
     Route::post('/ventas/propuestas/{id}/confirmar', [VentaController::class, 'efectuarPropuesta'])->name('ventas.propuestas.efectuar');
 
     Route::post('/ventas/propuestas/{id}/cancelar', [VentaController::class, 'cancelarPropuesta'])->name('ventas.propuestas.cancelar');
     Route::post('/ventas/propuestas/{id}/rehabilitar', [VentaController::class, 'rehabilitarPropuesta'])->name('ventas.propuestas.rehabilitar');
     
-    
     Route::get('/ventas/propuestas/{id}/edit', [VentaController::class, 'editPropuesta'])->name('ventas.propuestas.edit');
     Route::put('/ventas/propuestas/{id}', [VentaController::class, 'updatePropuesta'])->name('ventas.propuestas.update');
-
 });
