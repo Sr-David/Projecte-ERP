@@ -54,7 +54,7 @@ Route::get('/build/assets/{file}', function ($file) {
 })->where('file', '.*');
 
 // Rutas protegidas para administradores
-Route::middleware([AdminAuth::class])->group(function () {
+Route::middleware(AdminAuth::class)->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
@@ -96,4 +96,13 @@ Route::middleware([AdminAuth::class])->group(function () {
     
     Route::get('/ventas/propuestas/{id}/edit', [VentaController::class, 'editPropuesta'])->name('ventas.propuestas.edit');
     Route::put('/ventas/propuestas/{id}', [VentaController::class, 'updatePropuesta'])->name('ventas.propuestas.update');
+
+    // Sistema - Configuración del sistema (solo para administradores)
+    Route::get('/sistema', [App\Http\Controllers\AdminController::class, 'sistema'])->name('sistema');
+    Route::post('/sistema/usuario', [App\Http\Controllers\AdminController::class, 'saveUser'])->name('sistema.save-user');
+    Route::delete('/sistema/usuario/{id}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('sistema.delete-user');
+    
+    // Ajustes - Permisos de usuarios (solo para administradores)
+    Route::get('/ajustes', [App\Http\Controllers\AdminController::class, 'permisos'])->name('ajustes');
+    Route::post('/ajustes/permisos', [App\Http\Controllers\AdminController::class, 'savePermisos'])->name('ajustes.save-permisos');
 });
