@@ -550,6 +550,153 @@
             });
         }
         
+        // Eventos para tecla ESC para cerrar modal de tipo de cliente
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !clientTypeModal.classList.contains('hidden')) {
+                clientTypeModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                newClientTypeForm.reset();
+                clientTypeError.classList.add('hidden');
+                clientTypeError.textContent = '';
+            }
+        });
+        
+        // Manejar eventos para el modal de detalles del cliente
+        const clientDetailsModal = document.getElementById('clientDetailsModal');
+        const closeClientModal = document.getElementById('closeClientModal');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const viewClientButtons = document.querySelectorAll('.view-client-details');
+        
+        // Abrir modal de detalles del cliente
+        if (viewClientButtons) {
+            viewClientButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Obtener los datos del cliente del botón
+                    const clientId = this.dataset.clientId;
+                    const clientName = this.dataset.clientName;
+                    const clientLastName = this.dataset.clientLastname;
+                    const clientEmail = this.dataset.clientEmail;
+                    const clientPhone = this.dataset.clientPhone;
+                    const clientAddress = this.dataset.clientAddress;
+                    const clientType = this.dataset.clientType;
+                    const clientCreated = this.dataset.clientCreated;
+                    const clientUpdated = this.dataset.clientUpdated;
+                    
+                    // Actualizar el modal con los datos del cliente
+                    document.getElementById('clientInitials').textContent = 
+                        (clientName ? clientName.charAt(0) : '') + 
+                        (clientLastName ? clientLastName.charAt(0) : '');
+                    document.getElementById('clientFullName').textContent = 
+                        (clientName || '') + ' ' + (clientLastName || '');
+                    document.getElementById('clientType').textContent = clientType;
+                    document.getElementById('clientName').textContent = clientName || 'No disponible';
+                    document.getElementById('clientLastName').textContent = clientLastName || 'No disponible';
+                    document.getElementById('clientId').textContent = clientId;
+                    
+                    const emailElement = document.getElementById('clientEmail');
+                    if (clientEmail) {
+                        emailElement.textContent = clientEmail;
+                        emailElement.href = `mailto:${clientEmail}`;
+                    } else {
+                        emailElement.textContent = 'No disponible';
+                        emailElement.href = '#';
+                    }
+                    
+                    document.getElementById('clientPhone').textContent = clientPhone || 'No disponible';
+                    document.getElementById('clientAddress').textContent = clientAddress || 'No disponible';
+                    document.getElementById('clientCreatedAt').textContent = clientCreated;
+                    document.getElementById('clientUpdatedAt').textContent = clientUpdated;
+                    
+                    // Actualizar la URL para el botón de editar
+                    document.getElementById('editClientLink').href = `/clientes/${clientId}/edit`;
+                    
+                    // Mostrar el modal
+                    clientDetailsModal.classList.remove('hidden');
+                    document.body.classList.add('overflow-hidden');
+                });
+            });
+        }
+        
+        // Cerrar modal de detalles del cliente con botón X
+        if (closeClientModal) {
+            closeClientModal.addEventListener('click', function() {
+                clientDetailsModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            });
+        }
+        
+        // Cerrar modal de detalles del cliente con botón Cerrar
+        if (closeModalButton) {
+            closeModalButton.addEventListener('click', function() {
+                clientDetailsModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            });
+        }
+        
+        // Cerrar modal de detalles del cliente haciendo clic fuera
+        if (clientDetailsModal) {
+            clientDetailsModal.addEventListener('click', function(e) {
+                if (e.target === this.querySelector('.fixed.inset-0.bg-black.bg-opacity-50') || e.target === this) {
+                    clientDetailsModal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }
+            });
+        }
+        
+        // Eventos para tecla ESC para cerrar modal de detalles
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !clientDetailsModal.classList.contains('hidden')) {
+                clientDetailsModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+        });
+        
+        // Modal de edición de cliente
+        const clientEditModal = document.getElementById('clientEditModal');
+        const closeEditModal = document.getElementById('closeEditModal');
+        const cancelEditButton = document.getElementById('cancelEditButton');
+        
+        // Cerrar modal de edición con botón X
+        if (closeEditModal) {
+            closeEditModal.addEventListener('click', function() {
+                clientEditModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            });
+        }
+        
+        // Cerrar modal de edición con botón Cancelar
+        if (cancelEditButton) {
+            cancelEditButton.addEventListener('click', function() {
+                clientEditModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            });
+        }
+        
+        // Cerrar modal de edición haciendo clic fuera
+        if (clientEditModal) {
+            clientEditModal.addEventListener('click', function(e) {
+                if (e.target === this.querySelector('.fixed.inset-0.bg-black.bg-opacity-50') || e.target === this) {
+                    clientEditModal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }
+            });
+        }
+        
+        // Activar botones de confirmar eliminación
+        const confirmDeleteButtons = document.querySelectorAll('.confirm-delete');
+        if (confirmDeleteButtons) {
+            confirmDeleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('.delete-form');
+                    const clientName = form.dataset.clientName;
+                    
+                    if (confirm(`¿Estás seguro que deseas eliminar a ${clientName}? Esta acción no se puede deshacer.`)) {
+                        form.submit();
+                    }
+                });
+            });
+        }
+        
         // Guardar nuevo tipo de cliente
         if (saveClientType) {
             saveClientType.addEventListener('click', function() {
