@@ -510,6 +510,121 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Manejo del modal de tipo de cliente
+        const newClientTypeBtn = document.getElementById('new-client-type-btn');
+        const clientTypeModal = document.getElementById('clientTypeModal');
+        const closeClientTypeModal = document.getElementById('closeClientTypeModal');
+        const saveClientType = document.getElementById('saveClientType');
+        const newClientTypeForm = document.getElementById('newClientTypeForm');
+        const clientTypeError = document.getElementById('client-type-error');
+        
+        // Abrir modal de tipo de cliente
+        if (newClientTypeBtn) {
+            newClientTypeBtn.addEventListener('click', function() {
+                clientTypeModal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            });
+        }
+        
+        // Cerrar modal de tipo de cliente
+        if (closeClientTypeModal) {
+            closeClientTypeModal.addEventListener('click', function() {
+                clientTypeModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                newClientTypeForm.reset();
+                clientTypeError.classList.add('hidden');
+                clientTypeError.textContent = '';
+            });
+        }
+        
+        // Cerrar modal de tipo de cliente haciendo clic fuera
+        if (clientTypeModal) {
+            clientTypeModal.addEventListener('click', function(e) {
+                if (e.target === this.querySelector('.fixed.inset-0.bg-black.bg-opacity-50') || e.target === this) {
+                    clientTypeModal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                    newClientTypeForm.reset();
+                    clientTypeError.classList.add('hidden');
+                    clientTypeError.textContent = '';
+                }
+            });
+        }
+        
+        // Guardar nuevo tipo de cliente
+        if (saveClientType) {
+            saveClientType.addEventListener('click', function() {
+                const clientTypeName = document.getElementById('client_type_name').value.trim();
+                const clientTypeDescription = document.getElementById('client_type_description').value.trim();
+                
+                if (!clientTypeName) {
+                    clientTypeError.textContent = 'El nombre del tipo de cliente es obligatorio';
+                    clientTypeError.classList.remove('hidden');
+                    return;
+                }
+                
+                // Desactivar el botón mientras se procesa
+                saveClientType.disabled = true;
+                saveClientType.classList.add('opacity-75', 'cursor-not-allowed');
+                saveClientType.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Guardando...';
+                
+                // Enviar solicitud para guardar el nuevo tipo
+                fetch('{{ route('api.clienttypes.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        ClientType: clientTypeName,
+                        Description: clientTypeDescription
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Añadir el nuevo tipo al selector
+                        const filterType = document.getElementById('filter-type');
+                        if (filterType) {
+                            const option = document.createElement('option');
+                            option.value = data.idClientType;
+                            option.textContent = clientTypeName;
+                            filterType.appendChild(option);
+                        }
+                        
+                        // Cerrar el modal y limpiar
+                        clientTypeModal.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                        newClientTypeForm.reset();
+                        
+                        // Mostrar mensaje de éxito
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: 'Tipo de cliente creado correctamente',
+                            confirmButtonColor: '#3085d6'
+                        }).then(() => {
+                            // Actualizar la página para reflejar los cambios
+                            window.location.reload();
+                        });
+                    } else {
+                        clientTypeError.textContent = data.message || 'Error al crear el tipo de cliente';
+                        clientTypeError.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    clientTypeError.textContent = 'Error de conexión. Por favor, inténtalo de nuevo.';
+                    clientTypeError.classList.remove('hidden');
+                })
+                .finally(() => {
+                    // Restaurar el botón
+                    saveClientType.disabled = false;
+                    saveClientType.classList.remove('opacity-75', 'cursor-not-allowed');
+                    saveClientType.innerHTML = 'Guardar';
+                });
+            });
+        }
+
         // Datos para los gráficos
         const clientTypesLabels = {!! json_encode($clientTypeCounts->pluck('label')->toArray()) !!};
         const clientTypesCounts = {!! json_encode($clientTypeCounts->pluck('count')->toArray()) !!};

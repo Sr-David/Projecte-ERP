@@ -26,7 +26,6 @@ class ClientTypeController extends Controller
         $validator = Validator::make($request->all(), [
             'ClientType' => 'required|string|max:45',
             'Description' => 'nullable|string',
-            'idEmpresa' => 'required|integer|exists:UserAdministration,idEmpresa',
         ]);
 
         if ($validator->fails()) {
@@ -37,17 +36,27 @@ class ClientTypeController extends Controller
             ], 422);
         }
 
+        // Obtener idEmpresa desde la sesión
+        $idEmpresa = $request->session()->get('empresa_id');
+        
+        if (!$idEmpresa) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo determinar la empresa a la que pertenece el usuario'
+            ], 400);
+        }
+
         // Crear el nuevo tipo de cliente
         $clientType = new ClientType();
         $clientType->ClientType = $request->ClientType;
         $clientType->Description = $request->Description;
-        $clientType->idEmpresa = $request->idEmpresa;
+        $clientType->idEmpresa = $idEmpresa;
         $clientType->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Tipo de cliente creado correctamente',
-            'clientType' => $clientType
+            'idClientType' => $clientType->idClientType
         ], 201);
     }
 

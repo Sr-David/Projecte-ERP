@@ -60,7 +60,7 @@ Route::get('/api/user-permissions', function(\Illuminate\Http\Request $request) 
 });
 
 // API para tipos de clientes
-Route::post('/api/client-types', [App\Http\Controllers\ClientTypeController::class, 'store']);
+Route::post('/api/client-types', [App\Http\Controllers\ClientTypeController::class, 'store'])->name('api.clienttypes.store');
 
 // Ruta para la página de login
 Route::get('/login', function (\Illuminate\Http\Request $request) {
