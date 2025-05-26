@@ -223,7 +223,7 @@
                 Ventas
             </h3>
             <div class="chart-container h-64">
-                <canvas id="salesChart"></canvas>
+                <div id="salesChart"></div>
             </div>
         </div>
         
@@ -236,7 +236,7 @@
                 Nuevos Clientes
             </h3>
             <div class="chart-container h-64">
-                <canvas id="clientsChart"></canvas>
+                <div id="clientsChart"></div>
             </div>
         </div>
     </div>
@@ -249,10 +249,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                 </svg>
-                Distribución de Ventas por Categoría
+                Ventas por Producto
             </h3>
             <div class="chart-container h-64">
-                <canvas id="salesDistributionChart"></canvas>
+                <div id="salesDistributionChart"></div>
             </div>
         </div>
         
@@ -265,7 +265,7 @@
                 Estado de Leads
             </h3>
             <div class="chart-container h-64">
-                <canvas id="leadsChart"></canvas>
+                <div id="leadsChart"></div>
             </div>
         </div>
     </div>
@@ -324,266 +324,387 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Colores de la aplicación
+    // Definir algunos colores para los gráficos
     const brandBlue = '#3F95FF';
-    const brandBlueLight = '#D1E5FF';
-    const brandGreen = '#4CAF50';
-    const brandPurple = '#9C27B0';
-    const brandYellow = '#FFC107';
+    const brandGreen = '#10b981';
+    const brandPurple = '#8b5cf6';
+    const brandAmber = '#f59e0b';
+    const brandRed = '#ef4444';
     
-    // Configuración común para los gráficos de línea
-    const lineChartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            tooltip: {
-                backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                titleFont: {
-                    size: 13,
-                    weight: 'bold',
-                    family: "'Inter', sans-serif"
-                },
-                bodyFont: {
-                    size: 12,
-                    family: "'Inter', sans-serif"
-                },
-                padding: 12,
-                cornerRadius: 8,
-                boxPadding: 6
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(226, 232, 240, 0.6)',
-                    drawBorder: false
-                }
-            },
-            x: {
-                grid: {
-                    display: false,
-                    drawBorder: false
-                }
-            }
-        },
-        elements: {
-            point: {
-                radius: 3,
-                hoverRadius: 5,
-                borderWidth: 2
-            },
-            line: {
-                tension: 0.3
-            }
-        }
-    };
+    // Datos para los gráficos
+    const salesData = {!! json_encode($salesChartData['data']) !!};
+    const clientsData = {!! json_encode($clientsChartData['data']) !!};
+    const salesDistributionLabels = {!! json_encode($salesDistributionData['labels']) !!};
+    const salesDistributionValues = {!! json_encode($salesDistributionData['data']) !!};
+    const salesDistributionColors = {!! json_encode($salesDistributionData['colors']) !!};
+    const leadsLabels = {!! json_encode($leadsStatusData['labels']) !!};
+    const leadsValues = {!! json_encode($leadsStatusData['data']) !!};
+    const leadsColors = {!! json_encode($leadsStatusData['colors']) !!};
 
-    // Datos para el gráfico de ventas
-    const salesChartData = {
-        labels: {!! json_encode($salesChartData['labels']) !!},
-        datasets: [{
-            label: 'Ventas',
-            data: {!! json_encode($salesChartData['data']) !!},
-            borderColor: brandBlue,
-            backgroundColor: 'rgba(63, 149, 255, 0.1)',
-            borderWidth: 2,
-            fill: true
-        }]
-    };
-
-    // Datos para el gráfico de clientes
-    const clientsChartData = {
-        labels: {!! json_encode($clientsChartData['labels']) !!},
-        datasets: [{
-            label: 'Nuevos Clientes',
-            data: {!! json_encode($clientsChartData['data']) !!},
-            borderColor: brandGreen,
-            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-            borderWidth: 2,
-            fill: true
-        }]
-    };
-
-    // Datos para el gráfico de distribución de ventas
-    const salesDistributionChartData = {
-        labels: {!! json_encode($salesDistributionData['labels']) !!},
-        datasets: [{
-            label: 'Distribución de Ventas',
-            data: {!! json_encode($salesDistributionData['data']) !!},
-            backgroundColor: {!! json_encode($salesDistributionData['colors']) !!},
-            borderWidth: 0
-        }]
-    };
-
-    // Datos para el gráfico de estado de leads
-    const leadsChartData = {
-        labels: {!! json_encode($leadsStatusData['labels']) !!},
-        datasets: [{
-            label: 'Estado de Leads',
-            data: {!! json_encode($leadsStatusData['data']) !!},
-            backgroundColor: {!! json_encode($leadsStatusData['colors']) !!},
-            borderWidth: 0
-        }]
-    };
+    // Depuración - Verificar si los datos están llegando
+    console.log('Datos de ventas por producto:', {
+        labels: salesDistributionLabels,
+        values: salesDistributionValues,
+        colors: salesDistributionColors
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar gráfico de ventas
-        const salesChart = new Chart(
-            document.getElementById('salesChart'),
-            {
-                type: 'line',
-                data: salesChartData,
-                options: {
-                    ...lineChartOptions,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(context.parsed.y);
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
+        // Gráfico de ventas
+        const salesChartOptions = {
+            series: [{
+                name: 'Ventas',
+                data: salesData
+            }],
+            chart: {
+                type: 'area',
+                height: 300,
+                fontFamily: 'Poppins, sans-serif',
+                toolbar: {
+                    show: true,
+                    tools: {
+                        download: true,
+                        selection: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: true,
+                    }
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
                     }
                 }
+            },
+            colors: [brandBlue],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'light',
+                    type: 'vertical',
+                    shadeIntensity: 0.3,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.2,
+                    stops: [0, 90, 100]
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                categories: {!! json_encode($salesChartData['labels']) !!},
+                labels: {
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px',
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: 500
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function(val) {
+                        return '€' + new Intl.NumberFormat('es-ES').format(val);
+                    },
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px'
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val) {
+                        return '€' + new Intl.NumberFormat('es-ES').format(val);
+                    }
+                },
+                theme: 'dark'
+            },
+            grid: {
+                borderColor: '#e0e0e0',
+                strokeDashArray: 5,
+                xaxis: {
+                    lines: {
+                        show: true
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            markers: {
+                size: 5,
+                colors: [brandBlue],
+                strokeColors: '#fff',
+                strokeWidth: 2,
+                hover: {
+                    size: 7
+                }
             }
-        );
+        };
 
-        // Inicializar gráfico de clientes
-        const clientsChart = new Chart(
-            document.getElementById('clientsChart'),
-            {
+        // Gráfico de clientes
+        const clientsChartOptions = {
+            series: [{
+                name: 'Nuevos Clientes',
+                data: clientsData
+            }],
+            chart: {
                 type: 'bar',
-                data: clientsChartData,
-                options: {
-                    ...lineChartOptions,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+                height: 300,
+                fontFamily: 'Poppins, sans-serif',
+                toolbar: {
+                    show: true
+                },
+                animations: {
+                    enabled: true,
+                    dynamicAnimation: {
+                        speed: 350
+                    }
+                }
+            },
+            colors: [brandGreen],
+            plotOptions: {
+                bar: {
+                    borderRadius: 5,
+                    columnWidth: '60%',
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: {!! json_encode($clientsChartData['labels']) !!},
+                labels: {
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function(val) {
+                        return val.toFixed(0);
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(226, 232, 240, 0.6)',
-                                drawBorder: false
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px'
+                    }
+                }
+            },
+            tooltip: {
+                theme: 'dark'
+            },
+            grid: {
+                borderColor: '#e0e0e0',
+                strokeDashArray: 5,
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            }
+        };
+
+        // Gráfico de distribución de ventas
+        const salesDistributionChartOptions = {
+            series: salesDistributionValues,
+            chart: {
+                type: 'donut',
+                height: 300,
+                fontFamily: 'Poppins, sans-serif'
+            },
+            labels: salesDistributionLabels,
+            colors: salesDistributionColors,
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%',
+                        labels: {
+                            show: true,
+                            name: {
+                                show: true,
+                                fontSize: '16px'
                             },
-                            ticks: {
-                                precision: 0
+                            value: {
+                                show: true,
+                                fontSize: '20px',
+                                formatter: function(val) {
+                                    return '€' + new Intl.NumberFormat('es-ES').format(val);
+                                }
+                            },
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                fontSize: '16px',
+                                formatter: function(w) {
+                                    const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                    return '€' + new Intl.NumberFormat('es-ES').format(total);
+                                }
                             }
                         }
                     }
                 }
-            }
-        );
-
-        // Inicializar gráfico de distribución de ventas
-        const salesDistributionChart = new Chart(
-            document.getElementById('salesDistributionChart'),
-            {
-                type: 'doughnut',
-                data: salesDistributionChartData,
+            },
+            dataLabels: {
+                enabled: false
+            },
+            legend: {
+                position: 'right',
+                fontSize: '14px',
+                fontFamily: 'Poppins, sans-serif',
+                labels: {
+                    colors: '#666'
+                },
+                markers: {
+                    width: 12,
+                    height: 12,
+                    strokeWidth: 0,
+                    radius: 12
+                },
+                itemMargin: {
+                    horizontal: 8,
+                    vertical: 5
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val) {
+                        return '€' + new Intl.NumberFormat('es-ES').format(val);
+                    }
+                },
+                theme: 'dark'
+            },
+            stroke: {
+                width: 0
+            },
+            responsive: [{
+                breakpoint: 480,
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                font: {
-                                    size: 11
-                                }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed;
-                                    const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    const amount = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
-                                    return `${label}: ${amount} (${percentage}%)`;
-                                }
-                            }
-                        }
+                    chart: {
+                        width: 300
                     },
-                    cutout: '70%',
-                    elements: {
-                        arc: {
-                            borderWidth: 0
-                        }
+                    legend: {
+                        position: 'bottom'
                     }
                 }
-            }
-        );
+            }]
+        };
 
-        // Inicializar gráfico de leads
-        const leadsChart = new Chart(
-            document.getElementById('leadsChart'),
-            {
+        // Gráfico de leads
+        const leadsChartOptions = {
+            series: [{
+                name: 'Leads',
+                data: leadsValues
+            }],
+            chart: {
                 type: 'bar',
-                data: leadsChartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                            callbacks: {
-                                label: function(context) {
-                                    const value = context.parsed.x;
-                                    const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    return `${context.dataset.label}: ${value} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            grid: {
-                                display: false,
-                                drawBorder: false
-                            },
-                            ticks: {
-                                precision: 0
-                            }
-                        },
-                        y: {
-                            grid: {
-                                display: false,
-                                drawBorder: false
-                            }
-                        }
+                height: 300,
+                fontFamily: 'Poppins, sans-serif',
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: leadsColors,
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    distributed: true,
+                    borderRadius: 5,
+                    barHeight: '70%',
+                    dataLabels: {
+                        position: 'center'
                     }
                 }
+            },
+            dataLabels: {
+                enabled: true,
+                textAnchor: 'start',
+                style: {
+                    colors: ['#fff']
+                },
+                formatter: function(val, opt) {
+                    const total = leadsValues.reduce((a, b) => a + b, 0);
+                    const percentage = ((val * 100) / total).toFixed(1);
+                    return val + ` (${percentage}%)`;
+                },
+                offsetX: 0
+            },
+            xaxis: {
+                categories: leadsLabels,
+                labels: {
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px'
+                    }
+                }
+            },
+            tooltip: {
+                theme: 'dark',
+                y: {
+                    formatter: function(val) {
+                        const total = leadsValues.reduce((a, b) => a + b, 0);
+                        const percentage = ((val * 100) / total).toFixed(1);
+                        return val + ` (${percentage}%)`;
+                    }
+                }
+            },
+            grid: {
+                show: false
             }
-        );
+        };
+
+        // Renderizar los gráficos
+        const salesChart = new ApexCharts(document.getElementById('salesChart'), salesChartOptions);
+        salesChart.render();
+
+        const clientsChart = new ApexCharts(document.getElementById('clientsChart'), clientsChartOptions);
+        clientsChart.render();
+
+        // Verificar si el contenedor existe
+        const salesDistributionContainer = document.getElementById('salesDistributionChart');
+        console.log('Contenedor del gráfico de ventas por producto:', salesDistributionContainer);
         
+        if (salesDistributionContainer) {
+            // Verificar si hay datos
+            if (salesDistributionValues && salesDistributionValues.length > 0) {
+                const salesDistributionChart = new ApexCharts(salesDistributionContainer, salesDistributionChartOptions);
+                salesDistributionChart.render();
+            } else {
+                console.error('No hay datos para el gráfico de ventas por producto');
+                salesDistributionContainer.innerHTML = '<div class="flex items-center justify-center h-full"><div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><p class="mt-2 text-gray-500">No hay datos disponibles para mostrar</p></div></div>';
+            }
+        } else {
+            console.error('No se encontró el contenedor del gráfico de ventas por producto');
+        }
+
+        const leadsChart = new ApexCharts(document.getElementById('leadsChart'), leadsChartOptions);
+        leadsChart.render();
+
         // Gestionar los filtros
         document.getElementById('period-filter').addEventListener('change', function(e) {
             const days = parseInt(e.target.value);

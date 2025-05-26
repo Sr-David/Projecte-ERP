@@ -212,7 +212,7 @@
         <!-- Barra de navegación -->
         <header class="w-full py-4 px-6 md:px-12 flex justify-between items-center">
             <div class="flex items-center justify-center w-full">
-                <img src="/images/logoElevate.png" alt="Elevate CRM Logo" class="h-16 md:h-20 object-contain mx-auto hover:scale-105 transition-transform duration-300">
+                <img src="/images/logoElevate.png" alt="Elevate CRM Logo" class="h-20 md:h-24 object-contain mx-auto">
             </div>
             
             @if (Route::has('login'))
@@ -389,7 +389,7 @@
         <footer class="bg-gray-50 py-12 px-6 md:px-12">
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="md:col-span-1">
-                    <img src="/images/logoElevate.png" alt="Elevate CRM Logo" class="h-16 object-contain mb-4 hover:animate-float">
+                    <img src="/images/logoElevate.png" alt="Elevate CRM Logo" class="h-20 object-contain mb-4">
                     <p class="text-gray-600 text-sm">Elevando tu negocio al siguiente nivel con soluciones inteligentes de gestión.</p>
                 </div>
                 

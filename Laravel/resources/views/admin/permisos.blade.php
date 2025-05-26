@@ -209,12 +209,12 @@
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         border: 1px solid #c4c8cc;
     }
-
+    
     .switch.checked {
         background-color: #4f46e5;
         border-color: #4338ca;
     }
-
+    
     .switch-dot {
         position: absolute;
         left: 4px;
@@ -226,11 +226,11 @@
         transition: 0.4s;
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-
+    
     .switch.checked .switch-dot {
         transform: translateX(30px);
     }
-
+    
     .module-row {
         @apply py-5 border-b border-gray-100;
     }
@@ -254,7 +254,7 @@
     .permission-label {
         @apply text-sm font-medium text-gray-700;
     }
-
+    
     /* Animaciones para switches */
     @keyframes switchPulse {
         0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
@@ -369,9 +369,9 @@
             <div class="p-6">
                 <!-- Seleccionar Todos -->
                 <div class="bg-blue-50 rounded-lg p-3 mb-6 border border-blue-200">
-                    <div class="flex items-center">
+                        <div class="flex items-center">
                         <label class="switch" id="selectAllSwitch" role="switch" aria-checked="false" tabindex="0">
-                            <span class="switch-dot"></span>
+                                <span class="switch-dot"></span>
                         </label>
                         <div class="ml-3">
                             <span class="text-sm font-medium text-blue-800">Seleccionar todos los permisos</span>
@@ -391,35 +391,35 @@
                             <!-- Ver -->
                             <div class="permission-toggle">
                                 <label class="switch" data-modulo="{{ $key }}" data-permiso="ver" data-input-id="{{ $key }}_ver" role="switch" aria-checked="false" tabindex="0">
-                                    <input type="checkbox" id="{{ $key }}_ver" class="hidden">
-                                    <span class="switch-dot"></span>
+                                                    <input type="checkbox" id="{{ $key }}_ver" class="hidden">
+                                                    <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Ver</span>
-                            </div>
+                                                </div>
                             
                             <!-- Crear -->
                             <div class="permission-toggle">
                                 <label class="switch" data-modulo="{{ $key }}" data-permiso="crear" data-input-id="{{ $key }}_crear" role="switch" aria-checked="false" tabindex="0">
-                                    <input type="checkbox" id="{{ $key }}_crear" class="hidden">
-                                    <span class="switch-dot"></span>
+                                                    <input type="checkbox" id="{{ $key }}_crear" class="hidden">
+                                                    <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Crear</span>
-                            </div>
+                                                </div>
                             
                             <!-- Editar -->
                             <div class="permission-toggle">
                                 <label class="switch" data-modulo="{{ $key }}" data-permiso="editar" data-input-id="{{ $key }}_editar" role="switch" aria-checked="false" tabindex="0">
-                                    <input type="checkbox" id="{{ $key }}_editar" class="hidden">
-                                    <span class="switch-dot"></span>
+                                                    <input type="checkbox" id="{{ $key }}_editar" class="hidden">
+                                                    <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Editar</span>
-                            </div>
+                                                </div>
                             
                             <!-- Eliminar -->
                             <div class="permission-toggle">
                                 <label class="switch" data-modulo="{{ $key }}" data-permiso="borrar" data-input-id="{{ $key }}_borrar" role="switch" aria-checked="false" tabindex="0">
-                                    <input type="checkbox" id="{{ $key }}_borrar" class="hidden">
-                                    <span class="switch-dot"></span>
+                                                    <input type="checkbox" id="{{ $key }}_borrar" class="hidden">
+                                                    <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Eliminar</span>
                             </div>
@@ -432,22 +432,22 @@
                         <div class="module-title">
                             Reportes
                             <span class="module-subtitle ml-2">(informes)</span>
-                        </div>
+                                </div>
                         <div class="permissions-wrapper">
                             <div class="permission-toggle">
                                 <label class="switch" data-input-id="reportes_ver" role="switch" aria-checked="false" tabindex="0">
-                                    <input id="reportes_ver" name="reportes[ver]" type="checkbox" class="hidden">
-                                    <span class="switch-dot"></span>
+                                        <input id="reportes_ver" name="reportes[ver]" type="checkbox" class="hidden">
+                                        <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Ver</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
+
                     <div class="module-row px-5" data-modulo="notas">
                         <div class="module-title">
                             Notas
-                        </div>
+                                </div>
                         <div class="permissions-wrapper">
                             <div class="permission-toggle">
                                 <label class="switch" data-input-id="notas_ver" role="switch" aria-checked="false" tabindex="0">
@@ -458,38 +458,38 @@
                             </div>
                             <div class="permission-toggle">
                                 <label class="switch" data-input-id="notas_crear" role="switch" aria-checked="false" tabindex="0">
-                                    <input id="notas_crear" name="notas[crear]" type="checkbox" class="hidden">
-                                    <span class="switch-dot"></span>
+                                        <input id="notas_crear" name="notas[crear]" type="checkbox" class="hidden">
+                                        <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Crear</span>
-                            </div>
+                                    </div>
                             <div class="permission-toggle">
                                 <label class="switch" data-input-id="notas_editar" role="switch" aria-checked="false" tabindex="0">
-                                    <input id="notas_editar" name="notas[editar]" type="checkbox" class="hidden">
-                                    <span class="switch-dot"></span>
+                                        <input id="notas_editar" name="notas[editar]" type="checkbox" class="hidden">
+                                        <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Editar</span>
-                            </div>
+                                    </div>
                             <div class="permission-toggle">
                                 <label class="switch" data-input-id="notas_borrar" role="switch" aria-checked="false" tabindex="0">
-                                    <input id="notas_borrar" name="notas[borrar]" type="checkbox" class="hidden">
-                                    <span class="switch-dot"></span>
+                                        <input id="notas_borrar" name="notas[borrar]" type="checkbox" class="hidden">
+                                        <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Eliminar</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
+
                     <div class="module-row px-5" data-modulo="sistema">
                         <div class="module-title">
                             Configuración
                             <span class="module-subtitle ml-2">(sistema)</span>
-                        </div>
+                                </div>
                         <div class="permissions-wrapper">
                             <div class="permission-toggle">
                                 <label class="switch" data-input-id="sistema_ver" role="switch" aria-checked="false" tabindex="0">
-                                    <input id="sistema_ver" name="sistema[ver]" type="checkbox" class="hidden">
-                                    <span class="switch-dot"></span>
+                                        <input id="sistema_ver" name="sistema[ver]" type="checkbox" class="hidden">
+                                        <span class="switch-dot"></span>
                                 </label>
                                 <span class="permission-label">Ver</span>
                             </div>
@@ -812,4 +812,4 @@
         btnSavePermisos.addEventListener('click', guardarPermisos);
     });
 </script>
-@endsection
+@endsection 

@@ -116,11 +116,11 @@
         </div>
 
         <div class="bg-white rounded-lg shadow p-6 mb-6">
-    <h3 class="text-lg font-semibold mb-4">Ventas totales por producto</h3>
-    <div style="width:100%; max-width:600px; margin:auto;">
-        <canvas id="ventasPorProductoChart"></canvas>
-    </div>
-</div>
+            <div class="border border-gray-200 rounded-lg shadow-sm p-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Historial de ventas</h3>
+                <div id="ventasPorProductoChart"></div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -137,32 +137,76 @@
         });
     });
 
-
-
     document.addEventListener('DOMContentLoaded', function () {
-    const ctx = document.getElementById('ventasPorProductoChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($productosLabels ?? []) !!},
-            datasets: [{
-                label: 'Ventas totales',
-                data: {!! json_encode($productosValores ?? []) !!},
-                backgroundColor: '#3F95FF'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false }
+        const productosLabels = {!! json_encode($productosLabels ?? []) !!};
+        const productosValores = {!! json_encode($productosValores ?? []) !!};
+        
+        const ventasOptions = {
+            series: [{
+                name: 'Ventas totales',
+                data: productosValores
+            }],
+            chart: {
+                type: 'bar',
+                height: 350,
+                fontFamily: 'Poppins, sans-serif',
+                toolbar: {
+                    show: true
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800
+                }
             },
-            scales: {
-                y: { beginAtZero: true }
+            colors: ['#3F95FF'],
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    columnWidth: '60%',
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: productosLabels,
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        fontFamily: 'Poppins, sans-serif'
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Ventas',
+                    style: {
+                        fontSize: '14px',
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: 600
+                    }
+                }
+            },
+            tooltip: {
+                theme: 'dark'
+            },
+            grid: {
+                borderColor: '#e0e0e0',
+                strokeDashArray: 5,
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
             }
-        }
+        };
+
+        const ventasChart = new ApexCharts(document.getElementById('ventasPorProductoChart'), ventasOptions);
+        ventasChart.render();
     });
-});
-
-
 </script>
 @endsection 

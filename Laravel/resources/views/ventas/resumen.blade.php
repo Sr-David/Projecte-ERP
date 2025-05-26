@@ -49,8 +49,8 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="chart-container h-80">
-                    <canvas id="productoPorFechaChart" class="animate__animated animate__fadeIn"></canvas>
+                <div class="w-full max-w-full">
+                    <div id="productoPorFechaChart" class="animate__animated animate__fadeIn"></div>
                 </div>
             </div>
             
@@ -64,7 +64,7 @@
                 </h2>
                 <div class="flex flex-col md:flex-row justify-center items-center gap-8 bg-white p-4 rounded-lg">
                     <div class="w-full md:w-1/2 max-w-xs">
-                        <canvas id="ventasVsPropuestasChart" class="animate__animated animate__fadeIn"></canvas>
+                        <div id="ventasVsPropuestasChart" class="animate__animated animate__fadeIn"></div>
                     </div>
                     <div class="flex flex-col items-center animate__animated animate__fadeInRight">
                         @php
@@ -88,7 +88,7 @@
                 </h2>
                 <div class="flex justify-center">
                     <div class="w-full max-w-md">
-                        <canvas id="ventasPorProductoChart" class="animate__animated animate__fadeIn"></canvas>
+                        <div id="ventasPorProductoChart" class="animate__animated animate__fadeIn"></div>
                     </div>
                 </div>
             </div>
@@ -98,168 +98,284 @@
 @endsection
 
     @section('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // Gráfico de barras
-                // const ctx = document.getElementById('ventasPorFechaChart').getContext('2d');
-                // const ventasPorFechaChart = new Chart(ctx, {
-                //     type: 'bar',
-                //     data: {
-                //         labels: {!! json_encode($labels) !!},
-                //         datasets: [{
-                //             label: 'Ventas',
-                //             data: {!! json_encode($valores) !!},
-                //             backgroundColor: '#3F95FF'
-                //         }]
-                //     },
-                //     options: {
-                //         responsive: true,
-                //         maintainAspectRatio: false,
-                //         scales: {
-                //             x: { title: { display: true, text: 'Fecha' } },
-                //             y: { beginAtZero: true, title: { display: true, text: 'Ventas' } }
-                //         }
-                //     }
-                // });
-
-                // Gráfico circular
-                const ctxDoughnut = document.getElementById('ventasVsPropuestasChart').getContext('2d');
-                new Chart(ctxDoughnut, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Ventas Confirmadas', 'Propuestas de Venta'],
-                        datasets: [{
-                            data: [{{ $ventasCount }}, {{ $propuestasCount }}],
-                            backgroundColor: ['#3F95FF', '#6366F1'],
-                            borderColor: ['#E5EFFF', '#E5EFFF'],
-                            borderWidth: 3,
-                            hoverOffset: 15,
-                            borderRadius: 5
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        cutout: '70%',
-                        layout: {
-                            padding: 20
-                        },
-                        animation: {
-                            animateScale: true,
-                            animateRotate: true,
-                            duration: 2000,
-                            easing: 'easeOutQuart'
-                        },
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom',
-                                labels: {
-                                    color: '#1A1A1A',
-                                    font: { 
-                                        weight: 'bold',
-                                        size: 12
-                                    },
-                                    padding: 20
-                                }
+                // Gráfico circular de ventas vs propuestas
+                const ventasVsPropuestasOptions = {
+                    series: [{{ $ventasCount }}, {{ $propuestasCount }}],
+                    chart: {
+                        type: 'donut',
+                        height: 350,
+                        fontFamily: 'Poppins, sans-serif',
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 800,
+                            animateGradually: {
+                                enabled: true,
+                                delay: 150
                             },
-                            tooltip: {
-                                backgroundColor: 'rgba(0,0,0,0.8)',
-                                bodyFont: {
-                                    size: 14
-                                },
-                                padding: 15,
-                                cornerRadius: 8,
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.label || '';
-                                        const value = context.raw;
-                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                        const percentage = Math.round((value / total) * 100);
-                                        return `${label}: ${value} (${percentage}%)`;
+                            dynamicAnimation: {
+                                enabled: true,
+                                speed: 350
+                            }
+                        }
+                    },
+                    labels: ['Ventas Confirmadas', 'Propuestas de Venta'],
+                    colors: ['#3F95FF', '#6366F1'],
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '70%',
+                                labels: {
+                                    show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '16px',
+                                        fontFamily: 'Poppins, sans-serif',
+                                        fontWeight: 600,
+                                        offsetY: -10
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '26px',
+                                        fontFamily: 'Poppins, sans-serif',
+                                        fontWeight: 600,
+                                        offsetY: 5,
+                                        formatter: function (val) {
+                                            return val;
+                                        }
+                                    },
+                                    total: {
+                                        show: true,
+                                        label: 'Total',
+                                        fontSize: '16px',
+                                        fontWeight: 600,
+                                        formatter: function (w) {
+                                            return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                });
-
-
-
-
-                const ctxPie = document.getElementById('ventasPorProductoChart').getContext('2d');
-                new Chart(ctxPie, {
-                    type: 'pie',
-                    data: {
-                        labels: {!! json_encode($productosLabels ?? []) !!},
-                        datasets: [{
-                            data: {!! json_encode($productosValores ?? []) !!},
-                            backgroundColor: [
-                                '#3F95FF', '#6366F1', '#16BA81', '#F59E42', '#F43F5E', '#A855F7', '#FACC15', '#10B981'
-                            ],
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        }]
                     },
-                    options: {
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom',
-                                labels: {
-                                    color: '#1A1A1A',
-                                    font: { weight: 'bold' }
-                                }
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        width: 3,
+                        colors: ['#E5EFFF']
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontFamily: 'Poppins, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        markers: {
+                            width: 12,
+                            height: 12,
+                            strokeWidth: 0,
+                            radius: 12
+                        },
+                        itemMargin: {
+                            horizontal: 8,
+                            vertical: 8
+                        }
+                    },
+                    tooltip: {
+                        theme: 'dark',
+                        y: {
+                            formatter: function(val, opts) {
+                                const total = opts.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                const percentage = ((val * 100) / total).toFixed(1);
+                                return `${val} (${percentage}%)`;
                             }
                         }
-                    }
-                });
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 300
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                };
 
+                const ventasVsPropuestasChart = new ApexCharts(document.getElementById('ventasVsPropuestasChart'), ventasVsPropuestasOptions);
+                ventasVsPropuestasChart.render();
 
+                // Gráfico de ventas por producto
+                const ventasPorProductoOptions = {
+                    series: {!! json_encode($productosValores ?? []) !!},
+                    chart: {
+                        type: 'pie',
+                        height: 350,
+                        fontFamily: 'Poppins, sans-serif',
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 800
+                        }
+                    },
+                    labels: {!! json_encode($productosLabels ?? []) !!},
+                    colors: ['#3F95FF', '#6366F1', '#16BA81', '#F59E42', '#F43F5E', '#A855F7', '#FACC15', '#10B981'],
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function (val, opts) {
+                            return opts.w.globals.labels[opts.seriesIndex] + ": " + val.toFixed(1) + "%";
+                        },
+                        style: {
+                            fontSize: '14px',
+                            fontFamily: 'Poppins, sans-serif',
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true,
+                            blur: 3,
+                            opacity: 0.4
+                        }
+                    },
+                    stroke: {
+                        width: 2,
+                        colors: ['#fff']
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontFamily: 'Poppins, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: 600
+                    },
+                    tooltip: {
+                        theme: 'dark',
+                        y: {
+                            formatter: function(val, opts) {
+                                const total = opts.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                const percentage = ((val * 100) / total).toFixed(1);
+                                return `${val} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 300
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                };
 
+                const ventasPorProductoChart = new ApexCharts(document.getElementById('ventasPorProductoChart'), ventasPorProductoOptions);
+                ventasPorProductoChart.render();
 
+                // Gráfico de ventas por producto específico a lo largo del tiempo
                 const ventasPorProductoParaSelector = @json($ventasPorProductoParaSelector);
-
                 const selector = document.getElementById('productoSelector');
-                const ctxProducto = document.getElementById('productoPorFechaChart').getContext('2d');
 
                 function getChartData(productId) {
                     const datos = ventasPorProductoParaSelector[productId];
+                    
                     return {
-                        labels: datos ? datos.fechas : [],
-                        datasets: [{
-                            label: datos ? datos.nombre : '',
-                            data: datos ? datos.valores : [],
-                            backgroundColor: '#3F95FF'
-                        }]
+                        series: [{
+                            name: datos ? datos.nombre : '',
+                            data: datos ? datos.valores : []
+                        }],
+                        xaxis: {
+                            categories: datos ? datos.fechas : []
+                        }
                     };
                 }
 
                 // Inicializar con el primer producto
                 let currentProductId = selector.value;
-                let productoChart = new Chart(ctxProducto, {
-                    type: 'bar',
-                    data: getChartData(currentProductId),
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: { title: { display: true, text: 'Fecha' } },
-                            y: { beginAtZero: true, title: { display: true, text: 'Ventas' } }
+                let chartData = getChartData(currentProductId);
+                
+                const productoPorFechaOptions = {
+                    series: chartData.series,
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        fontFamily: 'Poppins, sans-serif',
+                        toolbar: {
+                            show: true
+                        },
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 800
+                        }
+                    },
+                    colors: ['#3F95FF'],
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            columnWidth: '60%',
+                            dataLabels: {
+                                position: 'top'
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    xaxis: {
+                        categories: chartData.xaxis.categories,
+                        title: {
+                            text: 'Fecha',
+                            style: {
+                                fontSize: '14px',
+                                fontFamily: 'Poppins, sans-serif',
+                                fontWeight: 600
+                            }
+                        }
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'Ventas',
+                            style: {
+                                fontSize: '14px',
+                                fontFamily: 'Poppins, sans-serif',
+                                fontWeight: 600
+                            }
+                        }
+                    },
+                    tooltip: {
+                        theme: 'dark'
+                    },
+                    grid: {
+                        borderColor: '#e0e0e0',
+                        strokeDashArray: 5,
+                        yaxis: {
+                            lines: {
+                                show: true
+                            }
                         }
                     }
-                });
+                };
 
+                const productoPorFechaChart = new ApexCharts(document.getElementById('productoPorFechaChart'), productoPorFechaOptions);
+                productoPorFechaChart.render();
+
+                // Actualizar el gráfico cuando cambia la selección de producto
                 selector.addEventListener('change', function () {
                     currentProductId = this.value;
                     const newData = getChartData(currentProductId);
-                    productoChart.data = newData;
-                    productoChart.update();
+                    
+                    productoPorFechaChart.updateOptions({
+                        xaxis: {
+                            categories: newData.xaxis.categories
+                        }
+                    });
+                    
+                    productoPorFechaChart.updateSeries(newData.series);
                 });
-
-
-
             });
         </script>
     @endsection

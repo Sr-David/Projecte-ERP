@@ -269,125 +269,206 @@
     </div>
 </div>
 
-<div class="bg-white rounded-xl shadow-lg p-8 mb-8 max-w-8xl mx-auto hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 animate__animated animate__fadeIn">
+<div class="w-full max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mt-6 border border-gray-200">
     <h3 class="text-xl font-semibold text-blue-700 mb-6 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        Análisis de productos según fecha de entrada
-    </h3>
-    <div class="flex justify-center">
-        <canvas id="productosPorFechaChart" width="700" height="350" class="animate__animated animate__fadeIn"></canvas>
-    </div>
-</div>
-
-
-<div class="bg-white rounded-xl shadow-lg p-8 mb-8 max-w-8xl mx-auto hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 animate__animated animate__fadeIn animate__delay-1s">
-    <h3 class="text-xl font-semibold text-green-700 mb-6 flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
         </svg>
-        Ventas por producto y fecha
+        Productos por Fecha
     </h3>
-    <div class="flex justify-center">
-        <canvas id="lineVentasPorProductoFecha" width="900" height="400" class="animate__animated animate__fadeIn"></canvas>
-    </div>
+    <div id="productosPorFechaChart" class="animate__animated animate__fadeIn"></div>
+</div>
+
+<div class="w-full max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mt-6 border border-gray-200">
+    <h3 class="text-xl font-semibold text-green-700 mb-6 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Ventas por Producto y Fecha
+    </h3>
+    <div id="lineVentasPorProductoFecha" class="animate__animated animate__fadeIn"></div>
 </div>
 
 @endsection
 
 @section('scripts')
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('ventasPorProductoChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($productosLabels ?? []) !!},
-                    datasets: [{
-                        label: 'Ventas totales',
-                        data: {!! json_encode($productosValores ?? []) !!},
-                        backgroundColor: '#3F95FF'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
+            // Productos por fecha
+            const productosFechasLabels = {!! json_encode($productosFechasLabels ?? []) !!};
+            const productosFechasValores = {!! json_encode($productosFechasValores ?? []) !!};
+            
+            const productosPorFechaOptions = {
+                series: [{
+                    name: 'Productos añadidos',
+                    data: productosFechasValores
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    fontFamily: 'Poppins, sans-serif',
+                    toolbar: {
+                        show: true
                     },
-                    scales: {
-                        y: { beginAtZero: true }
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800
+                    }
+                },
+                colors: ['#3F95FF'],
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        columnWidth: '60%',
+                        dataLabels: {
+                            position: 'top'
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: productosFechasLabels,
+                    labels: {
+                        style: {
+                            fontSize: '12px',
+                            fontFamily: 'Poppins, sans-serif'
+                        },
+                        rotate: -45,
+                        rotateAlways: false
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Cantidad',
+                        style: {
+                            fontSize: '14px',
+                            fontFamily: 'Poppins, sans-serif',
+                            fontWeight: 600
+                        }
+                    }
+                },
+                tooltip: {
+                    theme: 'dark'
+                },
+                grid: {
+                    borderColor: '#e0e0e0',
+                    strokeDashArray: 5,
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
                     }
                 }
-            });
-        });
+            };
 
-   const colores = [
-            '#3F95FF'
-        ];
-
-
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // ...código del gráfico de ventas por producto...
-
-        // Gráfico de productos según fecha de entrada
-        const ctxFecha = document.getElementById('productosPorFechaChart').getContext('2d');
-        new Chart(ctxFecha, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($productosFechasLabels ?? []) !!},
-                datasets: [{
-                    label: 'Productos añadidos',
-                    data: {!! json_encode($productosFechasValores ?? []) !!},
-                    backgroundColor: colores
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
+            // Ventas por producto y fecha
+            const fechas = {!! json_encode($fechas ?? []) !!};
+            const lineChartDatasets = {!! json_encode($lineChartDatasets ?? []) !!};
+            
+            // Convertir datasets de Chart.js a formato ApexCharts
+            const apexSeries = [];
+            if (lineChartDatasets && lineChartDatasets.length > 0) {
+                lineChartDatasets.forEach(dataset => {
+                    apexSeries.push({
+                        name: dataset.label,
+                        data: dataset.data,
+                        color: dataset.borderColor
+                    });
+                });
             }
-        });
-    });
-
-
-
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // ...otros gráficos...
-
-        // Gráfico de líneas: ventas por producto y fecha
-        const ctxLine = document.getElementById('lineVentasPorProductoFecha').getContext('2d');
-        new Chart(ctxLine, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($fechas ?? []) !!},
-                datasets: {!! json_encode($lineChartDatasets ?? []) !!}
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true, position: 'bottom' }
+            
+            const ventasPorProductoFechaOptions = {
+                series: apexSeries,
+                chart: {
+                    type: 'line',
+                    height: 350,
+                    fontFamily: 'Poppins, sans-serif',
+                    toolbar: {
+                        show: true
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800
+                    }
                 },
-                scales: {
-                    y: { beginAtZero: true }
+                stroke: {
+                    width: 3,
+                    curve: 'smooth'
+                },
+                markers: {
+                    size: 4,
+                    strokeWidth: 2,
+                    hover: {
+                        size: 6
+                    }
+                },
+                xaxis: {
+                    categories: fechas,
+                    labels: {
+                        style: {
+                            fontSize: '12px',
+                            fontFamily: 'Poppins, sans-serif'
+                        }
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Ventas',
+                        style: {
+                            fontSize: '14px',
+                            fontFamily: 'Poppins, sans-serif',
+                            fontWeight: 600
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    horizontalAlign: 'center',
+                    fontSize: '14px',
+                    fontFamily: 'Poppins, sans-serif',
+                    markers: {
+                        width: 10,
+                        height: 10,
+                        radius: 2
+                    },
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 8
+                    }
+                },
+                tooltip: {
+                    theme: 'dark',
+                    shared: true,
+                    intersect: false
+                },
+                grid: {
+                    borderColor: '#e0e0e0',
+                    strokeDashArray: 5,
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    padding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 10
+                    }
                 }
-            }
+            };
+
+            // Renderizar los gráficos
+            const productosPorFechaChart = new ApexCharts(document.getElementById('productosPorFechaChart'), productosPorFechaOptions);
+            productosPorFechaChart.render();
+            
+            const lineVentasPorProductoFecha = new ApexCharts(document.getElementById('lineVentasPorProductoFecha'), ventasPorProductoFechaOptions);
+            lineVentasPorProductoFecha.render();
         });
-    });
-
-
-
 
         // Delete confirmation
         document.querySelectorAll('.delete-form').forEach(form => {

@@ -194,7 +194,7 @@
     <div class="flex flex-col items-center">
         <h3 class="text-xl font-semibold text-blue-700 mb-6 text-center">Distribución por tipo de cliente</h3>
         <div class="w-full max-w-2xl">
-            <canvas id="clientTypesPieChart" class="animate__animated animate__fadeIn"></canvas>
+            <div id="clientTypesPieChart" class="animate__animated animate__fadeIn"></div>
         </div>
     </div>
 </div>
@@ -206,11 +206,11 @@
     </h2>
 </div>
 
-<div class="rounded-xl shadow-lg p-8 w-full max-w-4xl mx-auto border border-gray-200 bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-10">
+<div class="rounded-xl shadow-lg p-8 w-full max-w-4xl mx-auto border border-gray-200 bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mt-8">
     <div class="flex flex-col items-center">
-        <h3 class="text-xl font-semibold text-blue-700 mb-6 text-center">Distribución de clientes por dirección</h3>
+        <h3 class="text-xl font-semibold text-blue-700 mb-6 text-center">Distribución por ubicación</h3>
         <div class="w-full max-w-2xl">
-            <canvas id="clientsByAddressChart" class="animate__animated animate__fadeIn"></canvas>
+            <div id="clientsByAddressChart" class="animate__animated animate__fadeIn"></div>
         </div>
     </div>
 </div>
@@ -498,656 +498,209 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    // Filtro de búsqueda en tiempo real
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('search-clients');
-        const typeFilter = document.getElementById('filter-type');
-        const tableRows = document.querySelectorAll('tbody tr');
-        
-        // Función auxiliar para manejar nombres y apellidos
-        function fixNameCase(str) {
-            if (!str) return '';
-            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-        }
-        
-        // Función para filtrar la tabla
-        function filterTable() {
-            const searchValue = searchInput.value.toLowerCase();
-            const typeValue = typeFilter.value;
-            
-            tableRows.forEach(row => {
-                const name = row.querySelector('td:first-child').textContent.toLowerCase();
-                const type = row.querySelector('td:nth-child(4)').textContent.trim();
-                const typeId = row.querySelector('td:nth-child(4) span').getAttribute('data-type-id') || '';
-                
-                const matchesSearch = name.includes(searchValue);
-                const matchesType = !typeValue || typeId === typeValue;
-                
-                if (matchesSearch && matchesType) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-        
-        // Eventos para filtrado
-        if (searchInput) {
-            searchInput.addEventListener('input', filterTable);
-        }
-        
-        if (typeFilter) {
-            typeFilter.addEventListener('change', filterTable);
-        }
-        
-        // Confirmación para eliminar
-        const deleteButtons = document.querySelectorAll('.confirm-delete');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const form = this.closest('.delete-form');
-                const clientName = form.getAttribute('data-client-name');
-                
-                // Añadir más información en la consola para verificar
-                console.log('Intentando eliminar cliente:', {
-                    name: clientName,
-                    action: form.action
-                });
-                
-                if (confirm(`¿Está seguro que desea eliminar el cliente "${clientName}"? Esta acción no se puede deshacer.`)) {
-                    form.submit();
-                }
-            });
-        });
-
-        // Funcionalidad del modal de detalles del cliente
-        const detailsModal = document.getElementById('clientDetailsModal');
-        const editModal = document.getElementById('clientEditModal');
-        const viewButtons = document.querySelectorAll('.view-client-details');
-        const closeDetailButtons = document.querySelectorAll('#closeClientModal, #closeModalButton');
-        const closeEditButtons = document.querySelectorAll('#closeEditModal, #cancelEditButton');
-        const editButtons = document.querySelectorAll('.edit-client'); // Botones de editar en la tabla
-        
-        // Funciones para mostrar y ocultar los modales
-        function showDetailsModal() {
-            detailsModal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-        }
-        
-        function hideDetailsModal() {
-            detailsModal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-        
-        function showEditModal() {
-            editModal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-        }
-        
-        function hideEditModal() {
-            editModal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-        
-        // Event listeners para los botones de ver detalles
-        viewButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Marcar este botón como activo y quitar la marca de los demás
-                document.querySelectorAll('.view-client-details').forEach(btn => {
-                    btn.removeAttribute('data-active');
-                });
-                this.setAttribute('data-active', 'true');
-                
-                const clientId = this.getAttribute('data-client-id');
-                const name = this.getAttribute('data-client-name');
-                const lastName = this.getAttribute('data-client-lastname');
-                const email = this.getAttribute('data-client-email');
-                const phone = this.getAttribute('data-client-phone');
-                const address = this.getAttribute('data-client-address') || 'No especificada';
-                const type = this.getAttribute('data-client-type');
-                const typeId = this.getAttribute('data-client-type-id');
-                const createdAt = this.getAttribute('data-client-created');
-                const updatedAt = this.getAttribute('data-client-updated');
-                
-                // Debug - Mostrar los datos extraídos del botón
-                console.log('Datos del botón de detalles:', {
-                    id: clientId,
-                    nombre: name,
-                    apellido: lastName,
-                    email: email,
-                    teléfono: phone,
-                    dirección: address,
-                    tipo: type,
-                    tipoId: typeId,
-                    creado: createdAt,
-                    actualizado: updatedAt
-                });
-                
-                // Guardar el nombre completo original para usarlo después
-                this.setAttribute('data-client-fullname', `${name} ${lastName}`);
-                
-                // Actualizar contenido del modal
-                document.getElementById('clientInitials').textContent = name.charAt(0) + lastName.charAt(0);
-                document.getElementById('clientFullName').textContent = name + ' ' + lastName;
-                document.getElementById('clientType').textContent = type;
-                document.getElementById('clientName').textContent = name;
-                document.getElementById('clientLastName').textContent = lastName;
-                document.getElementById('clientId').textContent = '#' + clientId;
-                document.getElementById('clientEmail').textContent = email;
-                document.getElementById('clientEmail').href = 'mailto:' + email;
-                document.getElementById('clientPhone').textContent = phone;
-                document.getElementById('clientAddress').textContent = address;
-                
-                // Formatear y mostrar correctamente las fechas
-                document.getElementById('clientCreatedAt').textContent = createdAt && createdAt !== 'No disponible' 
-                    ? createdAt 
-                    : 'No disponible';
-                    
-                document.getElementById('clientUpdatedAt').textContent = updatedAt && updatedAt !== 'No disponible' 
-                    ? updatedAt 
-                    : 'No disponible';
-                
-                // Guardar los datos originales en atributos data para usarlos posteriormente
-                document.getElementById('clientFullName').setAttribute('data-original-name', name);
-                document.getElementById('clientFullName').setAttribute('data-original-lastname', lastName);
-                document.getElementById('clientType').setAttribute('data-original-type-id', typeId);
-                
-                // Actualizar enlace de edición
-                document.getElementById('editClientLink').href = '/clientes/' + clientId + '/edit';
-                
-                showDetailsModal();
-            });
-        });
-        
-        // Event listener para el botón "Editar Cliente" en el modal de detalles
-        document.getElementById('editClientLink').addEventListener('click', function(e) {
-            //e.preventDefault();
-            
-            try {
-                // Obtener el botón activo que abrió el modal
-                const activeButton = document.querySelector('.view-client-details[data-active="true"]');
-                
-                if (!activeButton) {
-                    console.error('Error crítico: No se encontró el botón activo');
-                    alert('Error al obtener datos del cliente. Por favor inténtelo de nuevo.');
-                    return;
-                }
-                
-                // Obtener datos DIRECTAMENTE de los atributos del botón sin ningún procesamiento
-                const clientId = activeButton.getAttribute('data-client-id');
-                const name = activeButton.getAttribute('data-client-name');
-                const lastName = activeButton.getAttribute('data-client-lastname');
-                
-                // Usar console.error para asegurar visibilidad en la consola
-                console.error('DATOS FINALES PARA EDITAR:', {
-                    'ID Cliente': clientId,
-                    'Nombre': name,
-                    'Apellido': lastName
-                });
-                
-                // ESTABLECER DIRECTAMENTE los valores en los campos del formulario
-                const nameField = document.getElementById('edit_name');
-                const lastNameField = document.getElementById('edit_lastname');
-                const emailField = document.getElementById('edit_email');
-                const phoneField = document.getElementById('edit_phone');
-                const addressField = document.getElementById('edit_address');
-                
-                nameField.value = name || '';
-                lastNameField.value = lastName || '';
-                emailField.value = activeButton.getAttribute('data-client-email') || '';
-                phoneField.value = activeButton.getAttribute('data-client-phone') || '';
-                
-                const address = activeButton.getAttribute('data-client-address');
-                addressField.value = (address && address !== 'No especificada') ? address : '';
-                
-                // Seleccionar tipo de cliente
-                const typeId = activeButton.getAttribute('data-client-type-id');
-                document.querySelectorAll('#edit_client_type option').forEach(option => {
-                    option.selected = option.value === typeId;
-                });
-                
-                // Establecer URL del formulario
-                const clientUrl = `/clientes/${clientId}`;
-                document.getElementById('editClientForm').action = clientUrl;
-                
-                // Iniciales para mostrar (solo visual)
-                document.getElementById('editClientInitials').textContent = (name?.charAt(0) || '') + (lastName?.charAt(0) || '');
-                
-                // Cambiar entre modales
-                hideDetailsModal();
-                showEditModal();
-                
-                // Verificación final
-                setTimeout(() => {
-                    console.log('VERIFICACIÓN FINAL - Valores de los campos:');
-                    console.log('Nombre field value:', nameField.value);
-                    console.log('Apellido field value:', lastNameField.value);
-                }, 100);
-                
-            } catch (error) {
-                console.error('Error crítico en la edición:', error);
-                // Mostrar error usando la función de alerta personalizada si está disponible
-                if (typeof showAlert === 'function') {
-                    showAlert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.', 'error');
-                } else {
-                    alert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.');
-                }
+    // Delete confirmation
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (confirm('¿Estás seguro que deseas eliminar este cliente? Esta acción no se puede deshacer.')) {
+                this.submit();
             }
         });
-        
-        // Event listeners para los botones de editar en la tabla
-        document.querySelectorAll('a[href*="/clientes/"][href$="/edit"]').forEach(button => {
-            button.addEventListener('click', function(e) {
-                console.log('Botón de editar en tabla clickeado', this);
-                e.preventDefault();
-                
-                try {
-                    const clientRow = this.closest('tr');
-                    const clientUrl = this.getAttribute('href');
-                    const clientId = clientUrl.substring(clientUrl.lastIndexOf('/') + 1).replace('/edit', '');
-                    
-                    // Encontrar el botón de detalles relacionado para obtener sus datos
-                    const detailsButton = clientRow.querySelector('.view-client-details');
-                    
-                    if (!detailsButton) {
-                        console.error('No se pudo encontrar el botón de detalles relacionado');
-                        
-                        // Intentar extraer datos directamente de la fila como respaldo
-                        const nameCell = clientRow.querySelector('td:first-child');
-                        const emailCell = clientRow.querySelector('td:nth-child(2)');
-                        const phoneCell = clientRow.querySelector('td:nth-child(3)');
-                        const typeCell = clientRow.querySelector('td:nth-child(4)');
-                        
-                        if (!nameCell) {
-                            throw new Error('No se pudieron encontrar las celdas necesarias');
-                        }
-                        
-                        // Extraer datos de las celdas
-                        const nameElement = nameCell.querySelector('.text-sm.font-medium');
-                        const fullName = nameElement ? nameElement.textContent.trim() : '';
-                        const nameParts = fullName.split(' ');
-                        const name = nameParts[0] || '';
-                        const lastName = nameParts.slice(1).join(' ') || '';
-                        const email = emailCell ? emailCell.textContent.trim() : '';
-                        const phone = phoneCell ? phoneCell.textContent.trim() : '';
-                        const typeElement = typeCell ? typeCell.querySelector('span') : null;
-                        const type = typeElement ? typeElement.textContent.trim() : '';
-                        const typeId = typeElement ? typeElement.getAttribute('data-type-id') : '';
-                        
-                        // Rellenar el formulario con los datos extraídos
-                        document.getElementById('edit_name').value = name;
-                        document.getElementById('edit_lastname').value = lastName;
-                        document.getElementById('edit_email').value = email;
-                        document.getElementById('edit_phone').value = phone;
-                        
-                        // Seleccionar tipo de cliente si está disponible
-                        if (typeId) {
-                            document.querySelectorAll('#edit_client_type option').forEach(option => {
-                                option.selected = option.value === typeId;
-                            });
-                        }
-                    } else {
-                        // Extraer datos del botón de detalles (más confiable)
-                        const name = detailsButton.getAttribute('data-client-name');
-                        const lastName = detailsButton.getAttribute('data-client-lastname');
-                        const email = detailsButton.getAttribute('data-client-email');
-                        const phone = detailsButton.getAttribute('data-client-phone');
-                        const address = detailsButton.getAttribute('data-client-address');
-                        const typeId = detailsButton.getAttribute('data-client-type-id');
-                        
-                        // Rellenar el formulario
-                        document.getElementById('edit_name').value = name || '';
-                        document.getElementById('edit_lastname').value = lastName || '';
-                        document.getElementById('edit_email').value = email || '';
-                        document.getElementById('edit_phone').value = phone || '';
-                        document.getElementById('edit_address').value = address !== 'No especificada' ? address || '' : '';
-                        
-                        // Seleccionar tipo de cliente
-                        document.querySelectorAll('#edit_client_type option').forEach(option => {
-                            option.selected = option.value === typeId;
-                        });
-                        
-                        // Iniciales para mostrar
-                        document.getElementById('editClientInitials').textContent = (name?.charAt(0) || '') + (lastName?.charAt(0) || '');
-                    }
-                    
-                    // Establecer URL del formulario
-                    document.getElementById('editClientForm').action = clientUrl.replace('/edit', '');
-                    
-                    // Verificación
-                    console.log('Editando desde tabla, valores finales:', {
-                        nombre: document.getElementById('edit_name').value,
-                        apellido: document.getElementById('edit_lastname').value
-                    });
-                    
-                    // Mostrar el modal de edición
-                    showEditModal();
-                    
-                } catch (error) {
-                    console.error('Error al editar desde tabla:', error);
-                    alert('Ha ocurrido un error al preparar el formulario de edición. Por favor inténtelo nuevamente.');
-                }
-            });
-        });
-        
-        // Event listeners para cerrar el modal de detalles
-        closeDetailButtons.forEach(button => {
-            button.addEventListener('click', hideDetailsModal);
-        });
-        
-        // Event listeners para cerrar el modal de edición
-        closeEditButtons.forEach(button => {
-            button.addEventListener('click', hideEditModal);
-        });
-        
-        // Cerrar modal al hacer clic fuera de él
-        window.addEventListener('click', function(event) {
-            if (event.target === detailsModal.querySelector('.fixed.inset-0.bg-black.bg-opacity-50')) {
-                hideDetailsModal();
-            }
-            
-            if (event.target === editModal.querySelector('.fixed.inset-0.bg-black.bg-opacity-50')) {
-                hideEditModal();
-            }
-        });
-        
-        // Cerrar modal con la tecla ESC
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                if (!detailsModal.classList.contains('hidden')) {
-                    hideDetailsModal();
-                }
-                
-                if (!editModal.classList.contains('hidden')) {
-                    hideEditModal();
-                }
-            }
-        });
-
-        // Modal para nuevo tipo de cliente
-        const clientTypeModal = document.getElementById('clientTypeModal');
-        const newClientTypeBtn = document.getElementById('new-client-type-btn');
-        const closeClientTypeModal = document.getElementById('closeClientTypeModal');
-        const saveClientType = document.getElementById('saveClientType');
-
-        function showClientTypeModal() {
-            clientTypeModal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-            
-            // Asegurar que el formulario esté limpio
-            document.getElementById('client_type_name').value = '';
-            document.getElementById('client_type_description').value = '';
-            document.getElementById('client-type-error').classList.add('hidden');
-            
-            // Dar foco al input principal
-            setTimeout(() => {
-                document.getElementById('client_type_name').focus();
-            }, 100);
-        }
-
-        function hideClientTypeModal() {
-            clientTypeModal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-
-        newClientTypeBtn.addEventListener('click', showClientTypeModal);
-        closeClientTypeModal.addEventListener('click', hideClientTypeModal);
-
-        saveClientType.addEventListener('click', function() {
-            const name = document.getElementById('client_type_name').value.trim();
-            const description = document.getElementById('client_type_description').value.trim();
-            const errorElement = document.getElementById('client-type-error');
-            
-            if (!name) {
-                showAlert('El nombre del tipo es obligatorio.', 'error');
-                return;
-            }
-
-            // Enviar petición AJAX para crear el tipo
-            fetch('/api/client-types', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    ClientType: name,
-                    Description: description,
-                    idEmpresa: {{ session('empresa_id') }} // Usar el ID de empresa de la sesión
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Añadir el nuevo tipo al select
-                    const filterSelect = document.getElementById('filter-type');
-                    const editClientTypeSelect = document.getElementById('edit_client_type');
-                    
-                    const newOption = document.createElement('option');
-                    newOption.value = data.clientType.idClientType;
-                    newOption.textContent = data.clientType.ClientType;
-                    
-                    filterSelect.appendChild(newOption);
-                    
-                    if (editClientTypeSelect) {
-                        const editOption = newOption.cloneNode(true);
-                        editClientTypeSelect.appendChild(editOption);
-                    }
-                    
-                    hideClientTypeModal();
-                    
-                    // Mostrar mensaje de éxito con la alerta personalizada
-                    showAlert('Tipo de cliente creado correctamente!');
-                } else {
-                    // Mostrar mensajes de error con la alerta personalizada
-                    if (data.errors) {
-                        const errorMessages = Object.values(data.errors).flat().join('. ');
-                        showAlert(`${data.message || 'Datos inválidos'}: ${errorMessages}`, 'error');
-                    } else {
-                        showAlert(data.message || 'Error al crear el tipo de cliente.', 'error');
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('Error al procesar la solicitud.', 'error');
-            });
-        });
-        
-        // Función para mostrar alertas con un estilo consistente
-        function showAlert(message, type = 'success') {
-            const alertClass = type === 'success' ? 'app-alert-success' : 
-                               type === 'warning' ? 'app-alert-warning' : 
-                               type === 'info' ? 'app-alert-info' : 'app-alert-error';
-            
-            const iconPath = type === 'success' ? 
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />' : 
-                type === 'info' ?
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />';
-            
-            // Crear un contenedor para la alerta si no existe
-            let alertContainer = document.getElementById('custom-alert-container');
-            if (!alertContainer) {
-                alertContainer = document.createElement('div');
-                alertContainer.id = 'custom-alert-container';
-                alertContainer.style.position = 'fixed';
-                alertContainer.style.top = '1rem';
-                alertContainer.style.right = '1rem';
-                alertContainer.style.zIndex = '9999';
-                alertContainer.style.maxWidth = '24rem';
-                document.body.appendChild(alertContainer);
-            }
-            
-            // Crear la alerta
-            const alertElement = document.createElement('div');
-            alertElement.className = `app-alert ${alertClass} shadow-lg mb-3 transform transition-all duration-300 ease-in-out`;
-            alertElement.style.opacity = '0';
-            alertElement.style.transform = 'translateX(1rem)';
-            alertElement.innerHTML = `
-                <svg class="app-alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    ${iconPath}
-                </svg>
-                <span>${message}</span>
-            `;
-            
-            // Añadir la alerta al contenedor
-            alertContainer.appendChild(alertElement);
-            
-            // Animación de entrada
-            setTimeout(() => {
-                alertElement.style.opacity = '1';
-                alertElement.style.transform = 'translateX(0)';
-            }, 10);
-            
-            // Ocultar después de 5 segundos
-            setTimeout(() => {
-                alertElement.style.opacity = '0';
-                alertElement.style.transform = 'translateX(1rem)';
-                
-                // Eliminar el elemento después de la animación
-                setTimeout(() => {
-                    alertContainer.removeChild(alertElement);
-                    
-                    // Eliminar el contenedor si no tiene más alertas
-                    if (alertContainer.childNodes.length === 0) {
-                        document.body.removeChild(alertContainer);
-                    }
-                }, 300);
-            }, 5000);
-        }
     });
 
+    document.addEventListener('DOMContentLoaded', function () {
+        // Datos para los gráficos
+        const clientTypesLabels = {!! json_encode($clientTypeCounts->pluck('label')->toArray()) !!};
+        const clientTypesCounts = {!! json_encode($clientTypeCounts->pluck('count')->toArray()) !!};
+        const clientsByAddressLabels = {!! json_encode($clientsByAddress->pluck('address')->toArray()) !!};
+        const clientsByAddressCounts = {!! json_encode($clientsByAddress->pluck('count')->toArray()) !!};
 
+        console.log('Datos de tipos de cliente:', { labels: clientTypesLabels, counts: clientTypesCounts });
+        console.log('Datos de clientes por dirección:', { labels: clientsByAddressLabels, counts: clientsByAddressCounts });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const ctx = document.getElementById('clientTypesPieChart').getContext('2d');
-    const data = {
-        labels: {!! json_encode($clientTypeCounts->pluck('label')->toArray()) !!},
-        datasets: [{
-            data: {!! json_encode($clientTypeCounts->pluck('count')->toArray()) !!},
-            backgroundColor: [
-                '#3F95FF', '#6366F1', '#16BA81', '#F59E42', '#F43F5E', '#A855F7', '#FACC15', '#10B981'
-            ],
-            borderColor: '#fff',
-            borderWidth: 3,
-            hoverOffset: 15,
-            borderRadius: 5
-        }]
-    };
-  new Chart(ctx, {
-        type: 'doughnut',
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            cutout: '65%',
-            layout: {
-                padding: 20
-            },
-            animation: {
-                animateScale: true,
-                animateRotate: true,
-                duration: 2000,
-                easing: 'easeOutQuart'
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom',
-                    labels: {
-                        generateLabels: function(chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map((label, i) => {
-                                    const value = data.datasets[0].data[i];
-                                    return {
-                                        text: `${label} (${value})`,
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        strokeStyle: data.datasets[0].borderColor,
-                                        lineWidth: data.datasets[0].borderWidth,
-                                        hidden: isNaN(data.datasets[0].data[i]) || chart.getDataVisibility(i) === false,
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
+        // Verificar si hay datos para mostrar en los gráficos
+        const clientTypeContainer = document.getElementById('clientTypesPieChart');
+        const clientsByAddressContainer = document.getElementById('clientsByAddressChart');
+
+        // Colores para los gráficos
+        const colors = [
+            '#3F95FF', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444',
+            '#06b6d4', '#ec4899', '#14b8a6', '#6366f1', '#f97316'
+        ];
+
+        // Gráfico de tipos de cliente
+        if (clientTypeContainer && clientTypesLabels.length > 0) {
+            const clientTypesOptions = {
+                series: clientTypesCounts,
+                chart: {
+                    type: 'donut',
+                    height: 350,
+                    fontFamily: 'Poppins, sans-serif',
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800,
+                        animateGradually: {
+                            enabled: true,
+                            delay: 150
                         },
-                        padding: 20,
-                        font: {
-                            size: 12,
-                            weight: 'bold'
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 350
+                        }
+                    }
+                },
+                labels: clientTypesLabels,
+                colors: colors.slice(0, clientTypesLabels.length),
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '60%',
+                            labels: {
+                                show: true,
+                                name: {
+                                    show: true,
+                                    fontSize: '16px'
+                                },
+                                value: {
+                                    show: true,
+                                    fontSize: '20px'
+                                },
+                                total: {
+                                    show: true,
+                                    label: 'Total',
+                                    fontSize: '16px'
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                legend: {
+                    position: 'bottom',
+                    fontSize: '14px',
+                    fontFamily: 'Poppins, sans-serif',
+                    markers: {
+                        width: 12,
+                        height: 12,
+                        strokeWidth: 0,
+                        radius: 12
+                    },
+                    itemMargin: {
+                        horizontal: 8,
+                        vertical: 5
+                    }
+                },
+                tooltip: {
+                    theme: 'dark'
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            const clientTypesPieChart = new ApexCharts(clientTypeContainer, clientTypesOptions);
+            clientTypesPieChart.render();
+        } else if (clientTypeContainer) {
+            clientTypeContainer.innerHTML = '<div class="flex items-center justify-center h-full"><div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><p class="mt-2 text-gray-500">No hay datos disponibles para mostrar</p></div></div>';
+        }
+
+        // Gráfico de clientes por dirección
+        if (clientsByAddressContainer && clientsByAddressLabels.length > 0) {
+            const clientsByAddressOptions = {
+                series: [{
+                    name: 'Clientes',
+                    data: clientsByAddressCounts
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    fontFamily: 'Poppins, sans-serif',
+                    toolbar: {
+                        show: true
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800,
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 350
+                        }
+                    }
+                },
+                colors: ['#3F95FF'],
+                plotOptions: {
+                    bar: {
+                        borderRadius: 5,
+                        columnWidth: '60%',
+                        dataLabels: {
+                            position: 'top'
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function(val) {
+                        return val;
+                    },
+                    offsetY: -20,
+                    style: {
+                        fontSize: '12px',
+                        colors: ["#304758"]
+                    }
+                },
+                xaxis: {
+                    categories: clientsByAddressLabels,
+                    labels: {
+                        style: {
+                            fontSize: '12px',
+                            fontFamily: 'Poppins, sans-serif'
+                        },
+                        rotate: -45,
+                        rotateAlways: false
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Número de clientes',
+                        style: {
+                            fontSize: '14px',
+                            fontFamily: 'Poppins, sans-serif',
+                            fontWeight: 600
                         }
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    bodyFont: {
-                        size: 14
-                    },
-                    padding: 15,
-                    cornerRadius: 8,
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.raw;
-                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-                            return `${label}: ${value} (${percentage}%)`;
+                    theme: 'dark'
+                },
+                grid: {
+                    borderColor: '#e0e0e0',
+                    strokeDashArray: 5,
+                    yaxis: {
+                        lines: {
+                            show: true
                         }
                     }
                 }
-            }
+            };
+
+            const clientsByAddressChart = new ApexCharts(clientsByAddressContainer, clientsByAddressOptions);
+            clientsByAddressChart.render();
+        } else if (clientsByAddressContainer) {
+            clientsByAddressContainer.innerHTML = '<div class="flex items-center justify-center h-full"><div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><p class="mt-2 text-gray-500">No hay datos disponibles para mostrar</p></div></div>';
         }
     });
-});
-
-
-
-document.addEventListener('DOMContentLoaded', function () {
-        // ...existing code para clientTypesPieChart...
-
-        // Gráfico de clientes por dirección
-        const ctxAddress = document.getElementById('clientsByAddressChart').getContext('2d');
-        const addressLabels = {!! json_encode($clientsByAddress->pluck('address')->toArray()) !!};
-        const addressCounts = {!! json_encode($clientsByAddress->pluck('count')->toArray()) !!};
-        new Chart(ctxAddress, {
-            type: 'bar',
-            data: {
-                labels: addressLabels,
-                datasets: [{
-                    label: 'Clientes',
-                    data: addressCounts,
-                    backgroundColor: '#3F95FF'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `${context.label}: ${context.raw} clientes`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: { display: true, text: 'Dirección' },
-                        ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Nº de clientes' }
-                    }
-                }
-            }
-        });
-    });
-
 </script>
 @endsection 

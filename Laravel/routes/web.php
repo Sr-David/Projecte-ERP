@@ -230,7 +230,7 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':proyectos,borrar')->group(function () {
         Route::delete('/proyectos/{id}', [ProjectController::class, 'destroy'])->name('proyectos.destroy');
     });
-    
+
     // Notes routes
     Route::resource('notas', NotesController::class)->names([
         'index' => 'notes.index',

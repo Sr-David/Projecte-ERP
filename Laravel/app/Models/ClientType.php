@@ -22,7 +22,7 @@ class ClientType extends Model
      * @var string
      */
     protected $primaryKey = 'idClientType';
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -55,5 +55,5 @@ class ClientType extends Model
     public function empresa()
     {
         return $this->belongsTo(UserAdministration::class, 'idEmpresa', 'idEmpresa');
-    }
+}
 }

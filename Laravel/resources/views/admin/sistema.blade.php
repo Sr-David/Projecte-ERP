@@ -202,7 +202,7 @@
                 <div class="app-alert ${alertClass}" role="alert">
                     <svg class="app-alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         ${iconPath}
-                    </svg>
+                        </svg>
                     <span>${message}</span>
                 </div>
             `;

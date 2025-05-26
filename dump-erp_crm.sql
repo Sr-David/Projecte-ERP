@@ -218,7 +218,7 @@ CREATE TABLE `Notes` (
   KEY `CreatedBy` (`CreatedBy`),
   CONSTRAINT `notes_ibfk_1` FOREIGN KEY (`idEmpresa`) REFERENCES `UserAdministration` (`idEmpresa`),
   CONSTRAINT `notes_ibfk_2` FOREIGN KEY (`CreatedBy`) REFERENCES `Users` (`idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
 
 --
 -- Table structure for table `Projects`

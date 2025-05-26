@@ -131,7 +131,7 @@
                 </div>
             </div>
             <div class="relative h-64">
-                <canvas id="salesChart" class="w-full h-full"></canvas>
+                <div id="salesChart" class="w-full h-full"></div>
             </div>
         </div>
         
@@ -260,57 +260,127 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Datos de ventas
         const salesData = @json($salesData);
         
-        // Configurar el gráfico de ventas
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        const salesChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: salesData.map(item => item.month + ' ' + item.year),
-                datasets: [{
-                    label: 'Ventas Mensuales',
-                    data: salesData.map(item => item.amount),
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderColor: 'rgb(59, 130, 246)',
-                    borderWidth: 2,
-                    pointBackgroundColor: 'rgb(59, 130, 246)',
-                    pointRadius: 4,
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `$${context.raw.toFixed(2)}`;
-                            }
-                        }
+        // Configurar el gráfico de ventas con ApexCharts
+        const salesChartOptions = {
+            series: [{
+                name: 'Ventas Mensuales',
+                data: salesData.map(item => item.amount)
+            }],
+            chart: {
+                type: 'area',
+                height: 350,
+                fontFamily: 'Poppins, sans-serif',
+                toolbar: {
+                    show: true,
+                    tools: {
+                        download: true,
+                        selection: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: true,
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value;
-                            }
-                        }
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
                     }
                 }
+            },
+            colors: ['#3F95FF'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'light',
+                    type: 'vertical',
+                    shadeIntensity: 0.3,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.2,
+                    stops: [0, 100]
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                categories: salesData.map(item => item.month + ' ' + item.year),
+                labels: {
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px',
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: 500
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function(val) {
+                        return '€' + val.toFixed(2);
+                    },
+                    style: {
+                        colors: '#666',
+                        fontSize: '12px',
+                        fontFamily: 'Poppins, sans-serif',
+                        fontWeight: 500
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val) {
+                        return '€' + val.toFixed(2);
+                    }
+                },
+                theme: 'dark',
+                x: {
+                    show: true
+                }
+            },
+            grid: {
+                borderColor: '#e0e0e0',
+                strokeDashArray: 5,
+                xaxis: {
+                    lines: {
+                        show: true
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            markers: {
+                size: 5,
+                colors: ['#3F95FF'],
+                strokeColors: '#fff',
+                strokeWidth: 2,
+                hover: {
+                    size: 7
+                }
             }
-        });
+        };
+
+        const salesChart = new ApexCharts(document.getElementById('salesChart'), salesChartOptions);
+        salesChart.render();
         
         // Cambiar datos según el período seleccionado
         document.getElementById('period-selector').addEventListener('change', function() {
@@ -342,9 +412,15 @@
             }
             
             // Actualizar el gráfico
-            salesChart.data.labels = filteredData.map(item => item.month + ' ' + item.year);
-            salesChart.data.datasets[0].data = filteredData.map(item => item.amount);
-            salesChart.update();
+            salesChart.updateOptions({
+                xaxis: {
+                    categories: filteredData.map(item => item.month + ' ' + item.year)
+                }
+            });
+            salesChart.updateSeries([{
+                name: 'Ventas Mensuales',
+                data: filteredData.map(item => item.amount)
+            }]);
         });
     });
 </script>

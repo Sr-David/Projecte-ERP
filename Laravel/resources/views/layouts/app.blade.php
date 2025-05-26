@@ -244,7 +244,7 @@
             <!-- Logo -->
             <div class="p-4 border-b flex items-center justify-center h-20">
                 <a href="{{ url('/dashboard') }}" class="flex items-center">
-                    <img src="/images/logoElevate.png" alt="Elevate CRM" class="h-12 animate__animated animate__pulse animate__infinite animate__slower">
+                    <img src="/images/logoElevate.png" alt="Elevate CRM" class="h-16">
                 </a>
             </div>
 
@@ -542,7 +542,7 @@
             <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:align-middle">
                 <!-- Header con logo -->
                 <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-6 sm:px-6 text-center">
-                    <img src="/images/logoElevate.png" alt="Elevate CRM" class="h-16 mx-auto mb-3 animate__animated animate__pulse animate__infinite animate__slower">
+                    <img src="/images/logoElevate.png" alt="Elevate CRM" class="h-20 mx-auto mb-3">
                     <h3 class="text-xl font-semibold text-white">Centro de Ayuda</h3>
                 </div>
                 
@@ -634,7 +634,7 @@
                                             <li>Completa el nombre y descripción del nuevo tipo</li>
                                             <li>Haz clic en "Guardar"</li>
                                         </ol>
-                                    </div>
+                            </div>
                                 </details>
 
                                 <details class="rounded-lg bg-gray-50 overflow-hidden">
@@ -653,7 +653,7 @@
                                             <li>Selecciona si es un producto o servicio</li>
                                             <li>Haz clic en "Guardar"</li>
                                         </ol>
-                                    </div>
+                        </div>
                                 </details>
 
                                 <details class="rounded-lg bg-gray-50 overflow-hidden">
@@ -661,7 +661,7 @@
                                         ¿Cómo generar un reporte de ventas?
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
+                                            </svg>
                                     </summary>
                                     <div class="px-4 py-3 text-sm text-gray-600 border-t border-gray-200">
                                         <p>Para generar un reporte de ventas:</p>
@@ -673,7 +673,7 @@
                                             <li>Haz clic en "Generar Reporte"</li>
                                             <li>Puedes exportar el reporte a PDF o Excel usando los botones correspondientes</li>
                                         </ol>
-                                    </div>
+                                        </div>
                                 </details>
 
                                 <details class="rounded-lg bg-gray-50 overflow-hidden">
@@ -681,7 +681,7 @@
                                         ¿Cómo convertir un lead en cliente?
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
+                                            </svg>
                                     </summary>
                                     <div class="px-4 py-3 text-sm text-gray-600 border-t border-gray-200">
                                         <p>Para convertir un lead en cliente:</p>
@@ -693,7 +693,7 @@
                                             <li>Completa cualquier información adicional requerida</li>
                                             <li>Confirma la conversión</li>
                                         </ol>
-                                    </div>
+                                        </div>
                                 </details>
 
                                 <details class="rounded-lg bg-gray-50 overflow-hidden">
@@ -701,7 +701,7 @@
                                         ¿Cómo crear y gestionar notas?
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
+                                            </svg>
                                     </summary>
                                     <div class="px-4 py-3 text-sm text-gray-600 border-t border-gray-200">
                                         <p>Para crear y gestionar notas:</p>
@@ -714,7 +714,7 @@
                                             <li>Haz clic en "Guardar"</li>
                                             <li>Para editar o eliminar una nota existente, usa los botones correspondientes en la lista de notas</li>
                                         </ol>
-                                    </div>
+                                        </div>
                                 </details>
 
                                 <details class="rounded-lg bg-gray-50 overflow-hidden">
@@ -722,7 +722,7 @@
                                         ¿Cómo modificar mi perfil de usuario?
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
+                                            </svg>
                                     </summary>
                                     <div class="px-4 py-3 text-sm text-gray-600 border-t border-gray-200">
                                         <p>Para modificar tu perfil de usuario:</p>
@@ -733,7 +733,7 @@
                                             <li>Para cambiar tu contraseña, usa la sección específica para ello</li>
                                             <li>Haz clic en "Guardar Cambios" para aplicar las modificaciones</li>
                                         </ol>
-                                    </div>
+                                        </div>
                                 </details>
 
                                 <details class="rounded-lg bg-gray-50 overflow-hidden">
@@ -813,9 +813,9 @@
                                             <li>Confirma la exportación</li>
                                             <li>El archivo se descargará automáticamente a tu dispositivo</li>
                                         </ol>
-                                    </div>
+                                        </div>
                                 </details>
-                            </div>
+                                        </div>
                         </div>
                     </div>
                 </div>
@@ -1029,6 +1029,9 @@
         });
     </script>
 
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
     @yield('scripts')
 </body>
 
