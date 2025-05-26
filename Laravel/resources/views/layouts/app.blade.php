@@ -294,9 +294,7 @@
                             class="mr-3 h-5 w-5 {{ request()->is('ventas*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2M16 21v-2a4 4 0 00-3-3.87" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 21v-2a4 4 0 013-3.87" />
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Ventas
                     </a>
@@ -515,21 +513,169 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center">
                         <div class="text-sm text-gray-500">
-                            &copy; 2023 Elevate CRM. Todos los derechos reservados.
+                            &copy; 2025 Elevate CRM. Todos los derechos reservados.
                         </div>
                         <div class="flex space-x-4">
-                            <a href="#" class="text-gray-500 hover:text-gray-700">
-                                <span class="sr-only">Términos</span>
+                            <button id="terms-btn" class="text-gray-500 hover:text-gray-700">
                                 <span class="text-xs">Términos de uso</span>
-                            </a>
-                            <a href="#" class="text-gray-500 hover:text-gray-700">
-                                <span class="sr-only">Privacidad</span>
+                            </button>
+                            <button id="privacy-btn" class="text-gray-500 hover:text-gray-700">
                                 <span class="text-xs">Política de privacidad</span>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
             </footer>
+        </div>
+    </div>
+
+    <!-- Modal de Términos de Uso -->
+    <div id="terms-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-modal="true">
+        <div class="flex min-h-screen items-center justify-center px-4 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
+            
+            <!-- Modal Panel -->
+            <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:align-middle">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-6 sm:px-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-white">Términos de Uso</h3>
+                        <button id="close-terms-modal" class="text-white hover:text-gray-200">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Contenido del modal -->
+                <div class="px-4 py-5 sm:p-6 max-h-[70vh] overflow-y-auto">
+                    <div class="prose prose-blue max-w-none">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">1. Aceptación de los Términos</h4>
+                        <p class="mb-4 text-gray-700">Al acceder y utilizar este sistema ERP-CRM, usted acepta estar legalmente obligado por estos términos y condiciones. Si no está de acuerdo con alguno de estos términos, no debe utilizar este servicio.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">2. Licencia de Uso</h4>
+                        <p class="mb-4 text-gray-700">Elevate CRM otorga al usuario una licencia limitada, no exclusiva y no transferible para acceder y utilizar el sistema de acuerdo con estos términos y condiciones. Esta licencia está sujeta al cumplimiento continuo de estos términos.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">3. Restricciones de Uso</h4>
+                        <p class="mb-4 text-gray-700">El usuario se compromete a no:</p>
+                        <ul class="list-disc pl-5 mb-4 text-gray-700">
+                            <li>Utilizar el sistema para fines ilegales o no autorizados</li>
+                            <li>Intentar acceder a áreas restringidas del sistema</li>
+                            <li>Modificar, adaptar o piratear el sistema</li>
+                            <li>Transmitir virus o código malicioso</li>
+                            <li>Realizar ingeniería inversa del software</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">4. Propiedad Intelectual</h4>
+                        <p class="mb-4 text-gray-700">Todos los derechos de propiedad intelectual relacionados con el sistema, incluyendo pero no limitado a software, código, diseño, logotipos y marcas comerciales, son propiedad de Elevate CRM o sus licenciantes. Ninguna disposición de estos términos transfiere ningún derecho de propiedad al usuario.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">5. Privacidad y Datos</h4>
+                        <p class="mb-4 text-gray-700">El uso del sistema está sujeto a nuestra política de privacidad, que describe cómo recopilamos, utilizamos y protegemos la información proporcionada por los usuarios. Al utilizar este sistema, usted acepta el procesamiento de su información según lo establecido en nuestra política de privacidad.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">6. Modificaciones</h4>
+                        <p class="mb-4 text-gray-700">Elevate CRM se reserva el derecho de modificar estos términos en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación. El uso continuado del sistema después de dichos cambios constituirá su aceptación de los nuevos términos.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">7. Terminación</h4>
+                        <p class="mb-4 text-gray-700">Elevate CRM se reserva el derecho de terminar o suspender el acceso al sistema en cualquier momento y por cualquier motivo, sin previo aviso.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">8. Limitación de Responsabilidad</h4>
+                        <p class="mb-4 text-gray-700">En ningún caso Elevate CRM será responsable por daños directos, indirectos, incidentales, especiales o consecuentes que resulten del uso o la imposibilidad de usar el sistema.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">9. Ley Aplicable</h4>
+                        <p class="mb-4 text-gray-700">Estos términos se regirán e interpretarán de acuerdo con las leyes del país de operación de Elevate CRM, sin tener en cuenta sus disposiciones sobre conflictos de leyes.</p>
+                    </div>
+                </div>
+                
+                <!-- Footer del modal -->
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end border-t border-gray-200">
+                    <button type="button" id="close-terms-btn" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm">
+                        Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Política de Privacidad -->
+    <div id="privacy-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-modal="true">
+        <div class="flex min-h-screen items-center justify-center px-4 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/75 transition-opacity" aria-hidden="true"></div>
+            
+            <!-- Modal Panel -->
+            <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:align-middle">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 px-4 py-6 sm:px-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-white">Política de Privacidad</h3>
+                        <button id="close-privacy-modal" class="text-white hover:text-gray-200">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Contenido del modal -->
+                <div class="px-4 py-5 sm:p-6 max-h-[70vh] overflow-y-auto">
+                    <div class="prose prose-blue max-w-none">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">1. Información que Recopilamos</h4>
+                        <p class="mb-4 text-gray-700">Elevate CRM puede recopilar la siguiente información personal:</p>
+                        <ul class="list-disc pl-5 mb-4 text-gray-700">
+                            <li>Información de contacto (nombre, dirección de correo electrónico, teléfono)</li>
+                            <li>Información de la empresa (nombre, dirección, sector)</li>
+                            <li>Datos de inicio de sesión y actividad en el sistema</li>
+                            <li>Información del dispositivo y conexión</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">2. Cómo Utilizamos su Información</h4>
+                        <p class="mb-4 text-gray-700">Utilizamos la información recopilada para:</p>
+                        <ul class="list-disc pl-5 mb-4 text-gray-700">
+                            <li>Proporcionar y mantener nuestros servicios</li>
+                            <li>Mejorar y personalizar la experiencia del usuario</li>
+                            <li>Enviar información importante sobre el servicio</li>
+                            <li>Proporcionar soporte al cliente</li>
+                            <li>Garantizar la seguridad de nuestros sistemas</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">3. Protección de Datos</h4>
+                        <p class="mb-4 text-gray-700">Implementamos medidas de seguridad técnicas y organizativas para proteger sus datos personales contra el acceso no autorizado, la pérdida o alteración. Estas medidas incluyen encriptación de datos, acceso restringido y auditorías regulares de seguridad.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">4. Compartir Datos</h4>
+                        <p class="mb-4 text-gray-700">No vendemos, intercambiamos ni transferimos su información personal a terceros sin su consentimiento, excepto cuando sea necesario para proporcionar nuestros servicios o cumplir con requisitos legales.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">5. Cookies y Tecnologías Similares</h4>
+                        <p class="mb-4 text-gray-700">Utilizamos cookies y tecnologías similares para mejorar la experiencia del usuario, analizar el uso del sistema y personalizar el contenido. Puede configurar su navegador para rechazar cookies, pero esto puede limitar algunas funcionalidades del sistema.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">6. Sus Derechos</h4>
+                        <p class="mb-4 text-gray-700">Dependiendo de su ubicación, puede tener ciertos derechos con respecto a sus datos personales, incluyendo:</p>
+                        <ul class="list-disc pl-5 mb-4 text-gray-700">
+                            <li>Derecho de acceso a sus datos</li>
+                            <li>Derecho a rectificar datos inexactos</li>
+                            <li>Derecho a eliminar sus datos</li>
+                            <li>Derecho a restringir el procesamiento</li>
+                            <li>Derecho a la portabilidad de datos</li>
+                            <li>Derecho a oponerse al procesamiento</li>
+                        </ul>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">7. Retención de Datos</h4>
+                        <p class="mb-4 text-gray-700">Conservaremos sus datos personales solo durante el tiempo necesario para cumplir con los fines para los que se recopilaron, incluido el cumplimiento de requisitos legales o reglamentarios.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">8. Cambios en esta Política</h4>
+                        <p class="mb-4 text-gray-700">Podemos actualizar nuestra política de privacidad periódicamente. Le notificaremos cualquier cambio publicando la nueva política de privacidad en esta página y, cuando sea apropiado, le informaremos por correo electrónico.</p>
+                        
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">9. Contacto</h4>
+                        <p class="mb-4 text-gray-700">Si tiene preguntas sobre esta política de privacidad, puede contactarnos a través de los canales de soporte proporcionados en el sistema.</p>
+                    </div>
+                </div>
+                
+                <!-- Footer del modal -->
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end border-t border-gray-200">
+                    <button type="button" id="close-privacy-btn" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:w-auto sm:text-sm">
+                        Aceptar
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1025,6 +1171,63 @@
             // Also trigger the animation when navigating with browser history
             window.addEventListener('popstate', function() {
                 showTransition();
+            });
+            
+            // Términos y Privacidad modals
+            const termsBtn = document.getElementById('terms-btn');
+            const termsModal = document.getElementById('terms-modal');
+            const closeTermsModal = document.getElementById('close-terms-modal');
+            const closeTermsBtn = document.getElementById('close-terms-btn');
+            
+            const privacyBtn = document.getElementById('privacy-btn');
+            const privacyModal = document.getElementById('privacy-modal');
+            const closePrivacyModal = document.getElementById('close-privacy-modal');
+            const closePrivacyBtn = document.getElementById('close-privacy-btn');
+            
+            // Términos modal
+            termsBtn?.addEventListener('click', function() {
+                termsModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeTermsModal?.addEventListener('click', function() {
+                termsModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            closeTermsBtn?.addEventListener('click', function() {
+                termsModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            termsModal?.addEventListener('click', function(e) {
+                if (e.target === termsModal) {
+                    termsModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Privacidad modal
+            privacyBtn?.addEventListener('click', function() {
+                privacyModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closePrivacyModal?.addEventListener('click', function() {
+                privacyModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            closePrivacyBtn?.addEventListener('click', function() {
+                privacyModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            privacyModal?.addEventListener('click', function(e) {
+                if (e.target === privacyModal) {
+                    privacyModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
             });
         });
     </script>

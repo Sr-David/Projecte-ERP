@@ -85,29 +85,29 @@
             </div>
             
             <!-- (Notas) -->
-           <div class="card bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-    <div class="flex items-center">
+            <div class="card bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center">
         <div class="flex-shrink-0 bg-purple-100 rounded-full p-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-            </svg>
-        </div>
-        <div class="ml-4">
+                        </svg>
+                    </div>
+                    <div class="ml-4">
             <h3 class="text-sm font-medium text-gray-500">Notas</h3>
-            <div class="mt-1 flex items-baseline">
+                        <div class="mt-1 flex items-baseline">
                 <p class="text-2xl font-semibold text-gray-900">{{ $stats['notes']['total'] }}</p>
                 <p class="ml-2 text-sm font-medium {{ $stats['notes']['change'] <= 0 ? 'text-gray-600' : 'text-gray-600' }}">
                     {{ $stats['notes']['change'] >= 0 ? '+' : '' }}{{ $stats['notes']['change'] }}
                 </p>
-            </div>
-        </div>
-    </div>
-    <div class="mt-4">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
         <a href="{{ route('notes.index') }}" class="text-sm font-medium text-purple-600 hover:underline">
             Ver notas
-        </a>
-    </div>
-</div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     

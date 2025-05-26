@@ -304,7 +304,7 @@
                     data: productosFechasValores
                 }],
                 chart: {
-                    type: 'bar',
+                type: 'bar',
                     height: 350,
                     fontFamily: 'Poppins, sans-serif',
                     toolbar: {
@@ -376,8 +376,8 @@
                         name: dataset.label,
                         data: dataset.data,
                         color: dataset.borderColor
-                    });
-                });
+            });
+        });
             }
             
             const ventasPorProductoFechaOptions = {

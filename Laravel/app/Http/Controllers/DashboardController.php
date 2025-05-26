@@ -62,18 +62,51 @@ class DashboardController extends Controller
             ? round((($activeProjects - $lastMonthProjects) / $lastMonthProjects) * 100, 1)
             : 100;
             
-        // Facturación mensual
+        // Facturación mensual - ventas confirmadas
         $currentMonthSales = DB::table('SalesProposals')
-    ->where('SalesProposals.idEmpresa', $idEmpresa)
-    ->where('SalesProposals.State', 'Efectuada') // o 'completed' según tu sistema
-    ->where('SalesProposals.CreatedAt', '>=', Carbon::now()->startOfMonth())
-    ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID')
-    ->sum(DB::raw('SalesDetails.QuantitySold * SalesDetails.UnitPrice'));
+            ->where('SalesProposals.idEmpresa', $idEmpresa)
+            ->where(function($query) {
+                $query->where('SalesProposals.State', 'Efectuada')
+                      ->orWhere('SalesProposals.State', 'efectuada')
+                      ->orWhere('SalesProposals.State', 'completed')
+                      ->orWhere('SalesProposals.State', 'Completed')
+                      ->orWhere('SalesProposals.State', 'confirmado')
+                      ->orWhere('SalesProposals.State', 'Confirmado')
+                      ->orWhereIn('SalesProposals.State', ['confirmed', 'Confirmed', 'finalizado', 'Finalizado']);
+            })
+            ->where('SalesProposals.CreatedAt', '>=', Carbon::now()->startOfMonth())
+            ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID')
+            ->sum(DB::raw('SalesDetails.QuantitySold * SalesDetails.UnitPrice'));
             
-        // Calcular porcentaje de crecimiento de ventas
+        // Facturación por proyectos completados en el mes actual
+        $currentMonthCompletedProjects = DB::table('Projects')
+            ->where('idEmpresa', $idEmpresa)
+            ->where(function($query) {
+                $query->where('Status', 'Completed')
+                      ->orWhere('Status', 'completed')
+                      ->orWhere('Status', 'Completado')
+                      ->orWhere('Status', 'completado')
+                      ->orWhere('Status', 'Finalizado')
+                      ->orWhere('Status', 'finalizado');
+            })
+            ->where('UpdatedAt', '>=', Carbon::now()->startOfMonth())
+            ->sum('Budget');
+            
+        // Sumar las ventas y los proyectos completados
+        $totalCurrentMonthBilling = $currentMonthSales + $currentMonthCompletedProjects;
+            
+        // Ventas del mes anterior
         $lastMonthSales = DB::table('SalesProposals')
             ->where('SalesProposals.idEmpresa', $idEmpresa)
-            ->where('SalesProposals.State', 'completed')
+            ->where(function($query) {
+                $query->where('SalesProposals.State', 'Efectuada')
+                      ->orWhere('SalesProposals.State', 'efectuada')
+                      ->orWhere('SalesProposals.State', 'completed')
+                      ->orWhere('SalesProposals.State', 'Completed')
+                      ->orWhere('SalesProposals.State', 'confirmado')
+                      ->orWhere('SalesProposals.State', 'Confirmado')
+                      ->orWhereIn('SalesProposals.State', ['confirmed', 'Confirmed', 'finalizado', 'Finalizado']);
+            })
             ->whereBetween('SalesProposals.CreatedAt', [
                 Carbon::now()->subMonth()->startOfMonth(),
                 Carbon::now()->subMonth()->endOfMonth()
@@ -81,8 +114,29 @@ class DashboardController extends Controller
             ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID')
             ->sum(DB::raw('SalesDetails.QuantitySold * SalesDetails.UnitPrice'));
             
-        $salesGrowth = $lastMonthSales > 0 
-            ? round((($currentMonthSales - $lastMonthSales) / $lastMonthSales) * 100, 1)
+        // Proyectos completados del mes anterior
+        $lastMonthCompletedProjects = DB::table('Projects')
+            ->where('idEmpresa', $idEmpresa)
+            ->where(function($query) {
+                $query->where('Status', 'Completed')
+                      ->orWhere('Status', 'completed')
+                      ->orWhere('Status', 'Completado')
+                      ->orWhere('Status', 'completado')
+                      ->orWhere('Status', 'Finalizado')
+                      ->orWhere('Status', 'finalizado');
+            })
+            ->whereBetween('UpdatedAt', [
+                Carbon::now()->subMonth()->startOfMonth(),
+                Carbon::now()->subMonth()->endOfMonth()
+            ])
+            ->sum('Budget');
+            
+        // Total facturación mes anterior
+        $totalLastMonthBilling = $lastMonthSales + $lastMonthCompletedProjects;
+            
+        // Calcular porcentaje de crecimiento
+        $salesGrowth = $totalLastMonthBilling > 0 
+            ? round((($totalCurrentMonthBilling - $totalLastMonthBilling) / $totalLastMonthBilling) * 100, 1)
             : 100;
             
         // Notas activas (usadas como tickets de soporte en este ejemplo)
@@ -112,7 +166,7 @@ class DashboardController extends Controller
                 'growth' => $projectGrowth
             ],
             'sales' => [
-                'total' => $currentMonthSales,
+                'total' => $totalCurrentMonthBilling,
                 'growth' => $salesGrowth
             ],
             'notes' => [
@@ -132,18 +186,45 @@ class DashboardController extends Controller
             $month = $date->format('M');
             $year = $date->format('Y');
             
+            // Ventas confirmadas para el mes
             $monthlySales = DB::table('SalesProposals')
                 ->where('SalesProposals.idEmpresa', $idEmpresa)
-                ->where('SalesProposals.State', 'completed')
+                ->where(function($query) {
+                    $query->where('SalesProposals.State', 'Efectuada')
+                          ->orWhere('SalesProposals.State', 'efectuada')
+                          ->orWhere('SalesProposals.State', 'completed')
+                          ->orWhere('SalesProposals.State', 'Completed')
+                          ->orWhere('SalesProposals.State', 'confirmado')
+                          ->orWhere('SalesProposals.State', 'Confirmado')
+                          ->orWhereIn('SalesProposals.State', ['confirmed', 'Confirmed', 'finalizado', 'Finalizado']);
+                })
                 ->whereYear('SalesProposals.CreatedAt', $date->year)
                 ->whereMonth('SalesProposals.CreatedAt', $date->month)
                 ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID')
                 ->sum(DB::raw('SalesDetails.QuantitySold * SalesDetails.UnitPrice'));
                 
+            // Proyectos completados para el mes
+            $monthlyProjectsRevenue = DB::table('Projects')
+                ->where('idEmpresa', $idEmpresa)
+                ->where(function($query) {
+                    $query->where('Status', 'Completed')
+                          ->orWhere('Status', 'completed')
+                          ->orWhere('Status', 'Completado')
+                          ->orWhere('Status', 'completado')
+                          ->orWhere('Status', 'Finalizado')
+                          ->orWhere('Status', 'finalizado');
+                })
+                ->whereYear('UpdatedAt', $date->year)
+                ->whereMonth('UpdatedAt', $date->month)
+                ->sum('Budget');
+                
+            // Sumar ambos tipos de ingresos
+            $totalMonthlyRevenue = $monthlySales + $monthlyProjectsRevenue;
+                
             $salesByMonth[] = [
                 'month' => $month,
                 'year' => $year,
-                'amount' => $monthlySales
+                'amount' => $totalMonthlyRevenue
             ];
         }
         
@@ -216,7 +297,7 @@ class DashboardController extends Controller
         foreach ($recentNotes as $note) {
             $activities[] = [
                 'type' => 'note',
-                'title' => 'Nuevo ticket de soporte',
+                'title' => 'Nueva anotación',
                 'detail' => $note->Title,
                 'time' => Carbon::parse($note->created_at)->diffForHumans(),
                 'timestamp' => $note->created_at

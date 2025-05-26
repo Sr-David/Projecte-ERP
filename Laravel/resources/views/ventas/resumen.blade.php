@@ -212,7 +212,7 @@
                 const ventasPorProductoOptions = {
                     series: {!! json_encode($productosValores ?? []) !!},
                     chart: {
-                        type: 'pie',
+                    type: 'pie',
                         height: 350,
                         fontFamily: 'Poppins, sans-serif',
                         animations: {
@@ -221,7 +221,7 @@
                             speed: 800
                         }
                     },
-                    labels: {!! json_encode($productosLabels ?? []) !!},
+                        labels: {!! json_encode($productosLabels ?? []) !!},
                     colors: ['#3F95FF', '#6366F1', '#16BA81', '#F59E42', '#F43F5E', '#A855F7', '#FACC15', '#10B981'],
                     dataLabels: {
                         enabled: true,
@@ -261,7 +261,7 @@
                     },
                     responsive: [{
                         breakpoint: 480,
-                        options: {
+                    options: {
                             chart: {
                                 width: 300
                             },
@@ -300,7 +300,7 @@
                 const productoPorFechaOptions = {
                     series: chartData.series,
                     chart: {
-                        type: 'bar',
+                    type: 'bar',
                         height: 350,
                         fontFamily: 'Poppins, sans-serif',
                         toolbar: {

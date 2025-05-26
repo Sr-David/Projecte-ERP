@@ -356,55 +356,62 @@ class ReportesController extends Controller
         $diffDays = $endDate->diffInDays($startDate);
         
         try {
-            // Verificar si hay ventas para esta empresa
-            $anySales = DB::table('SalesProposals')
+            // Obtener todos los estados existentes en la base de datos
+            $availableStates = DB::table('SalesProposals')
                 ->where('idEmpresa', $idEmpresa)
-                ->exists();
+                ->select('State')
+                ->distinct()
+                ->pluck('State')
+                ->toArray();
                 
-            // Si no hay ventas en absoluto, crear datos simulados de inmediato
-            if (!$anySales) {
-                \Illuminate\Support\Facades\Log::warning("No existen ventas para esta empresa, creando datos simulados");
-                return $this->createMockSalesChartData($startDate, $endDate, $diffDays);
-            }
+            \Illuminate\Support\Facades\Log::info("Estados disponibles en ventas:", $availableStates);
             
-            // Primero intentar con ventas confirmadas
+            // Crear una consulta base para todos los estados
             $salesQuery = DB::table('SalesProposals')
                 ->where('SalesProposals.idEmpresa', $idEmpresa)
-                ->where(function($query) {
+                ->whereBetween('SalesProposals.CreatedAt', [$startDate, $endDate])
+                ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID');
+            
+            // Intenta obtener ventas para todos los estados primero para analizar los datos
+            $allSales = (clone $salesQuery)
+                ->select(
+                    'SalesProposals.State',
+                    DB::raw('SUM(SalesDetails.QuantitySold * SalesDetails.UnitPrice) as total')
+                )
+                ->groupBy('SalesProposals.State')
+                ->get();
+                
+            \Illuminate\Support\Facades\Log::info("Ventas por estado:", $allSales->toArray());
+            
+            // Verifica qué estados tienen realmente ventas y usa esos
+            $statesWithSales = $allSales
+                ->where('total', '>', 0)
+                ->pluck('State')
+                ->toArray();
+                
+            \Illuminate\Support\Facades\Log::info("Estados con ventas reales:", $statesWithSales);
+            
+            // Si hay estados con ventas, filtra por esos estados
+            if (count($statesWithSales) > 0) {
+                $salesQuery->whereIn('SalesProposals.State', $statesWithSales);
+            } else {
+                // Si no hay estados con ventas, incluye todos los estados "completados" posibles
+                $salesQuery->where(function($query) {
                     $query->where('SalesProposals.State', 'completed')
                           ->orWhere('SalesProposals.State', 'Completed')
                           ->orWhere('SalesProposals.State', 'confirmado')
                           ->orWhere('SalesProposals.State', 'Confirmado')
+                          ->orWhere('SalesProposals.State', 'Efectuada')
+                          ->orWhere('SalesProposals.State', 'efectuada')
                           ->orWhereIn('SalesProposals.State', ['confirmed', 'Confirmed', 'finalizado', 'Finalizado']);
-                })
-                ->whereBetween('SalesProposals.CreatedAt', [$startDate, $endDate])
-                ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID');
-            
-            // Ver la consulta SQL para depuración
-            \Illuminate\Support\Facades\Log::info("Consulta SQL para ventas: " . $salesQuery->toSql(), $salesQuery->getBindings());
+                });
+            }
             
             // Verificar si hay resultados antes de continuar
             $salesCount = $salesQuery->count();
-            \Illuminate\Support\Facades\Log::info("Ventas encontradas con filtro de estado: " . $salesCount);
+            \Illuminate\Support\Facades\Log::info("Ventas encontradas con filtro: " . $salesCount);
             
-            if ($salesCount == 0) {
-                // Si no hay ventas con filtro de estado, intentar sin filtro
-                $salesQuery = DB::table('SalesProposals')
-                    ->where('SalesProposals.idEmpresa', $idEmpresa)
-                    ->whereBetween('SalesProposals.CreatedAt', [$startDate, $endDate])
-                    ->join('SalesDetails', 'SalesProposals.idSalesProposals', '=', 'SalesDetails.ProposalID');
-                
-                $salesCount = $salesQuery->count();
-                \Illuminate\Support\Facades\Log::info("Ventas encontradas sin filtro de estado: " . $salesCount);
-            }
-            
-            // Si aún no hay resultados, crear datos simulados
-            if ($salesCount == 0) {
-                \Illuminate\Support\Facades\Log::warning("No se encontraron ventas en el período seleccionado, creando datos simulados para el gráfico");
-                return $this->createMockSalesChartData($startDate, $endDate, $diffDays);
-            }
-            
-            // Continuar con el procesamiento normal si hay datos
+            // Formato de datos según el intervalo de tiempo
             if ($diffDays <= 31) {
                 // Datos diarios para períodos cortos
                 $salesByPeriod = $salesQuery
@@ -415,7 +422,7 @@ class ReportesController extends Controller
                     
                 \Illuminate\Support\Facades\Log::info("Ventas diarias encontradas:", [
                     'count' => $salesByPeriod->count(),
-                    'data' => $salesByPeriod
+                    'data' => $salesByPeriod->toArray()
                 ]);
                     
                 $labels = [];
@@ -453,7 +460,7 @@ class ReportesController extends Controller
                     
                 \Illuminate\Support\Facades\Log::info("Ventas mensuales encontradas:", [
                     'count' => $salesByPeriod->count(),
-                    'data' => $salesByPeriod
+                    'data' => $salesByPeriod->toArray()
                 ]);
                     
                 $labels = [];
@@ -485,20 +492,16 @@ class ReportesController extends Controller
                 }
             }
             
-            // Verificar si todos los valores son cero
-            $allZeros = true;
+            // Verificar si tenemos al menos algunos datos reales
+            $hasRealData = false;
             foreach ($data as $value) {
                 if ($value > 0) {
-                    $allZeros = false;
+                    $hasRealData = true;
                     break;
                 }
             }
             
-            // Si todos los valores son cero, usar datos simulados
-            if ($allZeros) {
-                \Illuminate\Support\Facades\Log::warning("Todos los valores del gráfico son cero, usando datos simulados");
-                return $this->createMockSalesChartData($startDate, $endDate, $diffDays);
-            }
+            \Illuminate\Support\Facades\Log::info("¿Hay datos reales de ventas? " . ($hasRealData ? "SÍ" : "NO"));
             
             $result = [
                 'labels' => $labels,
@@ -514,49 +517,12 @@ class ReportesController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             
-            // En caso de error, devolver datos simulados
-            return $this->createMockSalesChartData($startDate, $endDate, $diffDays);
+            // En caso de error, devolver un array vacío
+            return [
+                'labels' => [],
+                'data' => []
+            ];
         }
-    }
-    
-    /**
-     * Crear datos simulados para el gráfico de ventas
-     */
-    private function createMockSalesChartData($startDate, $endDate, $diffDays)
-    {
-        \Illuminate\Support\Facades\Log::info("Generando datos simulados para el gráfico de ventas");
-        
-        $labels = [];
-        $data = [];
-        
-        if ($diffDays <= 31) {
-            // Datos diarios simulados
-            $currentDate = clone $startDate;
-            while ($currentDate <= $endDate) {
-                $labels[] = $currentDate->format('d M');
-                // Valores simulados con cierta variación para que el gráfico parezca real
-                $data[] = rand(800, 2500) + (sin($currentDate->day / 3) * 500);
-                $currentDate->addDay();
-            }
-        } else {
-            // Datos mensuales simulados
-            $currentDate = clone $startDate->startOfMonth();
-            $endMonthDate = clone $endDate->endOfMonth();
-            
-            $monthCount = 0;
-            while ($currentDate <= $endMonthDate) {
-                $labels[] = $currentDate->format('M Y');
-                // Valores mensuales con tendencia ascendente para simular crecimiento
-                $data[] = rand(3000, 8000) + ($monthCount * 500);
-                $currentDate->addMonth();
-                $monthCount++;
-            }
-        }
-        
-        return [
-            'labels' => $labels,
-            'data' => $data
-        ];
     }
     
     private function getClientsChartData($idEmpresa, $startDate, $endDate)

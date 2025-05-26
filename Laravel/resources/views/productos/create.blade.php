@@ -107,7 +107,7 @@
         <div class="form-section">
             <h2 class="form-section-title">Descripción del producto</h2>
             <div class="form-group">
-                <label for="Description">Descripción detallada</label>
+                <label for="Description">Descripción</label>
                 <textarea name="Description" id="Description" rows="4"
                     class="form-input @error('Description') border-red-500 @enderror"
                     placeholder="Describe las características del producto...">{{ old('Description') }}</textarea>
@@ -119,7 +119,12 @@
         
         <!-- Form Actions -->
         <div class="flex justify-end space-x-3">
-            <a href="{{ route('productos.index') }}" class="btn-secondary">Cancelar</a>
+            <a href="{{ route('productos.index') }}" class="btn-secondary hover:bg-gray-300 transition-colors duration-300 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancelar
+            </a>
             <button type="submit" class="btn-primary">
                 <span class="flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
