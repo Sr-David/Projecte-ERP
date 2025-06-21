@@ -179,7 +179,7 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
 
     // Ruta de Empresa
     Route::get('/empresa', function() {
-        return view('empresa.index');
+        return redirect('/dashboard');
     })->name('empresa.index');
 
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':ventas,crear')->group(function () {

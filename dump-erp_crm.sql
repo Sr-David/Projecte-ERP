@@ -144,6 +144,11 @@ DROP TABLE IF EXISTS `UserAdministration`;
 CREATE TABLE `UserAdministration` (
   `idEmpresa` int NOT NULL AUTO_INCREMENT,
   `Name` varchar(100) NOT NULL,
+  `Email` varchar(100) NOT NULL,
+  `Phone` varchar(100) NOT NULL,
+  `Address` varchar(100) NOT NULL,
+  `City` varchar(100) NOT NULL,
+  `Logo` varchar(255) NOT NULL,
   `Username` varchar(100) NOT NULL,
   `Password` varchar(255) NOT NULL,
   `Permissions` text,

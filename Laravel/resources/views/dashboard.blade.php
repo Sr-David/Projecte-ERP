@@ -5,6 +5,91 @@
 @section('breadcrumb', 'Inicio')
 
 @section('content')
+    <!-- Empresa Overview -->
+    <div class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Fondo con patrón sutil -->
+            <div class="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 p-6 sm:p-8">
+                <!-- Patrón de fondo -->
+                <div class="absolute inset-0 opacity-10">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#smallGrid)" />
+                    </svg>
+                </div>
+                
+                <div class="relative flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+                    <!-- Logo de empresa con efecto de brillo -->
+                    <div class="flex-shrink-0">
+                        <div class="relative">
+                            <div class="absolute -inset-0.5 bg-white rounded-full opacity-50 blur-md"></div>
+                            <img src="{{ $companyData && $companyData->Logo ? asset($companyData->Logo) : asset('images/logoElevate.png') }}" alt="Logo Empresa" 
+                                class="relative w-28 h-28 rounded-full border-4 border-white shadow-xl object-cover bg-white transform transition-transform hover:scale-105 duration-300">
+                        </div>
+                    </div>
+                    
+                    <!-- Información principal -->
+                    <div class="flex-grow text-center md:text-left">
+                        <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">{{ $companyData ? $companyData->Name : 'Empresa' }}</h2>
+                        <p class="text-white/90 text-lg mb-4 max-w-2xl">Sistema integral para gestión de clientes y proyectos</p>
+                        
+                        <!-- Estadísticas rápidas -->
+                        <div class="inline-flex flex-wrap justify-center md:justify-start gap-4 mt-2">
+                            <div class="flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                                <div class="flex-shrink-0 p-1.5 bg-white/30 rounded-md mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-white/70 font-medium">Ubicación</div>
+                                    <div class="text-sm text-white font-semibold">{{ $companyData && $companyData->City ? $companyData->City : 'No disponible' }}{{ $companyData && $companyData->Address ? ', ' . $companyData->Address : '' }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                                <div class="flex-shrink-0 p-1.5 bg-white/30 rounded-md mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-white/70 font-medium">Contacto</div>
+                                    <div class="text-sm text-white font-semibold">{{ $companyData && $companyData->Email ? $companyData->Email : 'No disponible' }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                                <div class="flex-shrink-0 p-1.5 bg-white/30 rounded-md mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-white/70 font-medium">Teléfono</div>
+                                    <div class="text-sm text-white font-semibold">{{ $companyData && $companyData->Phone ? $companyData->Phone : 'No disponible' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Indicador de estado -->
+                    <div class="hidden md:flex flex-col items-center justify-center">
+                        <div class="flex items-center px-3 py-1 bg-green-500/20 backdrop-blur-sm rounded-full">
+                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+                            <span class="text-xs text-white font-medium">Sistema activo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Dashboard Overview -->
     <div class="mb-8">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">Resumen General</h2>
@@ -84,27 +169,27 @@
                 </div>
             </div>
             
-            <!-- (Notas) -->
+            <!-- Notas -->
             <div class="card bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                 <div class="flex items-center">
-        <div class="flex-shrink-0 bg-purple-100 rounded-full p-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                    <div class="flex-shrink-0 bg-purple-100 rounded-full p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                     </div>
                     <div class="ml-4">
-            <h3 class="text-sm font-medium text-gray-500">Notas</h3>
+                        <h3 class="text-sm font-medium text-gray-500">Notas</h3>
                         <div class="mt-1 flex items-baseline">
-                <p class="text-2xl font-semibold text-gray-900">{{ $stats['notes']['total'] }}</p>
-                <p class="ml-2 text-sm font-medium {{ $stats['notes']['change'] <= 0 ? 'text-gray-600' : 'text-gray-600' }}">
-                    {{ $stats['notes']['change'] >= 0 ? '+' : '' }}{{ $stats['notes']['change'] }}
-                </p>
+                            <p class="text-2xl font-semibold text-gray-900">{{ $stats['notes']['total'] }}</p>
+                            <p class="ml-2 text-sm font-medium {{ $stats['notes']['change'] <= 0 ? 'text-gray-600' : 'text-gray-600' }}">
+                                {{ $stats['notes']['change'] >= 0 ? '+' : '' }}{{ $stats['notes']['change'] }}
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4">
-        <a href="{{ route('notes.index') }}" class="text-sm font-medium text-purple-600 hover:underline">
-            Ver notas
+                    <a href="{{ route('notes.index') }}" class="text-sm font-medium text-purple-600 hover:underline">
+                        Ver notas
                     </a>
                 </div>
             </div>

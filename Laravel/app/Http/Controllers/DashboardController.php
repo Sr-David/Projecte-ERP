@@ -18,6 +18,9 @@ class DashboardController extends Controller
             return redirect()->route('login')->with('error', 'Sesión no válida');
         }
         
+        // Obtener datos de la empresa
+        $companyData = $this->getCompanyData($idEmpresa);
+        
         // Obtener estadísticas generales
         $stats = $this->getGeneralStats($idEmpresa);
         
@@ -27,7 +30,20 @@ class DashboardController extends Controller
         // Obtener actividades recientes
         $recentActivities = $this->getRecentActivities($idEmpresa);
         
-        return view('dashboard', compact('stats', 'salesData', 'recentActivities'));
+        return view('dashboard', compact('stats', 'salesData', 'recentActivities', 'companyData'));
+    }
+    
+    /**
+     * Obtiene los datos de la empresa desde la tabla UserAdministration
+     */
+    private function getCompanyData($idEmpresa)
+    {
+        $company = DB::table('UserAdministration')
+            ->where('idEmpresa', $idEmpresa)
+            ->select('Name', 'Email', 'Phone', 'Address', 'City', 'Logo')
+            ->first();
+            
+        return $company;
     }
     
     private function getGeneralStats($idEmpresa)
