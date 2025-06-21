@@ -177,6 +177,11 @@ Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
         Route::get('/ventas/propuestas', [VentaController::class, 'propuestas'])->name('ventas.propuestas');
     });
 
+    // Ruta de Empresa
+    Route::get('/empresa', function() {
+        return view('empresa.index');
+    })->name('empresa.index');
+
     Route::middleware(\App\Http\Middleware\CheckUserPermissions::class.':ventas,crear')->group(function () {
         Route::get('/ventas/propuestas/crear', [VentaController::class, 'crearPropuesta'])->name('ventas.propuestas.create');
         Route::post('/ventas/propuestas', [VentaController::class, 'guardarPropuesta'])->name('ventas.propuestas.store');

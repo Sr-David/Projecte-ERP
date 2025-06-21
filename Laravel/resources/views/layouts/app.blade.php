@@ -336,6 +336,18 @@
                         Notas
                     </a>
 
+                    <!-- Empresa -->
+                    <a href="{{ url('/empresa') }}"
+                        class="group flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->is('empresa*') ? 'sidebar-active' : 'text-gray-700 hover:bg-gray-100' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="mr-3 h-5 w-5 {{ request()->is('empresa*') ? 'text-brand-blue' : 'text-gray-500 group-hover:text-gray-600' }}"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        Empresa
+                    </a>
+
             
 
                     <!-- Reportes -->
@@ -433,6 +445,17 @@
 
                         <!-- Header Actions -->
                         <div class="flex items-center space-x-4">
+                            <!-- Empresa Button -->
+                            <a href="{{ url('/empresa') }}"
+                                class="p-1 rounded-full text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-300 transform hover:scale-110">
+                                <span class="sr-only">Empresa</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </a>
+                            
                             <!-- Help Button -->
                             <button type="button" id="help-button"
                                 class="p-1 rounded-full text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-300 transform hover:scale-110">
