@@ -27,8 +27,10 @@
                     <div class="flex-shrink-0">
                         <div class="relative">
                             <div class="absolute -inset-0.5 bg-white rounded-full opacity-50 blur-md"></div>
-                            <img src="{{ $companyData && $companyData->Logo ? asset($companyData->Logo) : asset('images/logoElevate.png') }}" alt="Logo Empresa" 
-                                class="relative w-28 h-28 rounded-full border-4 border-white shadow-xl object-cover bg-white transform transition-transform hover:scale-105 duration-300">
+                            <img src="{{ asset($companyData->Logo) }}" 
+                                alt="Logo {{ $companyData->Name }}" 
+                                class="relative w-28 h-28 rounded-full border-4 border-white shadow-xl object-cover bg-white transform transition-transform hover:scale-105 duration-300"
+                                onerror="this.onerror=null; this.src='{{ asset('images/logoElevate.png') }}';">
                         </div>
                     </div>
                     

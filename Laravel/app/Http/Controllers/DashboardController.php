@@ -43,6 +43,20 @@ class DashboardController extends Controller
             ->select('Name', 'Email', 'Phone', 'Address', 'City', 'Logo')
             ->first();
             
+        // Verificar si el logo existe y formatearlo correctamente
+        if ($company && !empty($company->Logo)) {
+            // Si el logo no comienza con http:// o https://, asumimos que es una ruta relativa
+            if (!preg_match('/^https?:\/\//', $company->Logo)) {
+                // Si no comienza con /, agregarlo
+                if (substr($company->Logo, 0, 1) !== '/') {
+                    $company->Logo = '/' . $company->Logo;
+                }
+            }
+        } else {
+            // Establecer un logo predeterminado si no hay uno
+            $company->Logo = 'images/logoElevate.png';
+        }
+            
         return $company;
     }
     
