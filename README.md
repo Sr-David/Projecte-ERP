@@ -145,5 +145,5 @@ Las contribuciones son bienvenidas. Para cambios importantes, por favor abre un 
 ---
 
 <div align="center">
-  <p>Desarrollado con ❤️ por Elevate Team</p>
+  <p>Desarrollado con ❤️ por Joan López y David Calvo</p>
 </div>
